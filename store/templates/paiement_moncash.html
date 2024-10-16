@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card p-4 shadow-sm" style="max-width: 400px; margin: auto;">
+    <h2 class="text-center text-danger mb-4">Paiement avec MonCash</h2>
+    
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Affichage du montant total -->
+      <h3 class="text-center text-success">Total à payer : {{ total }} HTG</h3>
+      <hr>
+
+      <!-- Champ pour numéro de téléphone -->
+      <div class="mb-3">
+        <label for="numero" class="form-label">Numéro de téléphone</label>
+        <div class="input-group">
+          <span class="input-group-text">+509</span>
+          <input type="number" name="numero" id="numero" class="form-control" 
+                 min="10000000" max="99999999" placeholder="Votre numéro" 
+                 title="Le numéro doit contenir exactement 8 chiffres." required>
+        </div>
+      </div>
+
+      <!-- Champ pour le PIN MonCash -->
+      <div class="mb-4">
+        <label for="pin" class="form-label">PIN MonCash</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-key"></i></span>
+          <input type="number" name="pin" id="pin" class="form-control" 
+                 min="1000" max="9999" placeholder="4 chiffres" 
+                 title="Le PIN doit contenir exactement 4 chiffres." required>
+        </div>
+      </div>
+      
+      <!-- Bouton de validation -->
+      <div class="d-grid">
+        <button type="submit" class="btn btn-danger btn-block">Payer avec MonCash</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

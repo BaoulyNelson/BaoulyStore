@@ -1,0 +1,45 @@
+/* Conteneur principal du formulaire */
+.search-form-container {
+    text-align: center; /* Centrer le titre et le formulaire */
+    background-color: #f4f4f9;
+    padding: 20px;
+    margin: 0;
+}
+
+/* Titre au-dessus du formulaire */
+.search-title {
+    margin-bottom: 20px; /* Ajoute de l'espace entre le titre et le formulaire */
+    font-size: 24px;
+    color: #333;
+}
+
+/* Centrage du formulaire */
+.search-form {
+    display: inline-block; /* Permet au formulaire d'être centré sans flex */
+}
+
+.search-form form {
+    display: flex;
+    align-items: center; /* Aligne les éléments du formulaire horizontalement */
+}
+
+.search-form input[type="text"] {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.search-form button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-form button i {
+    font-size: 16px;
+}

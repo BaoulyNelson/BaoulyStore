@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profil.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Bienvenue, {{ user.first_name }} {{ user.last_name }}!</h1>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Nom d'utilisateur :</strong> {{ user.username }}</p>
+        
+        <!-- Lien de déconnexion -->
+        <a href="{% url 'confirmer_deconnexion' %}" class="btn btn-danger mt-3">Se déconnecter</a>
+    </div>
+{% endblock %}

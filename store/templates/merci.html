@@ -1,0 +1,16 @@
+
+
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/merci.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+    <div class="merci-container">
+        <h1>Merci !</h1>
+        <p>Nous avons bien reçu votre message et vous répondrons dans les plus brefs délais.</p>
+        <a href="/">Retour à l'accueil</a>
+    </div>
+    {% endblock %}
+

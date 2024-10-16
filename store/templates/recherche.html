@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% block title %}Recherche{% endblock %} 
+{% block content %} 
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/StylesRecherche.css' %}" />
+
+<div class="search-form-container">
+    <h2 class="search-title">Rechercher un produit</h2> <!-- Titre au-dessus -->
+    
+    <!-- Conteneur du formulaire -->
+    <div id="searchForm" class="search-form">
+      <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" id="search-input" placeholder="Rechercher un produit..." required />
+        <button type="submit"><i class="fas fa-search"></i> Rechercher</button>
+      </form>
+    </div>
+  </div>
+  
+  
+  <!-- Script pour activer le focus -->
+  <script>
+    // Activer le focus sur le champ de recherche lorsque la page est chargée
+    window.onload = function() {
+      document.getElementById('search-input').focus();
+    };
+  </script>
+  
+  
+{% endblock %}

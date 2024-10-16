@@ -1,0 +1,38 @@
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/footer.css' %}">
+{% endblock %}
+
+<footer>
+    <p>&copy; <span id="currentYear"></span> Baouly'S Store</p>
+
+    <!-- Liens des réseaux sociaux -->
+    <div class="social-icons">
+        <a href="https://web.facebook.com/" target="_blank">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://twitter.com" target="_blank">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://web.telegram.org/a/" target="_blank">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://linkedin.com" target="_blank">
+            <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="https://whatsapp.com" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://telegramm.com" target="_blank">
+            <i class="fab fa-telegram"></i>
+        </a>
+        <a href="https://tiktok.com" target="_blank">
+            <i class="fab fa-tiktok"></i>
+        </a>
+    </div>
+
+    {% load static %}
+    <!-- Chargement des fichiers JavaScript -->
+    <script src="{% static 'js/footer.js' %}"></script>
+</footer>

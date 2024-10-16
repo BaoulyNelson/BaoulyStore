@@ -1,0 +1,9 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="dashboard-btn">
+        <a href="{% url 'admin_dashboard_stats' %}" class="btn btn-primary">Voir les statistiques</a>
+    </div>
+{% endblock %}

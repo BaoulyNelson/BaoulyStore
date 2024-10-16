@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/afficher_panier.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h1>Votre Panier</h1>
+
+<!-- Vérification des messages d'alerte -->
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<!-- Vérification si le panier est vide -->
+{% if panier %}
+    <!-- Affichage du tableau des articles dans le panier -->
+    <table>
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Couleur</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in panier %}
+            <tr>
+               
+                <td>{{ item.produit.nom }}</td>
+                <td>{{ item.produit.couleur }}</td>
+                <td>{{ item.quantite }}</td>
+                <td>{{ item.produit.prix }} HTG</td>
+                <td>{{ item.produit.prix|floatformat:2 }} HTG</td>
+             
+                <td>
+                    <!-- Bouton pour diminuer la quantité -->
+                    <a href="{% url 'modifier_quantite_panier' item.produit.id item.quantite|add:-1 %}">-</a>
+                    
+                    <!-- Bouton pour augmenter la quantité, désactivé si la quantité en stock est atteinte -->
+                    {% if item.quantite < item.produit.quantite_en_stock %}
+                    <a href="{% url 'modifier_quantite_panier' item.produit.id item.quantite|add:1 %}">+</a>
+                    {% else %}
+                    <span>+</span> <!-- Placeholder pour indiquer que l'ajout est impossible -->
+                    {% endif %}
+                    
+                    <!-- Lien pour supprimer l'article du panier avec confirmation -->
+                    <a href="{% url 'supprimer_du_panier' item.produit.id %}">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if payment_url %}
+    <!-- Afficher le bouton Payer si l'URL de paiement est valide -->
+    <a href="{{ payment_url }}" class="pay-button">
+        <img src="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/resources/assets/images/MC_button_kr.png" alt="Payer avec MonCash" style="width: 200px; height: auto;">
+    </a>
+    
+    
+{% else %}
+    <p>Impossible de créer le paiement pour le moment.</p>
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+{% endif %}
+
+
+    <!-- Total du panier -->
+    <h3>Total : {{ total }} Gourdes</h3>
+
+{% else %}
+    <!-- Message affiché si le panier est vide -->
+    <p class="text-center alert alert-info">Votre panier est vide. Ajoutez des produits pour continuer.</p>
+{% endif %}
+
+{% endblock %}

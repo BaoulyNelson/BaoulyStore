@@ -1,0 +1,74 @@
+/* Styles pour le menu latéral */
+.side-panel {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.side-panel a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-panel a:hover {
+    color: #6B1D1A;
+    /* Couleur de survol */
+}
+
+.side-panel .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    width: 36px;
+    /* Largeur du carré */
+    height: 36px;
+    /* Hauteur du carré */
+    font-size: 20px;
+    /* Taille de l'icône */
+    line-height: 36px;
+    /* Centrer verticalement l'icône */
+    text-align: center;
+    /* Centrer horizontalement l'icône */
+    background-color: #ccc;
+    /* Couleur de fond du carré */
+    border-radius: 4px;
+    /* Coins arrondis */
+    cursor: pointer;
+}
+
+/* Styles pour petits écrans */
+@media (max-width: 768px) {
+    .menu-icon {
+        display: block;
+        /* Affiche le menu sur les petits écrans */
+    }
+
+    .nav-links {
+        display: none;
+        /* Cache les liens horizontaux */
+    }
+}
+
+/* Styles pour grands écrans */
+@media (min-width: 769px) {
+    .nav-links {
+        display: flex;
+        /* Affiche les liens horizontalement */
+    }
+
+    .side-panel {
+        display: none;
+        /* Cache le panneau latéral */
+    }
+}

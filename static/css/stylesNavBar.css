@@ -1,0 +1,40 @@
+.header {
+    background-color: #6B1D1A; /* Couleur de fond marron */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    display: none; /* Par défaut, le menu est caché */
+}
+.logo {
+    color: white;
+    font-size: 20px;
+    font-family: 'Brush Script MT', cursive; /* Style du texte Constant Haiti */
+}
+.nav-links {
+    display: none; /* Les liens sont cachés par défaut */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-grow: 1;
+    justify-content: space-evenly;
+}
+.nav-links li {
+    display: inline-block;
+}
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: 0.3s;
+}
+.nav-links a:hover {
+    color: #FFD700; /* Couleur dorée au survol */
+}

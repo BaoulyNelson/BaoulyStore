@@ -1,0 +1,76 @@
+/* Conteneur commun pour le formulaire d'authentification */
+.auth-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Style du titre pour les deux formulaires */
+.auth-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Champs de formulaire pour les deux */
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-container form input[type="text"],
+.auth-container form input[type="email"],
+.auth-container form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Style des boutons de soumission */
+.auth-container form button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.auth-container form button:hover {
+    background-color: #0056b3;
+}
+
+/* Lien sous le formulaire (pour rediriger vers inscription/connexion) */
+.auth-container p {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.auth-container p a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-container p a:hover {
+    text-decoration: underline;
+}
+
+/* Optionnel: ajustement pour écrans mobiles */
+@media (max-width: 600px) {
+    .auth-container {
+        width: 90%;
+        padding: 15px;
+    }
+}

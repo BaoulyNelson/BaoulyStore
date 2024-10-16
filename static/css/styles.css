@@ -1,0 +1,27 @@
+/* Style global */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.search-icon {
+    cursor: pointer;
+    color: white;
+}
+
+
+/* Contenu principal */
+main {
+    padding: 40px;
+    background-color: #fff;
+    min-height: 70vh; /* Assurer que le contenu occupe de l'espace */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    width: 90%;
+    max-width: 1200px;
+}
+
+
