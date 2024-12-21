@@ -1,6 +1,3 @@
-Voici la liste sans doublons :  
-
-```plaintext
 asgiref==3.8.1
 babel==2.16.0
 certifi==2024.8.30
