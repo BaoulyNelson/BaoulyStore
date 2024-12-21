@@ -106,41 +106,35 @@
   <div class="container">
     <h2>Commentaires des visiteurs</h2>
     <div id="commentaires">
-      {% if commentaires %} {% for commentaire in commentaires %}
-      <div class="commentaire">
-        <p><strong>{{ commentaire.utilisateur.username }}</strong> a dit :</p>
-        <p>{{ commentaire.texte }}</p>
-        <p>
-          <small>Posté le {{ commentaire.date_postee|date:"d M Y H:i" }}</small>
-        </p>
+      {% if commentaires %} 
+        {% for commentaire in commentaires %}
+          <div class="commentaire">
+            <p><strong>{{ commentaire.utilisateur.username }}</strong> a dit :</p>
+            <p>{{ commentaire.texte }}</p>
+            <p>
+              <small>Posté le {{ commentaire.date_postee|date:"d M Y H:i" }}</small>
+            </p>
 
-        <!-- Vérification si l'utilisateur est superuser -->
-        {% if request.user.is_superuser %}
-        <!-- Bouton de suppression -->
-        <form
-          method="POST"
-          action="{% url 'supprimer_commentaire' commentaire.id %}"
-          style="display: inline"
-        >
-          {% csrf_token %}
-          <button
-            type="submit"
-            class="btn btn-danger"
-            title="Supprimer ce commentaire"
-          >
-            <i class="fas fa-trash-alt"></i>
-            <!-- Icône de la corbeille -->
-          </button>
-        </form>
-        {% endif %}
-      </div>
-      {% endfor %} {% else %}
-      <p style="text-align: center">
-        Aucun commentaire pour le moment. Soyez le premier à en laisser un !
-      </p>
+            <!-- Vérification si l'utilisateur est un superutilisateur -->
+            {% if request.user.is_superuser %}
+              <!-- Bouton de suppression -->
+              <form method="POST" action="{% url 'supprimer_commentaire' commentaire.id %}" style="display: inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" title="Supprimer ce commentaire">
+                  <i class="fas fa-trash-alt"></i> <!-- Icône de la corbeille -->
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align: center">
+          Aucun commentaire pour le moment. Soyez le premier à en laisser un !
+        </p>
       {% endif %}
     </div>
   </div>
 </section>
+
 
 {% endblock %}
