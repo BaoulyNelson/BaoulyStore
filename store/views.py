@@ -2,7 +2,7 @@ from moncashify import API  # Assurez-vous que le module MonCashify est bien ins
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Produit, Panier, Commentaire,User  # Importer tous les modèles nécessaires à la fois
-from .forms import CommentaireForm, ContactForm, UserRegistrationForm  # Importer tous les formulaires à la fois
+from .forms import CommentaireForm, ContactForm, UserRegistrationForm,ProfileForm,ProduitForm  # Importer tous les formulaires à la fois
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -25,6 +25,7 @@ def index(request):
         'commentaires': commentaires,
     })
 
+
 def login_view(request):
     form = LoginForm(request.POST or None)
     if request.method == 'POST':
@@ -45,7 +46,11 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
-                return redirect('index')  # Redirection après la connexion
+                # Redirection vers un produit ou une autre page après l'inscription
+                produit_id = request.POST.get('produit_id')
+                if produit_id:
+                    return redirect('ajouter_au_panier', produit_id=produit_id)  # Si vous avez cette fonctionnalité
+                return redirect('index')  # Rediriger vers la page d'accueil ou autre page
             else:
                 form.add_error(None, "Email/Nom d'utilisateur ou mot de passe invalide")
 
@@ -76,12 +81,55 @@ def register(request):
 
 
 
+@login_required
+def profile_view(request):
+    return render(request, 'registration/profile.html', {'user': request.user})
+
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirection après la mise à jour du profil
+    else:
+        form = ProfileForm(instance=request.user)
+    
+    return render(request, 'registration/edit_profile.html', {'form': form})
+
+
 def confirmer_deconnexion(request):
     if request.method == "POST":
         logout(request)
         return redirect('index')  # Redirection après déconnexion
     return render(request, 'registration/confirmer_deconnexion.html')
 
+
+
+@login_required
+def add_article(request):
+    if request.user.is_staff:  # Vérifiez si l'utilisateur est un membre du personnel
+        if request.method == 'POST':
+            form = ProduitForm(request.POST, request.FILES)  # Utilisez ProduitForm pour le formulaire produit
+            if form.is_valid():
+                produit = form.save(commit=False)
+                produit.save()  # Sauvegarde le produit
+                messages.success(request, "Le produit a été ajouté avec succès.")
+
+                # Vérifie quel bouton a été cliqué pour rediriger
+                if 'save_and_add_another' in request.POST:
+                    return redirect('add_article')  # Redirige vers un formulaire vide pour ajouter un autre produit
+                elif 'save_and_continue_editing' in request.POST:
+                    return redirect('edit_product', pk=produit.pk)  # Redirige vers la page d'édition du produit
+                else:
+                    return redirect('liste_produits')  # Redirige vers la liste des produits
+        else:
+            form = ProduitForm()
+        return render(request, 'add_article.html', {'form': form})
+    else:
+        return render(request, '403.html', status=403)  # Affiche une erreur 403 si l'utilisateur n'est pas staff
+    
 
 def produits_par_categorie(request, categorie):
     produits = Produit.objects.filter(categorie=categorie)
@@ -117,9 +165,6 @@ def detail_produit(request, pk):
         'form': form  # Formulaire sera None si l'utilisateur n'est pas connecté
     })
 
-
-def profile(request):
-    return render(request, 'registration/profile.html')  # Assure-toi d'avoir un template 'profile.html'
 
 
 def ajouter_au_panier(request, produit_id):

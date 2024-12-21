@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_styles %}
+<!-- Inclusion d'un fichier CSS spécifique à cette page -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/ajouter.css' %}">
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/ajouter.css' %}">
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Ajouter un Article</h2>
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">  <!-- Ajout de l'attribut enctype pour le téléchargement d'images -->
+                {% csrf_token %}
+
+                <!-- Section pour améliorer l'alignement et l'espacement des champs -->
+                <div class="form-group row">
+                    <label for="nom" class="col-sm-2 col-form-label">Nom du Produit</label>
+                    <div class="col-sm-10">
+                        {{ form.nom }}
+                    </div>
+                </div>
+                
+
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-10">
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="categorie" class="col-sm-2 col-form-label">Catégorie</label>
+                    <div class="col-sm-10">
+                        {{ form.categorie }}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="prix" class="col-sm-2 col-form-label">Prix</label>
+                    <div class="col-sm-10">
+                        {{ form.prix }}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="quantite_en_stock" class="col-sm-2 col-form-label">Quantité en Stock</label>
+                    <div class="col-sm-10">
+                        {{ form.quantite_en_stock }}
+                    </div>
+                </div>
+                
+
+                <!-- Amélioration de l'ergonomie pour l'image et la couleur -->
+                <div class="form-group row">
+                    <label for="image" class="col-sm-2 col-form-label">Image du Produit</label>
+                    <div class="col-sm-10">
+                        {{ form.image }}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="couleur" class="col-sm-2 col-form-label">Couleur</label>
+                    <div class="col-sm-10">
+                        {{ form.couleur }}
+                    </div>
+                </div>
+
+                <!-- Boutons d'action avec hiérarchisation visuelle -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary mr-2">Enregistrer</button>
+                    <button type="submit" class="btn btn-outline-secondary mr-2" name="save_and_add_another">Enregistrer et ajouter un autre</button>
+                    <button type="submit" class="btn btn-outline-secondary" name="save_and_continue_editing">Enregistrer et continuer à modifier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

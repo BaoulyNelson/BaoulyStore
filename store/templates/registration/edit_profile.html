@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_styles %}
+<!-- Inclusion d'un fichier CSS spécifique à cette page -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/modifier.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="profile-edit-container">
+    <div class="profile-edit-box">
+        <h2 class="profile-edit-title">Modifier le profil</h2>
+        <form method="POST" class="profile-edit-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-update">Mettre à jour</button>
+             <!-- Bouton Annuler -->
+    <a href="{% url 'profile' %}" class="btn-cancel">Annuler</a>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

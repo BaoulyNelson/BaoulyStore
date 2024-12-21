@@ -1,0 +1,67 @@
+<!-- En-tête -->
+{% load static %}
+<header class="header">
+  <div class="menu-icon" onclick="openPanel()">
+    <i class="fas fa-bars"></i>
+  </div>
+  <!-- Icône de menu -->
+  <div class="logo">
+    <img
+      src="{% static 'images/logo.jpg' %}"
+      alt="Baouly'Store Logo"
+      width="100"
+      style="border-radius: 50%; object-fit: cover"
+    />
+  </div>
+  <ul class="nav-links">
+    <li><a href="{% url 'index' %}">Accueil</a></li>
+
+    <li>
+      <a href="{% url 'produits_par_categorie' categorie='femme' %}">Femme</a>
+    </li>
+    <li>
+      <a href="{% url 'produits_par_categorie' categorie='homme' %}">Homme</a>
+    </li>
+    <li>
+      <a href="{% url 'produits_par_categorie' categorie='enfant' %}">Enfant</a>
+    </li>
+
+    <li><a href="{% url 'contact' %}">Contact</a></li>
+   
+      {% if user.is_superuser %}
+        <div class="profile-icon" style="color: white">
+          <a href="{% url 'admin:index' %}" title="Tableau de bord">
+            <i class="fas fa-user"></i>
+          </a>
+        </div>
+      {% elif user.is_staff %}
+        <div class="profile-icon" style="color: white">
+          <a href="{% url 'add_article' %}" title="Tableau de bord du staff">
+            <i class="fas fa-plus-circle"></i> Ajouter un Article
+            <a href="{% url 'confirmer_deconnexion' %}" title="Se déconnecter">
+              <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </a>
+          </a>
+         
+        </div>
+      {% elif user.is_authenticated %}
+        <div class="profile-icon" style="color: white">
+          <a href="{% url 'profile' %}" title="Voir votre profil">
+            <i class="fas fa-user-circle"></i>
+          </a>
+        </div>
+      {% else %}
+        <div class="profile-icon" style="color: white">
+          <a href="{% url 'login' %}" title="Se connecter">
+            <i class="fas fa-user-plus"></i>
+          </a>
+        </div>
+      {% endif %}
+   
+    
+  </ul>
+  <!-- Icône de recherche en tant que lien -->
+  <a href="{% url 'recherche' %}" class="search-icon">
+    <i class="fas fa-search"></i>
+  </a>
+</header>

@@ -1,0 +1,68 @@
+/* Style global */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Conteneur principal centré */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Titre et messages de bienvenue */
+.container h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+.container span {
+    font-size: 1.2em;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Détails du profil */
+.profile-details {
+    margin: 20px 0;
+    font-size: 1.1em;
+}
+
+.profile-details p {
+    margin: 10px 0;
+}
+
+.profile-details strong {
+    color: #007bff;
+}
+
+/* Bouton de déconnexion */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #c82333;
+}
+
+.mt-3 {
+    margin-top: 20px;
+}

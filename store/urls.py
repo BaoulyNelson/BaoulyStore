@@ -10,6 +10,7 @@ urlpatterns = [
     path('categorie/<str:categorie>/', produits_par_categorie, name='produits_par_categorie'),
     path('contact/', views.contact, name='contact'),
     path('liste_produits/', views.liste_produits, name='liste_produits'),
+    path('ajouter-article/', views.add_article, name='add_article'),
     path('detail_produit/<int:pk>/', views.detail_produit, name='detail_produit'),
     path('ajouter-au-panier/<int:produit_id>/', views.ajouter_au_panier, name='ajouter_au_panier'),
     path('panier/', views.afficher_panier, name='afficher_panier'),
@@ -25,8 +26,9 @@ urlpatterns = [
 
    path('login/', login_view, name='login'),  # Vue de connexion personnalisée
     path('register/', register, name='register'),  # Vue d'inscription
-
-    path('profile/', views.profile, name='account_profile'),  # Ajoute cette ligne
+    path('profile/', views.profile_view, name='profile'),
+    
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('confirmer-deconnexion/', confirmer_deconnexion, name='confirmer_deconnexion'),
     path('ajouter_commentaire/<int:produit_id>/', ajouter_commentaire, name='ajouter_commentaire'),
  
