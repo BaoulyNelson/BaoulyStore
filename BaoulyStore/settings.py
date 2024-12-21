@@ -18,6 +18,8 @@ DEBUG = config('DJANGO_DEBUG', cast=bool)
 # ALLOWED_HOSTS (charge depuis le fichier .env et sépare les valeurs par des virgules)
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
 
+ALLOWED_HOSTS = ['baoulystore.onrender.com', 'localhost', '127.0.0.1']
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
