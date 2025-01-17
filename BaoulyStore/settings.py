@@ -75,12 +75,12 @@ WSGI_APPLICATION = 'BaoulyStore.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='store'),  # Remplacez 'store' par le nom de votre base de données
         'USER': config('DB_USER', default='root'),  # Remplacez 'root' par l'utilisateur de la base de données
         'PASSWORD': config('DB_PASSWORD', default=''),  # Laissez vide si aucun mot de passe est défini
         'HOST': config('DB_HOST', default='localhost'),  # Adresse du serveur MySQL (localhost, ou l'adresse distante)
-        'PORT': config('DB_PORT', default='3306'),  # Port utilisé par MySQL (3306 par défaut)
+        'PORT': config('DB_PORT', default='5432'),  # Port utilisé par MySQL (3306 par défaut)
     }
 }
 
