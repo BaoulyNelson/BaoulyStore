@@ -73,14 +73,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BaoulyStore.wsgi.application'
 
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS').split(',')
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL'),  # Charger depuis .env
+        default=config('DATABASE_URL'), 
         conn_max_age=600,
     )
 }
-
+# MonCash Configuration
+MONCASH_CLIENT_ID = config('MONCASH_CLIENT_ID')
+MONCASH_SECRET_ID = config('MONCASH_SECRET_ID')
+MONCASH_DEBUG = config('MONCASH_DEBUG', default=False, cast=bool)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
