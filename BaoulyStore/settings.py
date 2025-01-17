@@ -73,16 +73,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BaoulyStore.wsgi.application'
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='store'),  # Nom de la base de données
-        'USER': config('DB_USER', default='baouly'),  # Utilisateur PostgreSQL
-        'PASSWORD': config('DB_PASSWORD', default='votre_mot_de_passe'),  # Mot de passe
-        'HOST': config('DB_HOST', default='localhost'),  # Hôte (souvent l'URL de Render)
-        'PORT': config('DB_PORT', default='5432'),  # Port de PostgreSQL
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),  # Charger depuis .env
+        conn_max_age=600,
+    )
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
