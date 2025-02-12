@@ -1,110 +1,86 @@
 {% extends 'base.html' %} {% load static %} {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/accueil.css' %}" />
+
 {% endblock %} {% block content %}
-<div class="hero">
-  <div class="hero-content">
-   
-    <!-- Bannière -->
+    <!-- Bannière d'accueil -->
     <section class="banner text-center bg-light py-5">
       <div class="container">
-    <h1>Bienvenue sur Baouly's Store !</h1>
-
-        <h1 class="display-5">
-          Découvrez des produits uniques pour votre quotidien
-        </h1>
-        <p class="lead">Faites-vous plaisir, à portée de clic.</p>
-        <a href="{% url 'liste_produits' %}" class="btn btn-primary btn-lg mt-3"
-          >Découvrez nos collections</a
-        >
+        <h1 class="display-4 fw-bold">Bienvenue sur Baouly's Store !</h1>
+        <p class="lead">Découvrez des produits uniques pour votre quotidien.</p>
+        
       </div>
     </section>
+
+<!-- ✅ SECTION PRODUITS EN VEDETTE -->
+<section class="container my-5 text-center">
+  <h2 class="text-center mb-4 fw-bold">Nos Derniers Produits</h2>
+  <div class="row">
+    {% for produit in produits %}
+      <div class="col-md-3 col-sm-4 col-6 mb-4">
+        <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
+          <div class="d-flex flex-column align-items-center">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 140px; height: 140px; overflow: hidden;">
+              <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p class="mt-2 fw-bold">{{ produit.nom }}</p>
+            <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted">Aucun produit disponible pour le moment.</p>
+    {% endfor %}
   </div>
-</div>
+</section>
+
+
+  <!-- ✅ PAGINATION -->
+  {% if produits.has_other_pages %}
+    <nav aria-label="Pagination">
+      <ul class="pagination justify-content-center">
+        <!-- Bouton Précédent -->
+        {% if produits.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ produits.previous_page_number }}">Précédent</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Précédent</span>
+          </li>
+        {% endif %}
+
+        <!-- Numéros de page -->
+        {% for num in produits.paginator.page_range %}
+          <li class="page-item {% if produits.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+
+        <!-- Bouton Suivant -->
+        {% if produits.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ produits.next_page_number }}">Suivant</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Suivant</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</section>
+
+
 
 
 
 <hr>
 
-<!-- Catégories -->
-<section class="categories py-5">
-  <div class="container text-center">
-    <h2 class="mb-4">Nos catégories</h2>
-    <div class="row g-3">
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-tshirt fa-2x text-primary mb-3"></i>
-          <h3>Vêtements pour le quotidien</h3>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-hat-cowboy fa-2x text-success mb-3"></i>
-          <h3>Accessoires de mode</h3>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-running fa-2x text-danger mb-3"></i>
-          <h3>Vêtements de sport</h3>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-suitcase fa-2x text-pink mb-3"></i>
-          <h3>Vêtements de bureau</h3>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-tshirt fa-2x text-primary mb-3"></i>
-          <h3>Tenues de soirée</h3>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="category-item bg-white p-3 border rounded shadow-sm">
-          <i class="fas fa-leaf fa-2x text-info mb-3"></i>
-          <h3>Vêtements écoresponsables</h3>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="commitments">
-  <h2>Pourquoi choisir  Baouly's Store ?</h2>
-  <div class="commitments-list">
-    <section class="features">
-      <div class="container">
-        <h2>Nos Avantages</h2>
-        <div class="feature-list">
-          <div class="feature-item">
-            <i class="fas fa-truck"></i>
-            <h3>Livraison Rapide</h3>
-            <p>Recevez vos produits rapidement et en toute sécurité.</p>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-credit-card"></i>
-            <h3>Paiement Sécurisé</h3>
-            <p>Profitez d'un paiement en ligne sécurisé et facile.</p>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-thumbs-up"></i>
-            <h3>Service Client</h3>
-            <p>Notre équipe est disponible pour vous aider 24/7.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <div class="commitment">🌱 Produits éco-responsables</div>
-    <div class="commitment">🚚 Livraison rapide et soignée</div>
-    <div class="commitment">❤️ Satisfait ou remboursé</div>
-  </div>
-</section>
 
 <section class="comments-section">
   <div class="container">
-    <h2>Commentaires des visiteurs</h2>
+    <h2 style="text-align: center;">Commentaires des visiteurs</h2>
+
     <div id="commentaires">
       {% if commentaires %} 
         {% for commentaire in commentaires %}

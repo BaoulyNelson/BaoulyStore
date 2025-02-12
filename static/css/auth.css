@@ -1,13 +1,32 @@
-/* auth.css */
-
-/* Style du corps de la page */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2; /* Couleur de fond douce */
-    margin: 0;
-    padding: 0;
-    justify-content: center;
-    align-items: center;
+.auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.auth-container .form-group {
+    margin-bottom: 15px;
+}
+.auth-container .btn {
+    width: 100%;
+}
+.auth-links {
+    text-align: center;
+    margin-top: 15px;
+}
+.auth-links a {
+    color: #007bff;
+    text-decoration: none;
+}
+.auth-links a:hover {
+    text-decoration: underline;
 }
 
 /* Style du conteneur du formulaire */

@@ -1,83 +1,88 @@
-from moncashify import API  # Assurez-vous que le module MonCashify est bien installé
+from moncashify import API  
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Produit, Panier, Commentaire,User  # Importer tous les modèles nécessaires à la fois
-from .forms import CommentaireForm, ContactForm, UserRegistrationForm,ProfileForm,ProduitForm  # Importer tous les formulaires à la fois
+from .models import Produit, Panier, Commentaire,User
+from .forms import CommentaireForm, ContactForm,ProfileForm,ProduitForm 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.contrib.auth import login
 from django.contrib import messages
 from django.conf import settings
 from .models import User
 from django.http import JsonResponse
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm
 from django.contrib.admin.sites import site
+from django.contrib.auth import login,authenticate
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.contrib import messages
+from django.contrib.messages import get_messages
+from django.core.paginator import Paginator
 
 
 def index(request):
-    # Récupère tous les commentaires triés du plus récent au plus ancien
+    # Récupérer les commentaires du plus récent au plus ancien
     commentaires = Commentaire.objects.all().order_by('-date_postee')
     
+    # Récupérer les produits et activer la pagination
+    produits_list = Produit.objects.all().order_by('-id')  # Trie par le plus récent
+    paginator = Paginator(produits_list, 8)  # 10 produits par page
+
+    page_number = request.GET.get('page')  # Récupérer le numéro de la page depuis l'URL
+    produits = paginator.get_page(page_number)  # Obtenir les produits de la page
+
     return render(request, 'index.html', {
         'commentaires': commentaires,
+        'produits': produits,  # Passer les produits paginés au template
     })
 
-
 def login_view(request):
-    form = LoginForm(request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            username_or_email = form.cleaned_data.get('username_or_email')
-            password = form.cleaned_data.get('password')
+    # Supprime les anciens messages avant d'afficher un nouveau
+    storage = get_messages(request)
+    for _ in storage:
+        pass  # Cette boucle vide supprime tous les anciens messages
 
-            # Authentification avec email ou nom d'utilisateur
-            user = authenticate(request, username=username_or_email, password=password)
-            if user is None:
-                # Essayons de trouver un utilisateur avec l'email
-                try:
-                    from django.contrib.auth.models import User
-                    user_obj = User.objects.get(email=username_or_email)
-                    user = authenticate(request, username=user_obj.username, password=password)
-                except User.DoesNotExist:
-                    pass
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(request, username=username, password=password)
 
             if user is not None:
                 login(request, user)
-                # Redirection vers un produit ou une autre page après l'inscription
-                produit_id = request.POST.get('produit_id')
-                if produit_id:
-                    return redirect('ajouter_au_panier', produit_id=produit_id)  # Si vous avez cette fonctionnalité
-                return redirect('index')  # Rediriger vers la page d'accueil ou autre page
+                messages.success(request, f"Bienvenue {username} ! 😊 Vous êtes connecté.")
+
+                if request.POST.get("remember_me"):
+                    request.session.set_expiry(1209600)  # 2 semaines
+
+                return redirect("profile")
             else:
-                form.add_error(None, "Email/Nom d'utilisateur ou mot de passe invalide")
-
-    return render(request, 'registration/login.html', {'form': form})
-
-
-
-def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])  # Hachage du mot de passe
-            user.save()
-
-            # Connexion automatique après l'inscription
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-            # Redirection vers un produit ou une autre page après l'inscription
-            produit_id = request.POST.get('produit_id')
-            if produit_id:
-                return redirect('ajouter_au_panier', produit_id=produit_id)  # Si vous avez cette fonctionnalité
-            return redirect('index')  # Rediriger vers la page d'accueil ou autre page
+                messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
+        else:
+            messages.error(request, "Veuillez vérifier vos informations.")
     else:
-        form = UserRegistrationForm()
-    
-    return render(request, 'registration/register.html', {'form': form})
+        form = AuthenticationForm()
+
+    return render(request, "registration/login.html", {"form": form})
+
+
+def signup_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Inscription réussie ! 🎉 Bienvenue sur notre plateforme.")
+            return redirect("index")  # Redirection après succès
+        else:
+            messages.error(request, "Une erreur est survenue lors de l'inscription. Vérifiez les informations.")
+    else:
+        form = UserCreationForm()
+
+    return render(request, "registration/signup.html", {"form": form})
+
+
 
 
 
@@ -126,24 +131,58 @@ def add_article(request):
                     return redirect('liste_produits')  # Redirige vers la liste des produits
         else:
             form = ProduitForm()
-        return render(request, 'add_article.html', {'form': form})
+        return render(request, 'produits/add_article.html', {'form': form})
     else:
         return render(request, '403.html', status=403)  # Affiche une erreur 403 si l'utilisateur n'est pas staff
     
 
+
+
 def produits_par_categorie(request, categorie):
-    produits = Produit.objects.filter(categorie=categorie)
-    return render(request, 'liste_produits.html', {'produits': produits, 'categorie': categorie})
+    produits_list = Produit.objects.filter(categorie=categorie).order_by('-id')  # Trier par le plus récent
+
+    # 📌 PAGINATION : 9 produits par page
+    paginator = Paginator(produits_list, 4)  
+    page_number = request.GET.get('page')
+    produits = paginator.get_page(page_number)
+
+    return render(request, 'produits/liste_produits.html', {
+        'produits': produits,
+        'categorie': categorie,  # Pour afficher la catégorie sélectionnée
+    })
+
+
+
 
 
 def liste_produits(request):
-    produits = Produit.objects.all()
-    return render(request, 'liste_produits.html', {'produits': produits})
+    categorie = request.GET.get('categorie', None)  # Récupérer la catégorie depuis l'URL
+    
+    if categorie:
+        produits_list = Produit.objects.filter(categorie=categorie).order_by('-id')  # Filtrer par catégorie
+    else:
+        produits_list = Produit.objects.all().order_by('-id')  # Tous les produits
+
+    paginator = Paginator(produits_list, 8)  # 9 produits par page
+    page_number = request.GET.get('page')
+    produits = paginator.get_page(page_number)
+
+    return render(request, 'produits/liste_produits.html', {
+        'produits': produits,
+        'categorie_actuelle': categorie,  # Pour afficher la catégorie sélectionnée
+    })
+
+
+
+
 
 
 def detail_produit(request, pk):
     produit = get_object_or_404(Produit, pk=pk)
     commentaires = produit.commentaires.all()  # Récupère tous les commentaires associés à ce produit
+
+    # Récupérer les produits similaires dans la même catégorie, exclure le produit actuel
+    produits_similaires = Produit.objects.filter(categorie=produit.categorie).exclude(pk=produit.pk)
 
     form = None  # Initialiser le formulaire à None par défaut
 
@@ -159,10 +198,11 @@ def detail_produit(request, pk):
         else:
             form = CommentaireForm()  # Afficher le formulaire si l'utilisateur est authentifié
 
-    return render(request, 'detail_produit.html', {
+    return render(request, 'produits/detail_produit.html', {
         'produit': produit,
         'commentaires': commentaires,
-        'form': form  # Formulaire sera None si l'utilisateur n'est pas connecté
+        'form': form,  # Formulaire sera None si l'utilisateur n'est pas connecté
+        'produits_similaires': produits_similaires,  # Ajouter les produits similaires
     })
 
 
@@ -316,32 +356,34 @@ def supprimer_commentaire(request, commentaire_id):
     return redirect('index')  # Redirige correctement avec 'pk'
 
 
-def contact(request):
-    if request.method == 'POST':
+def contact_view(request):
+    if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Traitez les données du formulaire ici
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            message = form.cleaned_data['message']
-            
-            # Vous pouvez envoyer un email ou sauvegarder les informations dans une base de données
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
+            message = form.cleaned_data["message"]
+
+            # 📩 Envoyer un email (assure-toi que les paramètres SMTP sont bien configurés)
             send_mail(
-                f"Message de {name}",  # Sujet
-                message,  # Corps de l'email
-                email,  # De l'adresse email de l'utilisateur
-                ['votre-email@example.com'],  # Adresse email où envoyer le message
+                subject=f"Nouveau message de {name}",
+                message=message,
+                from_email=email,
+                recipient_list=["elconquistadorbaoulyn@example.com"],  # 
+                fail_silently=False,
             )
-            
-            # Redirigez l'utilisateur vers une page de confirmation ou un message de succès
-            return render(request, 'merci.html')
+
+            messages.success(request, "Votre message a bien été envoyé !")
+            return redirect("contact_success")  # Redirige vers la page de succès
 
     else:
         form = ContactForm()
 
-    
-    return render(request, 'contact.html', {'form': form})
+    return render(request, "contact/contact.html", {"form": form})
 
+
+def contact_success_view(request):
+    return render(request, "contact/contact_success.html")
 
 
 @login_required
@@ -371,7 +413,7 @@ def admin_dashboard_stats(request):
 
 
 def recherche_page(request):
-    return render(request, 'recherche.html')
+    return render(request, 'search/recherche.html')
 
 
 def search_results(request):
@@ -399,4 +441,4 @@ def search_results(request):
     if 'contact' in query.lower():
         pages.append({'nom': 'Contact', 'url': 'contact'})
     
-    return render(request, 'search_results.html', {'produits': produits, 'pages': pages, 'query': query})
+    return render(request, 'search/search_results.html', {'produits': produits, 'pages': pages, 'query': query})

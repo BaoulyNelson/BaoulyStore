@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Colonne gauche : Détails du produit -->
+        <div class="col-md-8">
+            <div class="product-container">
+                <div class="product-header">
+                    <h1 class="product-name">{{ produit.nom }}</h1>
+                </div>
+
+                <div class="product-details">
+                    <div class="product-image">
+                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+                    </div>
+                    <div class="product-info">
+                        <p class="description"><strong>Description :</strong> {{ produit.description }}</p>
+                        <p class="price"><strong>Prix :</strong> {{ produit.prix }} HTG</p>
+                        <p class="stock"><strong>Quantité en stock :</strong> {{ produit.quantite_en_stock }}</p>
+                        <p class="category"><strong>Catégorie :</strong> {{ produit.get_categorie_display }}</p>
+                        <p class="couleur"><strong>Couleur :</strong> {{ produit.couleur }}</p>
+
+                        <!-- Formulaire pour ajouter au panier -->
+                        <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" class="add-to-cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i> Ajouter au panier
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne droite : Autres produits de la même catégorie -->
+        <div class="col-md-4">
+            <h4 class="text-primary">Autres dans {{ produit.get_categorie_display }}</h4>
+        
+            {% if produits_similaires %}
+                <ul class="list-unstyled">
+                    {% for autre_produit in produits_similaires %}
+                        <li class="d-flex align-items-center mb-3 border-bottom pb-2">
+                            <!-- Image du produit plus grande et en cercle -->
+                            <img src="{{ autre_produit.image.url }}" alt="{{ autre_produit.nom }}" 
+                                 width="70" height="70" class="me-3 rounded-circle">
+        
+                            <!-- Détails du produit -->
+                            <div>
+                                <a href="{% url 'detail_produit' autre_produit.id %}" 
+                                   class="text-decoration-none text-dark fw-semibold hover-underline">
+                                    {{ autre_produit.nom }}
+                               
+                                <p class="text-primary fw-bold mb-0">{{ autre_produit.prix }} HTG</p>
+                            </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Aucun autre produit trouvé dans cette catégorie.</p>
+            {% endif %}
+        </div>
+        
+    </div>
+</div>
+
+
+<hr>
+<!-- Section des commentaires -->
+<div class="comments-section">
+    <h2>Commentaires</h2>
+    <div id="commentaires">
+        {% if commentaires %}
+            {% for commentaire in commentaires %}
+                <div class="commentaire">
+                    <p><strong>{{ commentaire.utilisateur.username }}</strong> a dit :</p>
+                    <p>{{ commentaire.texte }}</p>
+                    <p><small>Posté le {{ commentaire.date_postee|date:"d M Y H:i" }}</small></p>
+
+                    <!-- Vérification si l'utilisateur est superuser pour afficher le bouton de suppression -->
+                    {% if request.user.is_superuser %}
+                        <form method="POST" action="{% url 'supprimer_commentaire' commentaire.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" title="Supprimer ce commentaire">
+                                <i class="fas fa-trash-alt"></i> <!-- Icône de la corbeille -->
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align: center;">Aucun commentaire pour le moment. Soyez le premier à en laisser un !</p>
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+
+<!-- Formulaire d'ajout de commentaire -->
+{% if user.is_authenticated %}
+    <div class="comment-form">
+        <h2>Ajouter un commentaire</h2>
+        <form method="POST" action="{% url 'ajouter_commentaire' produit.id %}"> <!-- Assurez-vous que l'URL est correcte -->
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="submit-comment-btn">Soumettre</button>
+        </form>
+    </div>
+{% else %}
+    <p style="text-align: center;"><a href="{% url 'login' %}">Connectez-vous</a> pour ajouter un commentaire.</p>
+{% endif %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/modals.js' %}"></script>
+{% endblock %}
+
+{% endblock %}
+
+

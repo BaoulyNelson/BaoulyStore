@@ -1,29 +1,23 @@
 from pathlib import Path
-from decouple import AutoConfig, Csv
+import os
+from dotenv import load_dotenv
 
-import dj_database_url
-# Configuration des variables d'environnement
-config = AutoConfig()
+# Charger les variables d'environnement
+load_dotenv()
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Chemin de base
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY (charge depuis le fichier .env)
-SECRET_KEY = config('DJANGO_SECRET_KEY')
+# Clé secrète
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default_secret_key')
 
-# DEBUG (charge depuis le fichier .env et convertit en booléen)
-DEBUG = config('DJANGO_DEBUG', cast=bool)
+# Mode debug
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS (charge depuis le fichier .env et sépare les valeurs par des virgules)
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+# Hôtes autorisés
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'baoulystore.onrender.com,localhost,127.0.0.1').split(',')
 
-ALLOWED_HOSTS = ['baoulystore.onrender.com', 'localhost', '127.0.0.1']
-
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Application definition
+# Application installée
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,9 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # E-commerce related apps
     'store',
-    # Additional packages
     'paypal.standard.ipn',
     'crispy_forms',
     'django.contrib.sites',
@@ -42,6 +34,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 ]
 
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,12 +46,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# URL configuration
 ROOT_URLCONF = 'BaoulyStore.urls'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'store/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,75 +69,64 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BaoulyStore.wsgi.application'
 
-SECRET_KEY = config('DJANGO_SECRET_KEY')
-DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS').split(',')
-
+# Base de données
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'), 
-        conn_max_age=600,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', 'default_db_name'),
+        'USER': os.getenv('DB_USER', 'default_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
+    }
 }
-# MonCash Configuration
-MONCASH_CLIENT_ID = config('MONCASH_CLIENT_ID')
-MONCASH_SECRET_ID = config('MONCASH_SECRET_ID')
-MONCASH_DEBUG = config('MONCASH_DEBUG', default=False, cast=bool)
 
-# Password validation
+# Configuration de l'email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# Configuration MonCash
+MONCASH_CLIENT_ID = os.getenv('client_id', '')
+MONCASH_SECRET_ID = os.getenv('secret_key', '')
+MONCASH_DEBUG = os.getenv('MONCASH_DEBUG', 'False') == 'True'
+
+# Validation des mots de passe
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Email backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Internationalization
+# Internationalisation
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# Fichiers statiques et médias
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Login settings
+# Configuration de connexion
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'liste_produits'
 LOGOUT_REDIRECT_URL = '/'
 
-# Django-crispy-forms configuration
+# Configuration Django-crispy-forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-# Django-allauth configuration
+# Configuration Django-allauth
 AUTHENTICATION_BACKENDS = (
-    'store.authentication_backends.EmailOrUsernameModelBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',  # Utilisation du backend par défaut
 )
 
 SITE_ID = 1
-
-# MonCash settings
-MONCASH_CLIENT_ID = config('MONCASH_CLIENT_ID')
-MONCASH_SECRET_ID = config('MONCASH_SECRET_ID')
-MONCASH_DEBUG = config('MONCASH_DEBUG', cast=bool)

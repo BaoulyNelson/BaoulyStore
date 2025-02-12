@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Produits - {{ categorie|title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="text-center mb-4">Produits - {{ categorie|title }}</h2>
+
+  <!-- ✅ Barre de navigation par catégorie -->
+  <div class="text-center mb-4">
+    <a href="{% url 'liste_produits' %}" class="btn {% if not categorie %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      Tous
+    </a>
+    <a href="{% url 'produits_par_categorie' 'homme' %}" class="btn {% if categorie == 'homme' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      Homme
+    </a>
+    <a href="{% url 'produits_par_categorie' 'femme' %}" class="btn {% if categorie == 'femme' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      Femme
+    </a>
+    <a href="{% url 'produits_par_categorie' 'enfant' %}" class="btn {% if categorie == 'enfant' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      Enfant
+    </a>
+  </div>
+
+<!-- ✅ AFFICHAGE DES CATEGORIES -->
+<div class="container mt-4 text-center">
+    <div class="row">
+      {% for produit in produits %}
+        <div class="col-md-3 col-sm-4 col-6 mb-4">
+          <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
+            <div class="d-flex flex-column align-items-center">
+              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; overflow: hidden;">
+                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <p class="mt-2 fw-bold">{{ produit.nom }}</p>
+               <!-- ⭐ Affichage des étoiles -->
+          <div class="mb-2">
+            {% for i in "12345" %}
+              {% if produit.note >= i|add:"0" %}
+                <i class="fas fa-star text-warning"></i>
+              {% else %}
+                <i class="fas fa-star text-secondary"></i>
+              {% endif %}
+            {% endfor %}
+            <span class="small text-muted">({{ produit.avis_count }})</span>
+          </div>
+              <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <p class="text-center text-muted">Aucun produit trouvé.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+  <!-- ✅ PAGINATION -->
+  {% if produits.has_other_pages %}
+    <nav aria-label="Pagination">
+      <ul class="pagination justify-content-center">
+        {% if produits.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ produits.previous_page_number }}">Précédent</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Précédent</span>
+          </li>
+        {% endif %}
+
+        {% for num in produits.paginator.page_range %}
+          <li class="page-item {% if produits.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+
+        {% if produits.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ produits.next_page_number }}">Suivant</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Suivant</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

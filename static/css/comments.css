@@ -1,0 +1,73 @@
+.comments-section, .comment-form {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.comments-section h2, .comment-form h2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.commentaire {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.commentaire p {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.commentaire strong {
+    color: #2a9d8f;
+    font-size: 18px;
+}
+
+.commentaire small {
+    color: #999;
+    font-size: 14px;
+}
+
+#commentaires p {
+    text-align: left;
+}
+
+/* Style pour le message "Aucun commentaire" */
+#commentaires p {
+    font-style: italic;
+    color: #666;
+    text-align: center;
+}
+
+/* Style pour le formulaire d'ajout de commentaire */
+.comment-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.comment-form input[type="text"],
+.comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+}

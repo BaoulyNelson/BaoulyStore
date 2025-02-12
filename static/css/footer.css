@@ -1,3 +1,31 @@
+/* Style pour la flèche vers le haut */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    display: none;  /* Initialement cachée */
+    transition: background-color 0.3s ease;
+}
+
+.back-to-top:hover {
+    background-color: #0056b3;
+}
+
+.back-to-top i {
+    font-size: 20px;
+}
+
+/* Affiche la flèche lorsque l'utilisateur défile vers le bas */
+.show {
+    display: block;
+}
 
 
 /* Pied de page */

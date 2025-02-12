@@ -49,9 +49,10 @@
     <p>Aucun résultat trouvé pour "{{ query }}".</p>
 {% endif %}
 
-<a href="{% url 'index' %}" class="back-button">
+<a  class="btn btn-primary" href="{% url 'index' %}" style="display: block; text-align: center; text-decoration: none;">
     <i class="fas fa-arrow-left"></i> Retour à l'accueil
 </a>
+
 
 {% endblock %}
 

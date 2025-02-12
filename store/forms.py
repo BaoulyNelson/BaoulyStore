@@ -3,10 +3,23 @@ from django.contrib.auth.models import User
 from .models import Commentaire,Produit
 
 
+from django import forms
+
 class ContactForm(forms.Form):
-    name = forms.CharField(max_length=100, label="Nom")
-    email = forms.EmailField(label="Email")
-    message = forms.CharField(widget=forms.Textarea, label="Message")
+    name = forms.CharField(
+        label="Nom",
+        max_length=100,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Votre nom"})
+    )
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Votre email"})
+    )
+    message = forms.CharField(
+        label="Message",
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 5, "placeholder": "Votre message"})
+    )
+
 
 
 class LoginForm(forms.Form):

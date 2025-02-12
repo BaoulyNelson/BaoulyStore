@@ -17,14 +17,26 @@
     <li><a href="{% url 'index' %}">Accueil</a></li>
 
     <li>
-      <a href="{% url 'produits_par_categorie' categorie='femme' %}">Femme</a>
+      <a href="{% url 'liste_produits' %}" {% if not categorie %}style="font-weight: bold;"{% endif %}>
+        Tous
+      </a>
     </li>
     <li>
-      <a href="{% url 'produits_par_categorie' categorie='homme' %}">Homme</a>
+      <a href="{% url 'produits_par_categorie' 'femme' %}" {% if categorie == 'femme' %}style="font-weight: bold;"{% endif %}>
+        Femme
+      </a>
     </li>
     <li>
-      <a href="{% url 'produits_par_categorie' categorie='enfant' %}">Enfant</a>
+      <a href="{% url 'produits_par_categorie' 'homme' %}" {% if categorie == 'homme' %}style="font-weight: bold;"{% endif %}>
+        Homme
+      </a>
     </li>
+    <li>
+      <a href="{% url 'produits_par_categorie' 'enfant' %}" {% if categorie == 'enfant' %}style="font-weight: bold;"{% endif %}>
+        Enfant
+      </a>
+    </li>
+    
 
     <li><a href="{% url 'contact' %}">Contact</a></li>
    

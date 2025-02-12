@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 # Liste des choix de catégories
 CATEGORIE_CHOICES = [
@@ -81,11 +82,13 @@ VETEMENTS_CHOICES = [
 ]
 
 class Produit(models.Model):
-    nom=models.CharField(
-    max_length=100,
-    choices=VETEMENTS_CHOICES,
-    default='jeans')
+    nom = models.CharField(
+        max_length=100,
+        choices=VETEMENTS_CHOICES,
+        default='jeans'
+    )
     description = models.TextField()
+    
     # Champ catégorie avec un menu déroulant
     categorie = models.CharField(
         max_length=20,
@@ -96,7 +99,6 @@ class Produit(models.Model):
     quantite_en_stock = models.IntegerField()
     image = models.ImageField(upload_to='produits/')
     
-    
     # Champ couleur avec un menu déroulant
     couleur = models.CharField(
         max_length=20,
@@ -104,8 +106,10 @@ class Produit(models.Model):
         default='noir'
     )
 
+    date_ajout = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.nom
+
 
 
 class Panier(models.Model):
