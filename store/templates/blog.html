@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Notre Blog</h2>
+        <p class="text-muted">Découvrez nos articles et conseils mode.</p>
+    </div>
+
+    <div class="row">
+        <!-- Article 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <img src="images/baskets.jpg" class="card-img-top" alt="Comment choisir ses baskets">
+                <div class="card-body">
+                    <h5 class="card-title">Comment choisir ses baskets ?</h5>
+                    <p class="card-text text-muted">Un guide pour choisir les meilleures baskets selon vos besoins.</p>
+                    <a href="#" class="btn btn-primary">Lire plus</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article 2 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <img src="images/tendances-mode.jpg" class="card-img-top" alt="Les tendances mode 2025">
+                <div class="card-body">
+                    <h5 class="card-title">Les tendances mode 2025</h5>
+                    <p class="card-text text-muted">Découvrez les styles incontournables de cette année.</p>
+                    <a href="#" class="btn btn-primary">Lire plus</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article 3 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <img src="images/accessoires.jpg" class="card-img-top" alt="Les accessoires indispensables">
+                <div class="card-body">
+                    <h5 class="card-title">Les accessoires indispensables</h5>
+                    <p class="card-text text-muted">Quels accessoires adopter pour parfaire votre look ?</p>
+                    <a href="#" class="btn btn-primary">Lire plus</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

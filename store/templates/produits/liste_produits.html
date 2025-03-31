@@ -4,7 +4,15 @@
 {% block title %}Produits - {{ categorie|title }}{% endblock %}
 
 {% block content %}
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
 <div class="container my-5">
+  
   <h2 class="text-center mb-4">Produits - {{ categorie|title }}</h2>
 
   <!-- ✅ Barre de navigation par catégorie -->
@@ -31,7 +39,11 @@
           <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
             <div class="d-flex flex-column align-items-center">
               <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; overflow: hidden;">
-                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{% if produit.image_url %}{{ produit.image_url }}{% else %}{{ produit.image.url }}{% endif %}" 
+                alt="{{ produit.nom }}" 
+                style="width: 100%; height: 100%; object-fit: cover;">
+           
+                
               </div>
               <p class="mt-2 fw-bold">{{ produit.nom }}</p>
                <!-- ⭐ Affichage des étoiles -->

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Promotions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-danger">Nos Promotions</h2>
+        <p class="text-muted">Profitez des meilleures offres et réductions du moment.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Promotion 1 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Promo chaussures">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Chaussures en promotion</h5>
+                    <span class="badge bg-danger">-30%</span>
+                    <p class="card-text text-muted">Profitez de 30% de réduction sur toutes les chaussures !</p>
+                    <a href="#" class="btn btn-outline-danger">Découvrir</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotion 2 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Promo t-shirts">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Offre spéciale T-shirts</h5>
+                    <span class="badge bg-success">1+1 Offert</span>
+                    <p class="card-text text-muted">Achetez un t-shirt et recevez-en un gratuitement !</p>
+                    <a href="#" class="btn btn-outline-success">J'en profite</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotion 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Promo accessoires">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Réduction sur accessoires</h5>
+                    <span class="badge bg-warning">-20%</span>
+                    <p class="card-text text-muted">Bénéficiez de 20% de réduction sur tous nos accessoires !</p>
+                    <a href="#" class="btn btn-outline-warning">Voir l'offre</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

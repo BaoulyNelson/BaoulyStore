@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Politique de retour{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-danger">Politique de retour</h2>
+        <p class="text-muted">Vous avez <strong>30 jours</strong> pour retourner votre produit s'il ne vous convient pas.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="fw-bold"><i class="bi bi-box-arrow-left text-danger"></i> Conditions de retour :</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="bi bi-check-circle text-success"></i> Le produit doit être en parfait état.</li>
+                    <li class="list-group-item"><i class="bi bi-check-circle text-success"></i> L'emballage d'origine doit être intact.</li>
+                    <li class="list-group-item"><i class="bi bi-envelope text-primary"></i> Contactez notre support pour obtenir une étiquette de retour.</li>
+                </ul>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="mailto:support@baoulystore.com" class="btn btn-outline-danger">
+                    <i class="bi bi-envelope"></i> Contacter le support
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

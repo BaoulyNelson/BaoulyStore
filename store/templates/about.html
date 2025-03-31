@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}À propos de nous{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center">
+        <h2 class="fw-bold text-primary">À propos de <span class="text-dark">Baouly'S Store</span></h2>
+        <p class="text-muted w-75 mx-auto">
+            Découvrez une sélection exceptionnelle de produits de qualité à des prix accessibles. Notre priorité est de vous offrir une expérience d'achat unique et un service irréprochable.
+        </p>
+    </div>
+
+    <div class="row align-items-center mt-5">
+        <div class="col-md-6 text-center">
+            <img src="images/logo.jpg" alt="Notre magasin" class="img-fluid rounded shadow-lg">
+        </div>
+        <div class="col-md-6">
+            <h3 class="fw-bold text-dark">Notre mission</h3>
+            <p class="text-muted">
+                Offrir une expérience d'achat unique avec des produits de haute qualité à des prix compétitifs. Nous sélectionnons avec soin nos articles pour vous garantir la meilleure satisfaction.
+            </p>
+            <h3 class="fw-bold text-dark mt-4">Nous contacter</h3>
+            <p class="text-muted">
+                📧 Email : <a href="mailto:elconquistadorbaoulyn@gmail.com" class="text-decoration-none fw-bold text-primary">elconquistadorbaoulyn@gmail.com</a>
+            </p>
+            <a href="mailto:elconquistadorbaoulyn@gmail.com" class="btn btn-primary mt-3">Nous écrire</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

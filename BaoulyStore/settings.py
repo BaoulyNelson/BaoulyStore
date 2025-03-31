@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 # Charger les variables d'environnement
 load_dotenv()
+SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 # Chemin de base
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,6 +79,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '3306'),
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
     }
 }
 
@@ -93,7 +95,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 MONCASH_CLIENT_ID = os.getenv('client_id', '')
 MONCASH_SECRET_ID = os.getenv('secret_key', '')
 MONCASH_DEBUG = os.getenv('MONCASH_DEBUG', 'False') == 'True'
-
+PEXELS_API_KEY = os.getenv('PEXELS_API_KEY')
 # Validation des mots de passe
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

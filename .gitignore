@@ -1,7 +1,7 @@
-
+.env
 # Ignorer les environnements virtuels
 venv/
-env/
+.env/
 
 # Ignorer les fichiers Python compilés
 *.pyc

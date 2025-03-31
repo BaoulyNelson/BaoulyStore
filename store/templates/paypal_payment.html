@@ -1,0 +1,7 @@
+<form action="{% url 'paypal_payment' product.id %}" method="post">
+    {% csrf_token %}
+    {{ form.render }}
+    <button type="submit" class="btn btn-light">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" style="height: 30px;"> Payer avec PayPal
+    </button>
+</form>

@@ -97,8 +97,8 @@ class Produit(models.Model):
     )
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     quantite_en_stock = models.IntegerField()
-    image = models.ImageField(upload_to='produits/')
-    
+    image_url = models.URLField(blank=True, null=True)  # Pour Pexels
+    image = models.ImageField(upload_to='produits/', blank=True, null=True)  # Pour l'admin Django
     # Champ couleur avec un menu déroulant
     couleur = models.CharField(
         max_length=20,
@@ -130,6 +130,5 @@ class Commentaire(models.Model):
 
     def __str__(self):
         return f'Commentaire de {self.utilisateur} sur {self.produit}'
-
 
 

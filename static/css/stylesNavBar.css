@@ -6,17 +6,8 @@
     justify-content: space-between;
 }
 
-.menu-icon {
-    font-size: 24px;
-    cursor: pointer;
-    color: white;
-    display: none; /* Par défaut, le menu est caché */
-}
-.logo {
-    color: white;
-    font-size: 20px;
-    font-family: 'Brush Script MT', cursive; /* Style du texte Constant Haiti */
-}
+
+
 .nav-links {
     display: none; /* Les liens sont cachés par défaut */
     margin: 0;

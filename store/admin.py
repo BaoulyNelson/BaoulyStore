@@ -1,13 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from .models import Produit, Commentaire
-
-from django.contrib import admin
-from django.contrib.auth.models import User, Group
-from django.urls import path
-from .models import Produit, Commentaire
+from django.utils.safestring import mark_safe
 
 class MyAdminSite(admin.AdminSite):
     site_header = 'BaoulyStore Administration'
@@ -22,7 +18,6 @@ class MyAdminSite(admin.AdminSite):
         return custom_urls + urls
 
     def admin_dashboard_stats(self, request):
-        # Votre logique pour récupérer les statistiques
         total_utilisateurs = User.objects.count()
         total_produits = Produit.objects.count()
         total_commentaires = Commentaire.objects.count()
@@ -35,7 +30,23 @@ class MyAdminSite(admin.AdminSite):
 
 admin_site = MyAdminSite(name='myadmin')
 
+class ProduitAdmin(admin.ModelAdmin):
+    list_display = ('nom', 'categorie', 'prix', 'image_display')
+
+    def image_display(self, obj):
+        if obj.image_url:  # ✅ Utilise le champ `image_url` pour les images distantes
+            return mark_safe(f'<img src="{obj.image_url}" width="50" height="50" />')
+        elif obj.image:  # ✅ Utilise `image.url` pour les images locales
+            return mark_safe(f'<img src="{obj.image.url}" width="50" height="50" />')
+        return "Pas d'image"
+
+    image_display.short_description = "Aperçu"
+
+admin.site.register(Produit, ProduitAdmin)
+
+# 📌 Enregistrer correctement les modèles dans `admin_site` au lieu de `admin`
 admin_site.register(User)
 admin_site.register(Group)
-admin_site.register(Produit)
+admin_site.register(Produit, ProduitAdmin)  # ✅ Corrigé ici
 admin_site.register(Commentaire)
+ 

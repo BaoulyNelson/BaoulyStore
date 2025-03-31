@@ -7,29 +7,34 @@
     <div class="row">
         <!-- Colonne gauche : Détails du produit -->
         <div class="col-md-8">
-            <div class="product-container">
-                <div class="product-header">
-                    <h1 class="product-name">{{ produit.nom }}</h1>
+            <div class="product-container shadow-sm p-4 rounded bg-light">
+                <div class="product-header mb-4">
+                    <h1 class="product-name text-dark">{{ produit.nom }}</h1>
                 </div>
 
-                <div class="product-details">
-                    <div class="product-image">
-                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+                <div class="product-details row">
+                    <div class="col-md-6">
+                        <!-- Image du produit -->
+                        <img src="{% if produit.image %}{{ produit.image.url }}{% else %}{{ produit.image_url }}{% endif %}" 
+                             alt="{{ produit.nom }}" class="img-fluid rounded shadow-sm">
                     </div>
-                    <div class="product-info">
-                        <p class="description"><strong>Description :</strong> {{ produit.description }}</p>
-                        <p class="price"><strong>Prix :</strong> {{ produit.prix }} HTG</p>
-                        <p class="stock"><strong>Quantité en stock :</strong> {{ produit.quantite_en_stock }}</p>
-                        <p class="category"><strong>Catégorie :</strong> {{ produit.get_categorie_display }}</p>
-                        <p class="couleur"><strong>Couleur :</strong> {{ produit.couleur }}</p>
+                    
+                    <div class="col-md-6">
+                        <div class="product-info">
+                            <p class="description mb-2"><strong>Description :</strong> {{ produit.description }}</p>
+                            <p class="price mb-2"><strong>Prix :</strong> {{ produit.prix }} HTG</p>
+                            <p class="stock mb-2"><strong>Quantité en stock :</strong> {{ produit.quantite_en_stock }}</p>
+                            <p class="category mb-2"><strong>Catégorie :</strong> {{ produit.get_categorie_display }}</p>
+                            <p class="couleur mb-4"><strong>Couleur :</strong> {{ produit.couleur }}</p>
 
-                        <!-- Formulaire pour ajouter au panier -->
-                        <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" class="add-to-cart-form">
-                            {% csrf_token %}
-                            <button type="submit" class="add-to-cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Ajouter au panier
-                            </button>
-                        </form>
+                            <!-- Formulaire pour ajouter au panier -->
+                            <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary w-100 py-3">
+                                    <i class="fas fa-shopping-cart"></i> Ajouter au panier
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -37,33 +42,32 @@
 
         <!-- Colonne droite : Autres produits de la même catégorie -->
         <div class="col-md-4">
-            <h4 class="text-primary">Autres dans {{ produit.get_categorie_display }}</h4>
-        
+            <h4 class="text-primary mb-4">Autres dans {{ produit.get_categorie_display }}</h4>
+
             {% if produits_similaires %}
-                <ul class="list-unstyled">
-                    {% for autre_produit in produits_similaires %}
-                        <li class="d-flex align-items-center mb-3 border-bottom pb-2">
-                            <!-- Image du produit plus grande et en cercle -->
-                            <img src="{{ autre_produit.image.url }}" alt="{{ autre_produit.nom }}" 
-                                 width="70" height="70" class="me-3 rounded-circle">
+    <ul class="list-unstyled">
+        {% for autre_produit in produits_similaires %}
+            <li class="d-flex align-items-center mb-4 border-bottom pb-3">
+                <!-- Image du produit -->
+                <img src="{% if autre_produit.image %}{{ autre_produit.image.url }}{% else %}{{ autre_produit.image_url }}{% endif %}" 
+                     alt="{{ autre_produit.nom }}" 
+                     class="me-3 rounded-circle" width="70" height="70">
         
-                            <!-- Détails du produit -->
-                            <div>
-                                <a href="{% url 'detail_produit' autre_produit.id %}" 
-                                   class="text-decoration-none text-dark fw-semibold hover-underline">
-                                    {{ autre_produit.nom }}
-                               
-                                <p class="text-primary fw-bold mb-0">{{ autre_produit.prix }} HTG</p>
-                            </a>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <!-- Détails du produit -->
+                <div>
+                    <a href="{% url 'detail_produit' autre_produit.id %}" 
+                       class="text-decoration-none text-dark fw-semibold hover-underline">
+                        {{ autre_produit.nom }}
+                    </a>
+                    <p class="text-primary fw-bold mb-0">{{ autre_produit.prix }} HTG</p>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
             {% else %}
                 <p class="text-muted">Aucun autre produit trouvé dans cette catégorie.</p>
             {% endif %}
         </div>
-        
     </div>
 </div>
 
@@ -119,5 +123,4 @@
 {% endblock %}
 
 {% endblock %}
-
 
