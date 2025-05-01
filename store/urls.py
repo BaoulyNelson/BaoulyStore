@@ -2,6 +2,8 @@
 from django.urls import path
 from . import views  # Importation des vues locales
 from django.contrib.auth import views as auth_views  # 
+
+
 urlpatterns = [
     # Page d'accueil du site
     path('', views.index, name='index'),
@@ -23,6 +25,9 @@ urlpatterns = [
 
     # Détail d'un produit spécifique
     path('detail_produit/<int:pk>/', views.detail_produit, name='detail_produit'),
+    path('populaires/', views.produits_populaires, name='populaires'),
+    path('nouveaux/', views.produits_nouveaux, name='nouveaux'),
+
 
     # Ajouter un produit au panier
     path('ajouter-au-panier/<int:produit_id>/', views.ajouter_au_panier, name='ajouter_au_panier'),
@@ -44,11 +49,7 @@ urlpatterns = [
     # Page de recherche avec un formulaire de recherche
     path('recherche/', views.recherche_page, name='recherche'),  # URL pour afficher recherche.html
 
-    # Statistiques de l'admin
-    path('admin/stats/', views.admin_dashboard_stats, name='admin_dashboard_stats'),
 
-    # Vue personnalisée pour l'index de l'admin
-    path('admin/', views.custom_admin_index, name='admin_index'),
 
     # Page de connexion (vue personnalisée)
     path('login/', views.login_view, name='login'),
@@ -94,16 +95,11 @@ urlpatterns = [
     # Supprimer un commentaire d'un produit
     path('supprimer_commentaire/<int:commentaire_id>/', views.supprimer_commentaire, name='supprimer_commentaire'),
     
-
-    path('new-arrivals/', views.new_arrivals, name='new_arrivals'),
     path('promotions/', views.promotions, name='promotions'),
     path('blog/', views.blog, name='blog'),
     path('faq/', views.faq, name='faq'),
     path('return-policy/', views.return_policy, name='return_policy'),
     path('order-tracking/', views.order_tracking, name='order_tracking'),
     path('about/', views.about, name='about'),
-
-    path('importer-pexels/', views.importer_produits_pexels, name='importer_pexels'),
-
-
+    path('shop/', views.produits_nouveaux, name='shop'),
 ]

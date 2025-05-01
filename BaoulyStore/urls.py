@@ -4,9 +4,11 @@ from django.conf.urls.static import static
 from store.admin import admin_site
 
 urlpatterns = [
-    path('admin/', admin_site.urls),  # Utilise ton site d'administration personnalisé
-    path('', include('store.urls')),  # Inclut les URLs de l'application store
+    path('admin/', admin_site.urls),
+    path('', include('store.urls')),
 ]
 
+# Ces lignes doivent être dé-indentées
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.BASE_DIR / 'media')

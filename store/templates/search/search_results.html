@@ -2,57 +2,49 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/search_results.css' %}">
-
+<link rel="stylesheet" href="{% static 'css/recherche.css' %}" />
 {% endblock %}
-
 
 {% block content %}
-<h1>Résultats de recherche pour "{{ query }}"</h1>
+<div class="container">
+  <h1 class="text-center text-primary mt-4">Résultats de recherche pour "{{ query }}"</h1>
 
- <!-- Template recherche.html -->
-<div class="search-form-container">
-    <h2>Rechercher un produit</h2>
-    <div id="searchForm" class="search-form">
-      <form action="{% url 'search_results' %}" method="GET">
-        <input type="text" name="q" placeholder="Rechercher un produit..." required />
-        <button type="submit"><i class="fas fa-search"></i> Rechercher</button>
-      </form>
-    </div>
+  <div class="search-form-container">
+      <h4 class="mb-4">Rechercher un autre produit</h4>
+      <div class="search-form">
+          <form action="{% url 'search_results' %}" method="GET">
+              <input type="text" name="q" placeholder="Rechercher un produit..." required />
+              <button type="submit"><i class="fas fa-search"></i> Rechercher</button>
+          </form>
+      </div>
   </div>
-  
-    
-{% if produits.exists or pages %}
-    <ul class="search-results">
-        <!-- Affichage des produits trouvés -->
-        {% for produit in produits %}
-        <li class="search-item">
-            <h2>{{ produit.nom }}</h2>
-            <p>{{ produit.description|truncatewords:20 }}</p>
-            <a href="{% url 'detail_produit' pk=produit.id %}">Voir les détails</a>
-        </li>
-        {% endfor %}
 
-        <!-- Affichage des pages associées -->
-        {% for page in pages %}
-        <li class="search-item">
-            <h2>{{ page.nom }}</h2>
-            {% if page.categorie %}
-                <a href="{% url page.url page.categorie %}">Accéder à la page {{ page.nom }}</a>
-            {% else %}
-                <a href="{% url page.url %}">Accéder à la page {{ page.nom }}</a>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucun résultat trouvé pour "{{ query }}".</p>
-{% endif %}
+  {% if produits.exists or pages %}
+      <ul class="search-results">
+          {% for produit in produits %}
+              <li class="search-item">
+                  <h2>{{ produit.nom }}</h2>
+                  <p>{{ produit.description|truncatewords:20 }}</p>
+                  <a href="{% url 'detail_produit' pk=produit.id %}">Voir les détails</a>
+              </li>
+          {% endfor %}
+          {% for page in pages %}
+              <li class="search-item">
+                  <h2>{{ page.nom }}</h2>
+                  {% if page.categorie %}
+                      <a href="{% url page.url page.categorie %}">Accéder à la page {{ page.nom }}</a>
+                  {% else %}
+                      <a href="{% url page.url %}">Accéder à la page {{ page.nom }}</a>
+                  {% endif %}
+              </li>
+          {% endfor %}
+      </ul>
+  {% else %}
+      <p class="text-center text-muted mt-4">Aucun résultat trouvé pour <strong>"{{ query }}"</strong>.</p>
+  {% endif %}
 
-<a  class="btn btn-primary" href="{% url 'index' %}" style="display: block; text-align: center; text-decoration: none;">
-    <i class="fas fa-arrow-left"></i> Retour à l'accueil
-</a>
-
-
+  <a class="btn btn-outline-primary return-link" href="{% url 'index' %}">
+      <i class="fas fa-arrow-left"></i> Retour à l'accueil
+  </a>
+</div>
 {% endblock %}
-

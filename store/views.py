@@ -23,11 +23,13 @@ from django.db.models import Sum
 from django.urls import reverse
 import requests
 import random
+from django.utils import timezone
+from datetime import timedelta
 
 
 def index(request):
     # Récupérer les commentaires du plus récent au plus ancien
-    commentaires = Commentaire.objects.all().order_by('-date_postee')
+    commentaires = Commentaire.objects.all().order_by('-date')
 
     # Récupérer les produits et activer la pagination
     produits_list = Produit.objects.all().order_by('-id')  # Trie par le plus récent
@@ -192,85 +194,26 @@ def liste_produits(request):
 
 def detail_produit(request, pk):
     produit = get_object_or_404(Produit, pk=pk)
-    # Récupère tous les commentaires associés à ce produit
-    commentaires = produit.commentaires.all()
 
     # Récupérer les produits similaires dans la même catégorie, exclure le produit actuel
     produits_similaires = Produit.objects.filter(
         categorie=produit.categorie).exclude(pk=produit.pk)
 
-    form = None  # Initialiser le formulaire à None par défaut
-
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            form = CommentaireForm(request.POST)
-            if form.is_valid():
-                commentaire = form.save(commit=False)
-                # Assurez-vous que l'utilisateur soit connecté
-                commentaire.utilisateur = request.user
-                commentaire.produit = produit
-                commentaire.save()
-                # Redirige après soumission
-                return redirect('detail_produit', pk=produit.pk)
-        else:
-            form = CommentaireForm()  # Afficher le formulaire si l'utilisateur est authentifié
-
     return render(request, 'produits/detail_produit.html', {
         'produit': produit,
-        'commentaires': commentaires,
-        'form': form,  # Formulaire sera None si l'utilisateur n'est pas connecté
-        'produits_similaires': produits_similaires,  # Ajouter les produits similaires
+        'produits_similaires': produits_similaires,
     })
 
 
-# API Pexels
-API_KEY = "BfSInOJNBv93QrQU1SICt0LOoSLSERsXVU4GC6JGq9iQk7UWDD3Xm2MY"
-URL = "https://api.pexels.com/v1/search"
 
-CATEGORIES = ['homme', 'femme', 'enfant']
-COULEURS = ['rouge', 'bleu', 'vert', 'noir', 'blanc', 'jaune']
-VETEMENTS = [
-    'tshirt', 'jeans', 'sweat', 'pantalon', 'veste', 'manteau',
-    'robe', 'jupe', 'short', 'hoodie', 'pull', 'pyjama'
-]
+def produits_populaires(request):
+    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:20]  # Limiter à 20 produits populaires
+    return render(request, 'produits/produits_populaires.html', {'populaires': populaires})
 
 
-def importer_produits_pexels(request):
-    """Vue pour importer des produits depuis Pexels"""
-
-    params = {
-        "query": "fashion clothing",  # Recherche d'images de mode
-        "per_page": 20  # Nombre d'images à importer
-    }
-    headers = {"Authorization": API_KEY}
-    response = requests.get(URL, headers=headers, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        for photo in data["photos"]:
-            nom = random.choice(VETEMENTS)
-            categorie = random.choice(CATEGORIES)
-            couleur = random.choice(COULEURS)
-            image_url = photo["src"]["medium"]  # URL de l'image
-
-            # Créer un produit en base de données
-            Produit.objects.create(
-                nom=nom,
-                description=f"Un {nom} tendance pour {categorie}.",
-                categorie=categorie,
-                # Prix aléatoire entre 1000 et 5000€
-                prix=random.uniform(1000, 5000),
-                quantite_en_stock=random.randint(1, 50),  # Stock aléatoire
-                couleur=couleur,
-                image_url=image_url  # On stocke l'URL dans image_url et non image !
-            )
-        messages.success(
-            request, "Les produits ont été importés depuis Pexels avec succès.")
-    else:
-        messages.error(
-            request, "Erreur lors de la récupération des produits depuis Pexels.")
-
-    return redirect("liste_produits")
+def produits_nouveaux(request):
+    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:20]  # Limiter à 20 produits nouveaux
+    return render(request, 'produits/produits_nouveaux.html', {'nouveaux': nouveaux})
 
 
 def ajouter_au_panier(request, produit_id):
@@ -309,34 +252,60 @@ def ajouter_au_panier(request, produit_id):
     return redirect('afficher_panier')
 
 
+from django.shortcuts import render
+from django.conf import settings
+from moncashify import API
+from .models import Panier
+
 def afficher_panier(request):
     session_id = request.session.session_key
     if not session_id:
         request.session.create()
         session_id = request.session.session_key
 
-    print(f"🛒 Vérification panier pour session : {session_id}")
-
-    # Récupérer tous les articles dans le panier pour la session actuelle
     panier = Panier.objects.filter(session_id=session_id)
-
-    # Calculer le total du panier en prenant en compte la quantité de chaque produit
     total = float(sum(item.produit.prix * item.quantite for item in panier))
 
-    # Ajouter le total par produit dans le contexte
     for item in panier:
         item.total = item.produit.prix * item.quantite
 
-    # Vérifier le contenu du panier
-    print(f"🔍 Produits trouvés : {list(panier.values())}")
-
-    # Sauvegarder le total dans la session pour l'utiliser ailleurs si nécessaire
     request.session['total_panier'] = total
 
-    return render(request, 'afficher_panier.html', {
+    payment_url = None
+    error_message = None
+
+    if total > 0:
+        try:
+            moncash_api = API(
+                client_id=settings.MONCASH_CLIENT_ID,
+                secret_key=settings.MONCASH_SECRET_ID,
+                debug=settings.MONCASH_DEBUG
+            )
+
+            # Crée un paiement MonCash
+            payment = moncash_api.payment(
+                order_id=f"order-{session_id}",  # L'ID de commande unique
+                amount=total  # Le montant total du panier
+            )
+
+        
+            payment_url = payment.redirect_url  # ✅ accès direct à l'attribut
+
+
+        except Exception as e:
+            error_message = f"Erreur Moncash : {str(e)}"
+
+    else:
+        error_message = "Le panier est vide."
+
+    return render(request, 'panier/afficher_panier.html', {
         'panier': panier,
-        'total': total
+        'total': total,
+        'payment_url': payment_url,
+        'error_message': error_message
     })
+
+
 
 
 def modifier_quantite_panier(request, produit_id, quantite):
@@ -374,14 +343,13 @@ def supprimer_du_panier(request, produit_id):
 
         return redirect('afficher_panier')
 
-    return render(request, 'confirmation.html', {'produit': produit})
+    return render(request, 'panier/confirmation.html', {'produit': produit})
 
 
 def panier_context(request):
     session_id = request.session.session_key or request.session.create()
     panier_count = Panier.objects.filter(session_id=session_id).aggregate(
         Sum('quantite'))['quantite__sum'] or 0
-
     return {'panier_count': panier_count}
 
 
@@ -445,31 +413,6 @@ def contact_success_view(request):
     return render(request, "contact/contact_success.html")
 
 
-@login_required
-def custom_admin_index(request):
-    context = {
-        'show_dashboard_stats': True,  # Variable pour afficher le bouton
-        'site_header': site.site_header,
-        'site_title': site.site_title,
-        'index_title': site.index_title,
-    }
-    return render(request, 'admin/index.html', context)
-
-
-@login_required
-def admin_dashboard_stats(request):
-    total_utilisateurs = User.objects.count()
-    total_produits = Produit.objects.count()
-    total_commentaires = Commentaire.objects.count()
-
-    context = {
-        'num_users': total_utilisateurs,
-        'num_produits': total_produits,
-        'num_commentaires': total_commentaires,
-    }
-    return render(request, 'admin/admin_dashboard_stats.html', context)
-
-
 def recherche_page(request):
     return render(request, 'search/recherche.html')
 
@@ -506,8 +449,6 @@ def search_results(request):
     return render(request, 'search/search_results.html', {'produits': produits, 'pages': pages, 'query': query})
 
 
-def new_arrivals(request):
-    return render(request, 'new_arrivals.html')
 
 
 def promotions(request):
@@ -532,3 +473,6 @@ def order_tracking(request):
 
 def about(request):
     return render(request, 'about.html')
+
+
+

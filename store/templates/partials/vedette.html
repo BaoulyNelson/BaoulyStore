@@ -1,0 +1,26 @@
+{% load static %}
+<!-- ✅ SECTION PRODUITS EN VEDETTE -->
+<section class="container my-5 text-center">
+    <h2 class="text-center mb-4 fw-bold">Nos Derniers Produits</h2>
+    <div class="row">
+      {% for produit in produits %}
+        <div class="col-md-3 col-sm-4 col-6 mb-4">
+          <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
+            <div class="d-flex flex-column align-items-center">
+              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 140px; height: 140px; overflow: hidden;">
+                <img src="{% if produit.image %}{{ produit.image.url }}{% elif produit.image_url %}{{ produit.image_url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}" 
+                alt="{{ produit.nom }}" 
+                style="width: 100%; height: 100%; object-fit: cover;">
+           
+              </div>
+              <p class="mt-2 fw-bold">{{ produit.nom }}</p>
+              <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <p class="text-center text-muted">Aucun produit disponible pour le moment.</p>
+      {% endfor %}
+    </div>
+  </section>
+  

@@ -3,48 +3,50 @@
 {% block title %}Blog{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">Notre Blog</h2>
-        <p class="text-muted">Découvrez nos articles et conseils mode.</p>
+<!-- Blog Section -->
+<section class="section blog">
+    <div class="container">
+        <h2 class="section-title">Derniers articles</h2>
+        <div class="blog-grid">
+            <div class="blog-card">
+                <div class="blog-img-container">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Tendances été" class="blog-img">
+                    <div class="blog-date">12 Juin 2023</div>
+                </div>
+                <div class="blog-content">
+                    <div class="blog-category">Mode</div>
+                    <h3 class="blog-title"><a href="#">Les tendances incontournables de l'été 2023</a></h3>
+                    <p class="blog-text">Découvrez les pièces essentielles qui feront sensation cet été et comment les porter avec style.</p>
+                    <a href="#" class="blog-link">Lire plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <div class="blog-img-container">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Mode durable" class="blog-img">
+                    <div class="blog-date">5 Juin 2023</div>
+                </div>
+                <div class="blog-content">
+                    <div class="blog-category">Lifestyle</div>
+                    <h3 class="blog-title"><a href="#">La mode durable : comment faire des choix éco-responsables</a></h3>
+                    <p class="blog-text">Nos conseils pour adopter une garde-robe plus respectueuse de l'environnement sans sacrifier le style.</p>
+                    <a href="#" class="blog-link">Lire plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <div class="blog-img-container">
+                    <img src="https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1530&q=80" alt="Accessoires" class="blog-img">
+                    <div class="blog-date">28 Mai 2023</div>
+                </div>
+                <div class="blog-content">
+                    <div class="blog-category">Conseils</div>
+                    <h3 class="blog-title"><a href="#">Comment les accessoires peuvent transformer votre tenue</a></h3>
+                    <p class="blog-text">L'art de choisir et d'associer les accessoires pour sublimer n'importe quelle tenue, même la plus simple.</p>
+                    <a href="#" class="blog-link">Lire plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="row">
-        <!-- Article 1 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <img src="images/baskets.jpg" class="card-img-top" alt="Comment choisir ses baskets">
-                <div class="card-body">
-                    <h5 class="card-title">Comment choisir ses baskets ?</h5>
-                    <p class="card-text text-muted">Un guide pour choisir les meilleures baskets selon vos besoins.</p>
-                    <a href="#" class="btn btn-primary">Lire plus</a>
-                </div>
-            </div>
-        </div>
 
-        <!-- Article 2 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <img src="images/tendances-mode.jpg" class="card-img-top" alt="Les tendances mode 2025">
-                <div class="card-body">
-                    <h5 class="card-title">Les tendances mode 2025</h5>
-                    <p class="card-text text-muted">Découvrez les styles incontournables de cette année.</p>
-                    <a href="#" class="btn btn-primary">Lire plus</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Article 3 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <img src="images/accessoires.jpg" class="card-img-top" alt="Les accessoires indispensables">
-                <div class="card-body">
-                    <h5 class="card-title">Les accessoires indispensables</h5>
-                    <p class="card-text text-muted">Quels accessoires adopter pour parfaire votre look ?</p>
-                    <a href="#" class="btn btn-primary">Lire plus</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

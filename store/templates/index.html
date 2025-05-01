@@ -1,41 +1,29 @@
-{% extends 'base.html' %} {% load static %} {% block extra_css %}
+{% extends 'base.html' %} {% load static %}
+ {% block extra_css %}
 
-{% endblock %} {% block content %}
+{% endblock %} 
+{% block content %}
 
-    <!-- Bannière d'accueil -->
-    <section class="banner text-center bg-light py-5">
-      <div class="container">
-        <h1 class="display-4 fw-bold">Bienvenue sur Baouly's Store !</h1>
-        <p class="lead">Découvrez des produits uniques pour votre quotidien.</p>
-   
-      
+<!-- Hero Section -->
+<section class="hero d-flex align-items-center" style="min-height: 100vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <h3 class="hero-subtitle">Nouvelle Collection</h3>
+        <h1 class="hero-title">Découvrez Votre Style Unique</h1>
+        <p class="hero-description">Explorez notre collection exclusive de vêtements et accessoires tendance pour exprimer votre personnalité avec élégance.</p>
+        <a href="{% url 'liste_produits' %}" class="btn btn-primary">Acheter Maintenant</a>
       </div>
-    </section>
-
-<!-- ✅ SECTION PRODUITS EN VEDETTE -->
-<section class="container my-5 text-center">
-  <h2 class="text-center mb-4 fw-bold">Nos Derniers Produits</h2>
-  <div class="row">
-    {% for produit in produits %}
-      <div class="col-md-3 col-sm-4 col-6 mb-4">
-        <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
-          <div class="d-flex flex-column align-items-center">
-            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 140px; height: 140px; overflow: hidden;">
-              <img src="{% if produit.image %}{{ produit.image.url }}{% elif produit.image_url %}{{ produit.image_url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}" 
-              alt="{{ produit.nom }}" 
-              style="width: 100%; height: 100%; object-fit: cover;">
-         
-            </div>
-            <p class="mt-2 fw-bold">{{ produit.nom }}</p>
-            <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
-          </div>
-        </a>
-      </div>
-    {% empty %}
-      <p class="text-center text-muted">Aucun produit disponible pour le moment.</p>
-    {% endfor %}
+    </div>
   </div>
 </section>
+
+
+{% include 'partials/categorie.html' %}
+
+
+  
+
 
 
   <!-- ✅ PAGINATION -->
@@ -75,47 +63,14 @@
   {% endif %}
 </section>
 
-
-
-
-
+{% include 'partials/offres.html' %}
+{% include 'partials/vedette.html' %}
 <hr>
 
 
-<section class="comments-section">
-  <div class="container">
-    <h2 style="text-align: center;">Commentaires des visiteurs</h2>
+{% include 'commentaires/commentaires.html' %}
 
-    <div id="commentaires">
-      {% if commentaires %} 
-        {% for commentaire in commentaires %}
-          <div class="commentaire">
-            <p><strong>{{ commentaire.utilisateur.username }}</strong> a dit :</p>
-            <p>{{ commentaire.texte }}</p>
-            <p>
-              <small>Posté le {{ commentaire.date_postee|date:"d M Y H:i" }}</small>
-            </p>
 
-            <!-- Vérification si l'utilisateur est un superutilisateur -->
-            {% if request.user.is_superuser %}
-              <!-- Bouton de suppression -->
-              <form method="POST" action="{% url 'supprimer_commentaire' commentaire.id %}" style="display: inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger" title="Supprimer ce commentaire">
-                  <i class="fas fa-trash-alt"></i> <!-- Icône de la corbeille -->
-                </button>
-              </form>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p style="text-align: center">
-          Aucun commentaire pour le moment. Soyez le premier à en laisser un !
-        </p>
-      {% endif %}
-    </div>
-  </div>
-</section>
 
 
 {% endblock %}

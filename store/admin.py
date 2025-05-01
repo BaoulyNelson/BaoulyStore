@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, Group
 from .models import Produit, Commentaire
 from django.utils.safestring import mark_safe
 
+
 class MyAdminSite(admin.AdminSite):
     site_header = 'BaoulyStore Administration'
     site_title = 'BaoulyStore Admin'

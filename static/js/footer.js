@@ -1,23 +1,54 @@
-// Obtenir l'année actuelle
-const currentYear = new Date().getFullYear();
+ // Mobile Menu Toggle
+ const mobileToggle = document.getElementById('mobileToggle');
+ const navLinks = document.getElementById('navLinks');
+ const closeMenu = document.getElementById('closeMenu');
 
-// Insérer l'année dans l'élément avec l'ID "currentYear"
-document.getElementById('currentYear').textContent = currentYear;
+ mobileToggle.addEventListener('click', () => {
+     navLinks.classList.add('show');
+ });
 
+ closeMenu.addEventListener('click', () => {
+     navLinks.classList.remove('show');
+ });
 
-// Fonction pour afficher ou masquer la flèche selon le défilement
-window.onscroll = function() {
-    var backToTopButton = document.querySelector('.back-to-top');
-    
-    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-        backToTopButton.classList.add('show');
-    } else {
-        backToTopButton.classList.remove('show');
-    }
-};
+ // Back to Top Button
+ const backToTopBtn = document.getElementById('backToTop');
 
-// Fonction pour faire défiler la page vers le haut
-document.querySelector('.back-to-top').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+ window.addEventListener('scroll', () => {
+     if (window.pageYOffset > 300) {
+         backToTopBtn.classList.add('show');
+     } else {
+         backToTopBtn.classList.remove('show');
+     }
+ });
+
+ backToTopBtn.addEventListener('click', (e) => {
+     e.preventDefault();
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+ });
+
+ // Product Filter
+ const filterBtns = document.querySelectorAll('.filter-btn');
+
+ filterBtns.forEach(btn => {
+     btn.addEventListener('click', () => {
+         filterBtns.forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+         // Here you would add logic to filter products
+     });
+ });
+
+ const dots = document.querySelectorAll('.dot');
+const slides = document.querySelectorAll('.testimonial-slide');
+
+dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        // Retirer la classe active de tous les dots et slides
+        dots.forEach(d => d.classList.remove('active'));
+        slides.forEach(s => s.classList.remove('active'));
+
+        // Ajouter la classe active au dot et à la slide cliquée
+        dot.classList.add('active');
+        slides[index].classList.add('active');
+    });
 });

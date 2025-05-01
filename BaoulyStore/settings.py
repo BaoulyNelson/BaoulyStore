@@ -16,7 +16,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default_secret_key')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Hôtes autorisés
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'baoulystore.onrender.com,localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
 
 # Application installée
 INSTALLED_APPS = [
@@ -91,10 +92,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
-# Configuration MonCash
-MONCASH_CLIENT_ID = os.getenv('client_id', '')
-MONCASH_SECRET_ID = os.getenv('secret_key', '')
+MONCASH_CLIENT_ID = os.getenv('MONCASH_CLIENT_ID', '')
+MONCASH_SECRET_ID = os.getenv('MONCASH_SECRET_ID', '')
 MONCASH_DEBUG = os.getenv('MONCASH_DEBUG', 'False') == 'True'
+
 PEXELS_API_KEY = os.getenv('PEXELS_API_KEY')
 # Validation des mots de passe
 AUTH_PASSWORD_VALIDATORS = [
@@ -110,21 +111,20 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Fichiers statiques et médias
+LOGIN_URL = '/connexion/'  # URL de la page de connexion
+LOGOUT_REDIRECT_URL = 'index'
+# URL pour accéder aux fichiers statiques
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Chemin où Django recherche les fichiers statiques
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # si vos fichiers statiques sont dans un dossier "static" à la racine de votre projet
+]
+
+# Ce répertoire est utilisé pour collecter tous les fichiers statiques lors de la mise en production
+STATIC_ROOT = BASE_DIR / "staticfiles"  # utile lorsque vous utilisez 'collectstatic'
+# URL où les fichiers médias seront accessibles
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Configuration de connexion
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = 'liste_produits'
-LOGOUT_REDIRECT_URL = '/'
-
-# Configuration Django-crispy-forms
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Configuration Django-allauth
 AUTHENTICATION_BACKENDS = (

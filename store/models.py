@@ -100,6 +100,9 @@ class Produit(models.Model):
     image_url = models.URLField(blank=True, null=True)  # Pour Pexels
     image = models.ImageField(upload_to='produits/', blank=True, null=True)  # Pour l'admin Django
     # Champ couleur avec un menu déroulant
+    # Ajouter ces champs
+    populaire = models.BooleanField(default=False)
+    nouveau = models.BooleanField(default=False)
     couleur = models.CharField(
         max_length=20,
         choices=COULEUR_CHOICES,
@@ -123,12 +126,11 @@ class Panier(models.Model):
 
 
 class Commentaire(models.Model):
-    produit = models.ForeignKey('Produit', on_delete=models.CASCADE, related_name='commentaires')
-    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
+    nom = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='commentaires_photos/', blank=True, null=True)
     texte = models.TextField()
-    date_postee = models.DateTimeField(auto_now_add=True)
+    role = models.CharField(max_length=100, default="Client")
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Commentaire de {self.utilisateur} sur {self.produit}'
-
-
+        return f"{self.nom} - {self.texte[:30]}..."

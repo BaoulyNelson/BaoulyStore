@@ -1,152 +1,74 @@
-{% load static %}
+
+<!-- Back to Top Button -->
+<a href="#" class="back-to-top" id="backToTop">
+  <i class="fas fa-arrow-up"></i>
+</a>
+
+<!-- Header -->
 <header class="header">
-  <!-- Icône du menu pour mobile -->
-  <button class="menu-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">
-    <i class="fas fa-bars"></i>
-  </button>
 
-<!-- Logo dans la navbar visible uniquement sur les grands écrans -->
-<div class="logo text-center d-none d-lg-block">
-  <img src="{% static 'images/logo.jpg' %}" alt="Baouly'Store Logo" class="img-fluid w-auto rounded-circle" style="max-width: 100px; object-fit: cover;" />
-</div>
+  <div class="container">
+    <nav class="navbar">
+      <a href="#" class="logo">Baouly<span>Store</span></a>
+      <div class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <div class="close-menu d-block d-md-none" id="closeMenu">
+          <i class="fas fa-times"></i>
+        </div>
 
+        <li><a href="{% url 'index' %}" class="active">Accueil</a></li>
+        <li><a href="{% url 'liste_produits' %}" class="active">Tous</a></li>
+        <li><a href="{% url 'produits_par_categorie' 'homme' %}">Hommes</a></li>
+        <li><a href="{% url 'produits_par_categorie' 'femme' %}">Femmes</a></li>
+        <li><a href="{% url 'produits_par_categorie' 'enfant' %}">Enfants</a></li>
+        
+      
+        <li><a href="{% url 'nouveaux' %}">Nouveautes</a></li>
+    
 
+        <li><a href="{% url 'contact' %}">Contact</a></li>
+      </ul>
 
-  <!-- Menu pour grand écran -->
-  <ul class="nav-links d-none d-lg-flex">
-    <li><a href="{% url 'index' %}">Accueil</a></li>
-    <li><a href="{% url 'produits_par_categorie' 'femme' %}">Femme</a></li>
-    <li><a href="{% url 'produits_par_categorie' 'homme' %}">Homme</a></li>
-    <li><a href="{% url 'produits_par_categorie' 'enfant' %}">Enfant</a></li>
-    <li><a href="{% url 'contact' %}">Contact</a></li>
-    <li><a href="{% url 'produits_par_categorie' 'enfant' %}">Enfant</a></li>
-    {% if request.user.is_superuser %}
-    <li><a href="{% url 'importer_pexels' %}" style="color: yellow;">Importer</a></li>
-{% endif %}
-
-
-    <li>
-      <a href="{% url 'afficher_panier' %}" style="font-weight: bold; color: #007bff;">
-          🛒Panier 
+      <div class="nav-icons">
+        <a href="{% url 'recherche' %}" class="nav-icon">
+          <i class="fas fa-search"></i>
+        </a>
+        <a href="{% url 'afficher_panier' %}" class="nav-icon">
+          <i class="fas fa-shopping-bag"></i>
           <span id="panier-count">
               {% if request.session.panier_count %}
-                  ({{ request.session.panier_count }})
+                  <sup>{{ request.session.panier_count }}</sup>
               {% endif %}
           </span>
       </a>
-  </li>
-
-
-    {% if user.is_superuser %}
-    <div class="profile-icon" style="color: white">
-      <a href="{% url 'admin:index' %}" title="Tableau de bord">
-        <i class="fas fa-user"></i>
-      </a>
-    </div>
-
-    {% elif user.is_staff %}
-    <div class="profile-icon" style="color: white">
-      <a href="{% url 'add_article' %}" title="Tableau de bord du staff">
-        <i class="fas fa-plus-circle"></i> 
-        <a href="{% url 'profile' %}" title="Voir votre profil">
-          <i class="fas fa-user-circle"></i>
-        </a>
-      </a>
-
-    </div>
-
-    {% elif user.is_authenticated %}
-    <div class="profile-icon" style="color: white">
-      <a href="{% url 'profile' %}" title="Voir votre profil">
-        <i class="fas fa-user-circle"></i>
-      </a>
-    </div>
-
-    {% else %}
-    <div class="profile-icon" style="color: white">
-      <a href="{% url 'login' %}" title="Se connecter">
-        <i class="fas fa-user-plus"></i>
-      </a>
-    </div>
-    {% endif %}
-
-  </ul>
-
-  <!-- Icône de recherche -->
-  <a href="{% url 'recherche' %}" class="search-icon">
-    <i class="fas fa-search"></i>
-  </a>
-</header>
-
-<!-- Offcanvas Menu -->
-<div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasMenu">
-  <div class="offcanvas-header">
-<!-- Logo Responsive -->
-<div class="logo text-center">
-  <img src="{% static 'images/logo.jpg' %}" alt="Baouly'Store Logo" class="img-fluid w-auto rounded-circle" style="max-width: 100px; object-fit: cover;" />
-</div>
-
-    <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas"></button>
-
-  </div>
-  <div class="offcanvas-body">
-    <ul class="nav flex-column">
-      <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Accueil</a></li>
-
-      <li class="nav-item"><a class="nav-link" href="{% url 'produits_par_categorie' 'femme' %}">Femme</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'produits_par_categorie' 'homme' %}">Homme</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'produits_par_categorie' 'enfant' %}">Enfant</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-      {% if request.user.is_superuser %}
-    <li><a href="{% url 'importer_pexels' %}" style="color: green;">Importer</a></li>
-{% endif %}
-  
-      <li>
-        <a href="{% url 'afficher_panier' %}" style="font-weight: bold; color: #007bff;">
-            🛒Panier 
-            <span id="panier-count">
-                {% if request.session.panier_count %}
-                    ({{ request.session.panier_count }})
-                {% endif %}
-            </span>
-        </a>
-    </li>
+      
     
-    
-    
-      {% if user.is_superuser %}
-      <div class="profile-icon" style="color: white">
-        <a href="{% url 'admin:index' %}" title="Tableau de bord">
+        {% if user.is_superuser %}
+        <a href="{% url 'admin:index' %}" class="nav-icon">
           <i class="fas fa-user"></i>
         </a>
-      </div>
-      {% elif user.is_staff %}
-      <div class="profile-icon" style="color: white">
-        <a href="{% url 'add_article' %}" title="Tableau de bord du staff">
+        {% elif user.is_staff %}
+        <a href="{% url 'add_article' %}" class="nav-icon">
           <i class="fas fa-plus-circle"></i>
-          <a href="{% url 'profile' %}" title="Voir votre profil">
-            <i class="fas fa-user-circle"></i>
-          </a>
         </a>
-
-      </div>
-      {% elif user.is_authenticated %}
-      <div class="profile-icon" style="color: white">
-        <a href="{% url 'profile' %}" title="Voir votre profil">
+        {% elif user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="nav-icon">
           <i class="fas fa-user-circle"></i>
         </a>
-      </div>
-      {% else %}
-      <div class="profile-icon" style="color: white">
-        <a href="{% url 'login' %}" title="Se connecter">
+        {% else %}
+        <a href="{% url 'login' %}" class="nav-icon">
           <i class="fas fa-user-plus"></i>
         </a>
-      </div>
-      {% endif %}
+        {% endif %}
 
-    </ul>
+      </div>
+    </nav>
   </div>
-</div>
-{% load static %}
-<script src="{% static 'js/panier.js' %}"></script>
+</header>
+
+
+
+
 

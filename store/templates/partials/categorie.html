@@ -1,0 +1,37 @@
+{% load static %}
+<section class="section categories">
+    <div class="container">
+      {% if categorie_actuelle %}
+        <h2 class="section-title">Catégorie : {{ categorie_actuelle }}</h2>
+      {% else %}
+        <h2 class="section-title">Tous les Produits</h2>
+      {% endif %}
+  
+      <div class="categories-grid">
+        {% for produit in produits %}
+          <div class="category-card">
+            {% if produit.image %}
+            <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="category-img">
+        {% elif produit.image_url %}
+            <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="category-img">
+        {% else %}
+            <img src="{% static 'images/logo.jpg' %}" alt="Image non disponible" class="category-img">
+        {% endif %}
+        
+  
+            <div class="category-content">
+              <h3 class="category-title">{{ produit.nom }}</h3>
+              <a href="{% url 'detail_produit' produit.id %}" class="category-link">
+                Explorer <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <p>Aucun produit trouvé dans cette catégorie.</p>
+        {% endfor %}
+      </div>
+  
+      
+    </div>
+  </section>
+  

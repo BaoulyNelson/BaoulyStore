@@ -1,92 +1,69 @@
-{% load static %}
-
-<footer class="bg-dark text-white py-3">
-  <div class="container">
-    <div class="row justify-content-center text-center text-md-left">
-      <!-- Colonne 1 : À propos -->
-      <div class="col-lg-4 col-md-4 mb-2">
-        <h4 class="text-uppercase">À propos de nous</h4>
-        <p>
-          Baouly'S Store est votre destination pour des produits de qualité
-          supérieure à des prix abordables.
-        </p>
-        <a href="{% url 'about' %}" class="text-white">En savoir plus</a>
-
-        📧
-        <a href="mailto:elconquistadorbaoulyn@gmail.com" style="color: white">
-          elconquistadorbaoulyn@gmail.com
-        </a>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+          <div class="footer-grid">
+              <div class="footer-widget footer-about">
+                  <h3 class="footer-title"> BaoulyStore</h3>
+                  <p>BaoulyStore est votre destination mode en ligne, proposant des vêtements et accessoires de qualité pour hommes et femmes. Notre mission est de vous aider à exprimer votre style personnel avec élégance et confiance.</p>
+                  
+                  <div class="footer-social">
+                      <a href="#"><i class="fab fa-facebook-f"></i></a>
+                      <a href="#"><i class="fab fa-instagram"></i></a>
+                      <a href="#"><i class="fab fa-twitter"></i></a>
+                      <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                  </div>
+              </div>
+              <div class="footer-widget">
+                  <h3 class="footer-title">Liens utiles</h3>
+                  <ul class="footer-links">
+                    <li><a href="{% url 'index' %}"><i class="fas fa-chevron-right"></i> Accueil</a></li>
+                    <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i> À propos</a></li>
+                    <li><a href="{% url 'shop' %}"><i class="fas fa-chevron-right"></i> Boutique</a></li>
+                    <li><a href="{% url 'blog' %}"><i class="fas fa-chevron-right"></i> Blog</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    <li><a href="{% url 'faq' %}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                  </ul>
+                  
+              </div>
+              <div class="footer-widget">
+                  <h3 class="footer-title">Contact</h3>
+                  <ul class="footer-contact">
+                      <li><i class="fas fa-map-marker-alt"></i> 123 Pelerin, Ouest Haiti</li>
+                      <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                      <li><i class="fas fa-envelope"></i> contact@baoulystore.com</li>
+                      <li><i class="fas fa-clock"></i> Lun-Sam: 9h00 - 20h00</li>
+                  </ul>
+              </div>
+              <div class="footer-widget">
+                  <h3 class="footer-title">Suivez-Nous</h3>
+                  <div class="">
+                
+                      <a href="https://facebook.com" target="_blank" class="text-white mr-2"
+                        ><i class="fab fa-facebook-f"></i
+                      ></a>
+                      <a href="https://twitter.com" target="_blank" class="text-white mr-2"
+                        ><i class="fab fa-twitter"></i
+                      ></a>
+                      <a
+                        href="https://instagram.com"
+                        target="_blank"
+                        class="text-white mr-2"
+                        ><i class="fab fa-instagram"></i
+                      ></a>
+                      <a href="https://linkedin.com" target="_blank" class="text-white mr-2"
+                        ><i class="fab fa-linkedin-in"></i
+                      ></a>
+                  
+                  </div>
+              </div>
+          </div>
       </div>
-
-      <!-- Colonne 2 : Liens rapides -->
-      <div class="col-lg-4 col-md-4 mb-2">
-        <h4 class="text-uppercase">Liens rapides</h4>
-        <ul class="list-unstyled">
-          <li><a href="{% url 'new_arrivals' %}" class="text-white">Nouveautés</a></li>
-          <li><a href="{% url 'promotions' %}" class="text-white">Promotions</a></li>
-          <li><a href="{% url 'blog' %}" class="text-white">Blog</a></li>
-          <li><a href="{% url 'faq' %}" class="text-white">FAQ</a></li>
-          <li><a href="{% url 'return_policy' %}" class="text-white">Politique de retour</a></li>
-          <li><a href="{% url 'order_tracking' %}" class="text-white">Suivi de commande</a></li>
-          
-        </ul>
+      <div class="footer-bottom">
+          <div class="container">
+              <p>&copy; 2023 BaoulyStore. Tous droits réservés. Conçu par <a href="#">BaoulyNELSON</a></p>
+          </div>
       </div>
+  </footer>
 
-      <!-- Colonne 3 : Suivez-nous -->
-      <div class="col-lg-4 col-md-4 mb-2">
-        <h4 class="text-uppercase">Suivez-nous</h4>
-        <div>
-          <a href="https://facebook.com" target="_blank" class="text-white mr-2"
-            ><i class="fab fa-facebook-f"></i
-          ></a>
-          <a href="https://twitter.com" target="_blank" class="text-white mr-2"
-            ><i class="fab fa-twitter"></i
-          ></a>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            class="text-white mr-2"
-            ><i class="fab fa-instagram"></i
-          ></a>
-          <a href="https://linkedin.com" target="_blank" class="text-white mr-2"
-            ><i class="fab fa-linkedin-in"></i
-          ></a>
-        </div>
-        <p class="mt-2">📩 Inscrivez-vous à notre newsletter</p>
-        <p>📞 +509 44521822</p>
-        <p>📞 +509 47403551</p>
-      </div>
-    </div>
 
-    <hr class="my-2 border-white">
 
-    <div class="row">
-      <div class="col-12 text-center mt-2">
-        <div>
-          <!-- Logo MonCash (déjà en ligne) -->
-          <img src="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/resources/assets/images/MC_button_kr.png" 
-               alt="MonCash" 
-               style="height: 30px;">
-          
-          <!-- Logo Visa -->
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" 
-               alt="Visa" 
-               width="50">
-          
-          <!-- Logo MasterCard -->
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" 
-               alt="MasterCard" 
-               width="50">
-          
-          <!-- Logo PayPal -->
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" 
-               alt="PayPal" 
-               width="50">
-      </div>
-      
-
-        <p class="mt-2">&copy; <span id="currentYear"></span> Baouly'S Store</p>
-      </div>
-    </div>
-  </div>
-</footer>
