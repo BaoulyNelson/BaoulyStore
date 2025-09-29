@@ -1,26 +1,53 @@
 {% load static %}
-<!-- ✅ SECTION PRODUITS EN VEDETTE -->
-<section class="container my-5 text-center">
-    <h2 class="text-center mb-4 fw-bold">Nos Derniers Produits</h2>
-    <div class="row">
+
+<section class="featured-products">
+  <div class="container">
+    <h2 class="section-title">Tous Nos Produits</h2>
+    <div class="products-grid">
       {% for produit in produits %}
-        <div class="col-md-3 col-sm-4 col-6 mb-4">
-          <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
-            <div class="d-flex flex-column align-items-center">
-              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 140px; height: 140px; overflow: hidden;">
-                <img src="{% if produit.image %}{{ produit.image.url }}{% elif produit.image_url %}{{ produit.image_url }}{% else %}{% static 'images/default-image.jpg' %}{% endif %}" 
-                alt="{{ produit.nom }}" 
-                style="width: 100%; height: 100%; object-fit: cover;">
-           
-              </div>
-              <p class="mt-2 fw-bold">{{ produit.nom }}</p>
-              <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
-            </div>
-          </a>
+      <div class="product-card">
+        <div class="product-img">
+       
+          <img src="{{ produit.get_image }}" alt="{{ item.produit.nom }}">
+
+          {% comment %} <div class="product-badge">BaouNel</div> {% endcomment %}
+          <div class="product-actions">
+            <button><i class="fas fa-heart"></i></button>
+            <a href="{% url 'detail_produit' produit.pk %}">
+              <i class="fas fa-eye"></i>
+            </a>
+
+            <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn add-to-cart-btn"><i class="fas fa-shopping-cart"></i></button>
+            </form>
+          </div>
         </div>
-      {% empty %}
-        <p class="text-center text-muted">Aucun produit disponible pour le moment.</p>
+        <div class="product-info">
+          <h3>{{ produit.nom }}</h3>
+          <div class="product-price">
+            <span class="current-price">{{ produit.prix }} HTG</span>
+            {% if produit.prix_original %}
+              <span class="old-price">{{ produit.prix_original }} HTG</span>
+            {% endif %}
+          </div>
+          <div class="product-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+            {% if produit.quantite_en_stock > 0 %}
+
+          <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+            {% csrf_token %}
+            <button class="btn add-to-cart-btn">Ajouter au panier</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
       {% endfor %}
     </div>
-  </section>
-  
+  </div>
+</section>

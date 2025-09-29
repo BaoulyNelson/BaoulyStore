@@ -1,73 +1,219 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Ajouter un Article - Administration{% endblock %}
+
 {% block extra_styles %}
 <!-- Inclusion d'un fichier CSS spécifique à cette page -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/ajouter.css' %}">
+
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded">
-        <div class="card-header bg-primary text-white text-center py-3">
-            <h3 class="mb-0">Ajouter un Article</h3>
+
+
+<div class="container mb-5">
+    <!-- Barre de progression -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="formProgress"></div>
+    </div>
+
+    <div class="main-card">
+        <div class="card-header text-center">
+            <i class="fas fa-plus-circle icon"></i>
+            <h3 class="mb-0">
+                <i class="fas fa-box me-2"></i>
+                Ajouter un Nouvel Article
+            </h3>
+            <p class="mb-0 mt-2" style="opacity: 0.9;">
+                Complétez les informations ci-dessous pour ajouter un nouveau produit
+            </p>
         </div>
-        <div class="card-body p-4">
-            <form method="POST" enctype="multipart/form-data">
+
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" id="articleForm" novalidate>
                 {% csrf_token %}
 
-                <div class="mb-3">
-                    <label for="nom" class="form-label">Nom du Produit</label>
-                    {{ form.nom }}
-                </div>
+                <!-- Section Informations Générales -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informations Générales
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="{{ form.nom.id_for_label }}" class="form-label required">
+                                <i class="fas fa-tag"></i>
+                                Nom du Produit
+                            </label>
+                            <div class="input-group">
+                                {{ form.nom }}
+                                <i class="fas fa-check input-icon text-success d-none" id="nom-check"></i>
+                            </div>
+                            {% if form.nom.errors %}
+                                <div class="error-message">{{ form.nom.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">Saisissez un nom descriptif et unique pour votre produit</div>
+                        </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    {{ form.description }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="categorie" class="form-label">Catégorie</label>
-                    {{ form.categorie }}
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="prix" class="form-label">Prix</label>
-                        {{ form.prix }}
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.categorie.id_for_label }}" class="form-label required">
+                                <i class="fas fa-folder"></i>
+                                Catégorie
+                            </label>
+                            {{ form.categorie }}
+                            {% if form.categorie.errors %}
+                                <div class="error-message">{{ form.categorie.errors.0 }}</div>
+                            {% endif %}
+                        </div>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="quantite_en_stock" class="form-label">Quantité en Stock</label>
-                        {{ form.quantite_en_stock }}
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                            <span class="tooltip-custom" data-tooltip="Une description détaillée aide les clients à comprendre votre produit">
+                                <i class="fas fa-question-circle text-muted"></i>
+                            </span>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="error-message">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                        <div class="help-text">Décrivez les caractéristiques et avantages de votre produit</div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="image" class="form-label">Image du Produit</label>
-                        {{ form.image }}
-                    </div>
+                <!-- Section Prix et Stock -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-euro-sign"></i>
+                        Prix et Inventaire
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.prix.id_for_label }}" class="form-label required">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Prix (HTG)
+                            </label>
+                            <div class="input-group">
+                                {{ form.prix }}
+                                <span class="input-group-text">HTG</span>
+                            </div>
+                            {% if form.prix.errors %}
+                                <div class="error-message">{{ form.prix.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="couleur" class="form-label">Couleur</label>
-                        {{ form.couleur }}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.quantite_en_stock.id_for_label }}" class="form-label required">
+                                <i class="fas fa-boxes"></i>
+                                Quantité en Stock
+                            </label>
+                            <div class="input-group">
+                                {{ form.quantite_en_stock }}
+                                <span class="input-group-text">unités</span>
+                            </div>
+                            {% if form.quantite_en_stock.errors %}
+                                <div class="error-message">{{ form.quantite_en_stock.errors.0 }}</div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap justify-content-center mt-4 gap-2">
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <button type="submit" class="btn btn-outline-secondary" name="save_and_add_another">
-                        Ajouter un autre
-                    </button>
-                    <button type="submit" class="btn btn-outline-secondary" name="save_and_continue_editing">
-                        Continuer
-                    </button>
+                <!-- Section Apparence -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-palette"></i>
+                        Apparence et Média
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                <i class="fas fa-image"></i>
+                                Image du Produit
+                            </label>
+                            <div class="file-input-wrapper">
+                                {{ form.image }}
+                                <div class="file-input-display" id="fileInputDisplay">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
+                                    <div>
+                                        <strong>Cliquez pour choisir une image</strong>
+                                        <div class="text-muted">ou glissez-déposez ici</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="imagePreview"></div>
+                            {% if form.image.errors %}
+                                <div class="error-message">{{ form.image.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">Formats acceptés: JPG, PNG, GIF - Taille max: 5MB</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.couleur.id_for_label }}" class="form-label">
+                                <i class="fas fa-paint-brush"></i>
+                                Couleur
+                            </label>
+                            <div class="d-flex align-items-center">
+                                {{ form.couleur }}
+                                <div class="color-preview" id="colorPreview"></div>
+                            </div>
+                            {% if form.couleur.errors %}
+                                <div class="error-message">{{ form.couleur.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                
-                
+
+                <!-- Messages d'erreur généraux -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
             </form>
+        </div>
+
+        <!-- Actions -->
+        <div class="btn-group-actions">
+            <button type="submit" form="articleForm" class="btn btn-custom btn-primary-custom" id="saveBtn">
+                <i class="fas fa-save"></i>
+                <span>Enregistrer</span>
+            </button>
+            
+            <button type="submit" form="articleForm" name="save_and_add_another" class="btn btn-custom btn-success-custom">
+                <i class="fas fa-plus"></i>
+                <span>Enregistrer et Ajouter</span>
+            </button>
+            
+            <button type="submit" form="articleForm" name="save_and_continue_editing" class="btn btn-custom btn-secondary-custom">
+                <i class="fas fa-edit"></i>
+                <span>Enregistrer et Continuer</span>
+            </button>
+            
+            <a href="{% url 'liste_produits' %}" class="btn btn-custom btn-secondary-custom">
+                <i class="fas fa-times"></i>
+                <span>Annuler</span>
+            </a>
         </div>
     </div>
 </div>
+
+<!-- Bouton de sauvegarde flottant -->
+<div class="floating-save" id="floatingSave">
+    <button type="submit" form="articleForm" class="btn btn-primary-custom btn-custom">
+        <i class="fas fa-save"></i>
+        <span>Sauvegarder</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    
+    <script src="{% static 'js/add_article.js' %}" defer></script>
 {% endblock %}

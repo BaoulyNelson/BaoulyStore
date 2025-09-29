@@ -1,0 +1,107 @@
+{% load static %}
+<!-- Cart Modal -->
+<div class="modal" id="cartModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Votre Panier</h3>
+            <button class="modal-close" id="closeCartModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="cart-items">
+                {% if panier %}
+                    {% for item in panier %}
+                        <!-- ⚠️ Ajout de data-produit-id -->
+                        <div class="cart-item" data-produit-id="{{ item.produit.id }}">
+                            <!-- Image -->
+                            <div class="cart-item-img">
+                                <img src="{{ item.produit.get_image }}" alt="{{ item.produit.nom }}">
+                            </div>
+
+                            <!-- Détails -->
+                            <div class="cart-item-details">
+                                <div class="cart-item-title">{{ item.produit.nom }}</div>
+                                <div class="cart-item-price">{{ item.produit.prix }} HTG</div>
+
+                                <!-- Sous-total pour cet article -->
+                                <div>
+                                    Sous-total : 
+                                    <span class="item-total">{{ item.total|floatformat:2 }}</span> HTG
+                                </div>
+
+                                <!-- Quantité +/– -->
+                                <div class="cart-item-quantity">
+                                    <!-- Bouton - -->
+                                    <button type="button" class="quantity-btn decrease">-</button>
+
+                                    <!-- Input avec data-produit-id -->
+                                    <input type="number"
+                                           class="quantity-input"
+                                           value="{{ item.quantite }}"
+                                           min="1"
+                                           max="{{ item.produit.quantite_en_stock }}"
+                                           readonly
+                                           data-produit-id="{{ item.produit.id }}">
+
+                                    <!-- Bouton + -->
+                                    {% if item.quantite < item.produit.quantite_en_stock %}
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    {% else %}
+                                        <span class="text-muted">+</span>
+                                    {% endif %}
+
+
+
+                                  <a href="{% url 'supprimer_du_panier' item.produit.id %}" class="cart-item-remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center alert alert-info">Votre panier est vide.</p>
+                {% endif %}
+            </div>
+
+            <!-- Résumé du panier -->
+            {% if panier %}
+              <div class="cart-summary">
+              <div class="cart-summary-row">
+                <span>Sous-total</span>
+                <span id="subtotal-panier">{{ total|floatformat:2 }} HTG</span>
+              </div>
+              <div class="cart-summary-row">
+                <span>Livraison</span>
+                <span id="livraison">Gratuite</span>
+              </div>
+              <div class="cart-summary-row total">
+                <span>Total</span>
+                <span id="total-panier">{{ total|floatformat:2 }} HTG</span>
+              </div>
+            </div>
+
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+            <!-- Continuer les achats : ferme le modal -->
+            <button class="btn btn-outline" id="continueShopping">Continuer les achats</button>
+
+            <!-- Passer à la caisse avec MonCash -->
+            {% if payment_url %}
+                <!-- ⚠️ Ajout id="btn-payer" -->
+                <a id="btn-payer" href="{{ payment_url }}" class="btn btn-warning">
+                    <img src="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/resources/assets/images/MC_button_kr.png" 
+                         alt="MonCash" style="height: 20px; vertical-align: middle;"> 
+                    Payer avec MonCash
+                </a>
+            {% else %}
+                <button class="btn btn-secondary" disabled>MonCash non disponible</button>
+            {% endif %}
+        </div>
+    </div>
+</div>

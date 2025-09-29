@@ -1,9 +1,72 @@
-<!-- Banner Section -->
-<section class="banner">
-    <div class="container">
-        <h3 class="banner-subtitle">Offre Spéciale</h3>
-        <h2 class="banner-title">Collection Été 2025</h2>
-        <p class="banner-text">Profitez de 30% de réduction sur notre nouvelle collection d'été. Des pièces légères et élégantes pour vous accompagner tout au long de la saison.</p>
-        <a href="{% url 'populaires' %}" class="btn-outline">Découvrir</a>
+<!-- Banner Section Moderne -->
+<section class="banner-modern">
+    
+    <!-- Background Elements -->
+    <div class="banner-bg">
+        <div class="gradient-overlay"></div>
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="dots-pattern"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="banner-container">
+        <div class="banner-content">
+            
+            <!-- Badge promotionnel -->
+            <div class="promo-badge">
+                <span class="pulse-dot"></span>
+                <span class="badge-text">OFFRE LIMITÉE</span>
+            </div>
+
+            <!-- Titre principal avec effet dégradé -->
+            <h1 class="banner-title">
+                <span class="title-gradient">Collection Été</span>
+                <span class="title-year">2025</span>
+            </h1>
+
+            <!-- Sous-titre -->
+            <p class="banner-description">
+                Profitez de <span class="highlight">30% de réduction</span> 
+                sur notre nouvelle collection d'été. Des pièces légères et élégantes pour vous accompagner tout au long de la saison.
+            </p>
+
+            <!-- Boutons d'action -->
+            <div class="banner-actions">
+                <a href="{% url 'populaires' %}" class="btn-primary">
+                    <span>Découvrir la Collection</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                
+                <button class="btn-secondary">
+                    <i class="fas fa-play"></i>
+                    <span>Voir le Lookbook</span>
+                </button>
+            </div>
+
+            <!-- Statistiques en bas -->
+            <div class="banner-stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Nouveaux Articles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">30%</div>
+                    <div class="stat-label">Réduction</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">48h</div>
+                    <div class="stat-label">Livraison Express</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+        <span class="scroll-text">Découvrir</span>
+        <i class="fas fa-chevron-down"></i>
     </div>
 </section>
+

@@ -1,24 +1,662 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block extra_styles %}
-<!-- Inclusion d'un fichier CSS spécifique à cette page -->
-<link rel="stylesheet" type="text/css" href="{% static 'css/modifier.css' %}">
+{% block title %}Modifier le profil - {{ user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-edit-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .profile-edit-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" fill="white" opacity="0.05"><circle cx="100" cy="50" r="30"/><circle cx="300" cy="150" r="20"/><circle cx="500" cy="80" r="40"/><circle cx="700" cy="120" r="25"/><circle cx="900" cy="40" r="35"/></svg>');
+        background-repeat: repeat;
+        animation: float 20s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .profile-edit-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        max-width: 600px;
+        width: 90%;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideInUp 0.6s ease-out;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .profile-edit-title {
+        text-align: center;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+    
+    .profile-edit-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+    
+    .profile-edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .profile-edit-form p {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        animation: fadeInLeft 0.6s ease-out forwards;
+        opacity: 0;
+    }
+    
+    .profile-edit-form p:nth-child(1) { animation-delay: 0.1s; }
+    .profile-edit-form p:nth-child(2) { animation-delay: 0.2s; }
+    .profile-edit-form p:nth-child(3) { animation-delay: 0.3s; }
+    .profile-edit-form p:nth-child(4) { animation-delay: 0.4s; }
+    .profile-edit-form p:nth-child(5) { animation-delay: 0.5s; }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .profile-edit-form label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+    }
+    
+    .profile-edit-form label::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 50%;
+        margin-right: 0.75rem;
+    }
+    
+    .profile-edit-form input[type="text"],
+    .profile-edit-form input[type="email"],
+    .profile-edit-form input[type="password"],
+    .profile-edit-form textarea,
+    .profile-edit-form select {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        background: #f8f9fa;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-sizing: border-box;
+    }
+    
+    .profile-edit-form input:focus,
+    .profile-edit-form textarea:focus,
+    .profile-edit-form select:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .profile-edit-form input:hover:not(:focus),
+    .profile-edit-form textarea:hover:not(:focus),
+    .profile-edit-form select:hover:not(:focus) {
+        border-color: #ced4da;
+        background: white;
+    }
+    
+    .profile-edit-form textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-update,
+    .btn-cancel {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 160px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-update::before,
+    .btn-cancel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-update:hover::before,
+    .btn-cancel:hover::before {
+        left: 100%;
+    }
+    
+    .btn-update {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-update:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(45deg, #5a6fd8, #6a42a1);
+    }
+    
+    .btn-update:active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-cancel {
+        background: linear-gradient(45deg, #6c757d, #5a6268);
+        color: white;
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+    }
+    
+    .btn-cancel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
+        background: linear-gradient(45deg, #5a6268, #495057);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Messages d'erreur et de succès */
+    .errorlist {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        list-style: none;
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    .errorlist li {
+        margin: 0;
+        padding: 0;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .helptext {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        font-style: italic;
+    }
+    
+    /* Messages de confirmation */
+    .messages {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        max-width: 400px;
+    }
+    
+    .messages .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        animation: slideInRight 0.5s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .alert-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        border: none;
+    }
+    
+    .alert-error {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+        color: white;
+        border: none;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .profile-edit-container {
+            padding: 1rem;
+        }
+        
+        .profile-edit-box {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+        
+        .profile-edit-title {
+            font-size: 1.8rem;
+        }
+        
+        .form-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .btn-update,
+        .btn-cancel {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .profile-edit-box {
+            padding: 1.5rem 1rem;
+        }
+        
+        .profile-edit-title {
+            font-size: 1.5rem;
+        }
+        
+        .profile-edit-form input,
+        .profile-edit-form textarea,
+        .profile-edit-form select {
+            padding: 12px 16px;
+            font-size: 0.95rem;
+        }
+    }
+    
+    /* Loading state */
+    .btn-update.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .btn-update.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Focus trap pour accessibilité */
+    .profile-edit-form input:focus,
+    .profile-edit-form textarea:focus,
+    .profile-edit-form select:focus,
+    .btn-update:focus,
+    .btn-cancel:focus {
+        outline: 2px solid #667eea;
+        outline-offset: 2px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+<!-- Messages de notification -->
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
 <section class="profile-edit-container">
     <div class="profile-edit-box">
-        <h2 class="profile-edit-title">Modifier le profil</h2>
-        <form method="POST" class="profile-edit-form">
+        <h2 class="profile-edit-title">
+            <i class="fas fa-user-edit" style="margin-right: 0.5rem; color: #667eea;"></i>
+            Modifier le profil
+        </h2>
+        
+        <form method="POST" class="profile-edit-form" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-update">Mettre à jour</button>
-             <!-- Bouton Annuler -->
-    <a href="{% url 'profile' %}" class="btn-cancel">Annuler</a>
+            
+            <!-- Rendu personnalisé des champs du formulaire -->
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">
+                        {% if field.name == 'username' %}
+                            <i class="fas fa-user"></i>
+                        {% elif field.name == 'email' %}
+                            <i class="fas fa-envelope"></i>
+                        {% elif field.name == 'first_name' %}
+                            <i class="fas fa-id-card"></i>
+                        {% elif field.name == 'last_name' %}
+                            <i class="fas fa-id-card"></i>
+                        {% elif field.name == 'bio' or field.name == 'description' %}
+                            <i class="fas fa-align-left"></i>
+                        {% elif field.name == 'phone' %}
+                            <i class="fas fa-phone"></i>
+                        {% elif field.name == 'birth_date' %}
+                            <i class="fas fa-calendar"></i>
+                        {% elif field.name == 'avatar' or field.name == 'photo' %}
+                            <i class="fas fa-image"></i>
+                        {% else %}
+                            <i class="fas fa-edit"></i>
+                        {% endif %}
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span style="color: #dc3545; margin-left: 4px;">*</span>
+                        {% endif %}
+                    </label>
+                    
+                    {{ field }}
+                    
+                    {% if field.help_text %}
+                        <small class="helptext">{{ field.help_text }}</small>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            {% if form.non_field_errors %}
+                <div class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-buttons">
+                <button type="submit" class="btn-update" id="submit-btn">
+                    <i class="fas fa-save" style="margin-right: 0.5rem;"></i>
+                    Mettre à jour
+                </button>
+                <a href="{% url 'profile' %}" class="btn-cancel">
+                    <i class="fas fa-times" style="margin-right: 0.5rem;"></i>
+                    Annuler
+                </a>
+            </div>
         </form>
+        
+        <!-- Informations supplémentaires -->
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e9ecef; text-center;">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Les champs marqués d'un astérisque (*) sont obligatoires.
+                <br>
+                Vos informations sont sécurisées et ne seront pas partagées.
+            </small>
+        </div>
     </div>
 </section>
+{% endblock %}
 
+{% block extra_js %}
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.profile-edit-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const inputs = form.querySelectorAll('input, textarea, select');
+    
+    // Gestion de l'état de chargement du formulaire
+    form.addEventListener('submit', function(e) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        // Simulation d'un délai (à retirer en production)
+        setTimeout(() => {
+            submitBtn.textContent = 'Mise à jour en cours...';
+        }, 100);
+    });
+    
+    // Validation en temps réel des champs
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            // Supprimer les messages d'erreur lors de la saisie
+            const errorList = this.parentNode.querySelector('.errorlist');
+            if (errorList) {
+                errorList.style.opacity = '0.5';
+            }
+        });
+    });
+    
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        
+        // Validation email
+        if (fieldName === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                showFieldError(field, 'Veuillez saisir une adresse email valide.');
+                return false;
+            }
+        }
+        
+        // Validation nom d'utilisateur
+        if (fieldName === 'username' && value) {
+            if (value.length < 3) {
+                showFieldError(field, 'Le nom d\'utilisateur doit contenir au moins 3 caractères.');
+                return false;
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                showFieldError(field, 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores.');
+                return false;
+            }
+        }
+        
+        // Validation prénom/nom
+        if ((fieldName === 'first_name' || fieldName === 'last_name') && value) {
+            if (!/^[a-zA-ZÀ-ÿ\s\-']+$/.test(value)) {
+                showFieldError(field, 'Ce champ ne peut contenir que des lettres, espaces, tirets et apostrophes.');
+                return false;
+            }
+        }
+        
+        clearFieldError(field);
+        return true;
+    }
+    
+    function showFieldError(field, message) {
+        clearFieldError(field);
+        const errorDiv = document.createElement('ul');
+        errorDiv.className = 'errorlist';
+        errorDiv.innerHTML = `<li>${message}</li>`;
+        field.parentNode.appendChild(errorDiv);
+    }
+    
+    function clearFieldError(field) {
+        const existingError = field.parentNode.querySelector('.errorlist');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+    
+    // Auto-hide messages après 5 secondes
+    const messages = document.querySelectorAll('.messages .alert');
+    messages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = '0';
+            message.style.transform = 'translateX(100%)';
+            setTimeout(() => message.remove(), 300);
+        }, 5000);
+    });
+    
+    // Confirmation avant annulation si des modifications ont été faites
+    const cancelBtn = document.querySelector('.btn-cancel');
+    let formModified = false;
+    
+    inputs.forEach(input => {
+        const originalValue = input.value;
+        input.addEventListener('input', function() {
+            if (this.value !== originalValue) {
+                formModified = true;
+            }
+        });
+    });
+    
+    cancelBtn.addEventListener('click', function(e) {
+        if (formModified) {
+            if (!confirm('Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir annuler ?')) {
+                e.preventDefault();
+            }
+        }
+    });
+    
+    // Sauvegarde automatique dans localStorage (optionnel)
+    function saveFormData() {
+        const formData = {};
+        inputs.forEach(input => {
+            if (input.type !== 'password') {
+                formData[input.name] = input.value;
+            }
+        });
+        // Note: localStorage n'est pas disponible dans les artifacts Claude
+        console.log('Form data saved:', formData);
+    }
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            setTimeout(saveFormData, 1000); // Sauvegarde après 1 seconde d'inactivité
+        });
+    });
+    
+    // Animation des champs au focus
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentNode.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentNode.style.transform = 'scale(1)';
+        });
+    });
+    
+    // Gestion des raccourcis clavier
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+S pour sauvegarder
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+        }
+        
+        // Escape pour annuler
+        if (e.key === 'Escape') {
+            if (confirm('Voulez-vous annuler les modifications ?')) {
+                window.location.href = cancelBtn.href;
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -1,21 +1,461 @@
 {% extends "base.html" %}
-
-{% block title %}Créer un compte{% endblock %}
 {% load static %}
 
+{% block title %}Créer un compte - {{ block.super }}{% endblock %}
+
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
+<link rel="stylesheet" href="{% static 'css/register.css' %}" />
+
+ 
 {% endblock %}
 
 {% block content %}
-  <h2>Créer un compte</h2>
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <!-- En-tête -->
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h2 class="auth-title">Créer un compte</h2>
+      <p class="auth-subtitle">Rejoignez notre communauté</p>
+    </div>
+
+    <!-- Messages d'alerte -->
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Erreurs non-field -->
+    {% if form.non_field_errors %}
+      <div class="messages">
+        <div class="alert alert-error" role="alert">
+          <i class="fas fa-exclamation-circle"></i>
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Créer un compte</button>
-  </form>
+    <!-- Formulaire d'inscription -->
+    <form method="post" class="auth-form" id="registerForm" novalidate>
+      {% csrf_token %}
+      
+      <!-- Champ nom d'utilisateur -->
+      {% if form.username %}
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">
+          <i class="fas fa-user"></i>
+          {{ form.username.label|default:"Nom d'utilisateur" }}
+          {% if form.username.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <input 
+          type="text" 
+          name="{{ form.username.name }}" 
+          id="{{ form.username.id_for_label }}" 
+          class="form-control{% if form.username.errors %} error{% endif %}"
+          value="{{ form.username.value|default_if_none:'' }}"
+          placeholder="Choisissez un nom d'utilisateur"
+          {% if form.username.field.required %}required{% endif %}
+          autocomplete="username"
+          minlength="3"
+          maxlength="150"
+        >
+        {% if form.username.help_text %}
+          <div class="field-help">{{ form.username.help_text }}</div>
+        {% endif %}
+        {% if form.username.errors %}
+          <ul class="field-errors">
+            {% for error in form.username.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% endif %}
 
-  <p>Vous avez déjà un compte ? <a href="{% url 'login' %}">Connexion</a></p>
+      <!-- Champ email -->
+      {% if form.email %}
+      <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">
+          <i class="fas fa-envelope"></i>
+          {{ form.email.label|default:"Email" }}
+          {% if form.email.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <input 
+          type="email" 
+          name="{{ form.email.name }}" 
+          id="{{ form.email.id_for_label }}" 
+          class="form-control{% if form.email.errors %} error{% endif %}"
+          value="{{ form.email.value|default_if_none:'' }}"
+          placeholder="votre.email@exemple.com"
+          {% if form.email.field.required %}required{% endif %}
+          autocomplete="email"
+        >
+        {% if form.email.help_text %}
+          <div class="field-help">{{ form.email.help_text }}</div>
+        {% endif %}
+        {% if form.email.errors %}
+          <ul class="field-errors">
+            {% for error in form.email.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Champs prénom/nom (si présents) -->
+      <div class="form-row">
+        {% if form.first_name %}
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}">
+            <i class="fas fa-id-card"></i>
+            {{ form.first_name.label|default:"Prénom" }}
+            {% if form.first_name.field.required %}<span class="required">*</span>{% endif %}
+          </label>
+          <input 
+            type="text" 
+            name="{{ form.first_name.name }}" 
+            id="{{ form.first_name.id_for_label }}" 
+            class="form-control{% if form.first_name.errors %} error{% endif %}"
+            value="{{ form.first_name.value|default_if_none:'' }}"
+            placeholder="Votre prénom"
+            {% if form.first_name.field.required %}required{% endif %}
+            autocomplete="given-name"
+          >
+          {% if form.first_name.errors %}
+            <ul class="field-errors">
+              {% for error in form.first_name.errors %}
+                <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if form.last_name %}
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}">
+            <i class="fas fa-id-card"></i>
+            {{ form.last_name.label|default:"Nom" }}
+            {% if form.last_name.field.required %}<span class="required">*</span>{% endif %}
+          </label>
+          <input 
+            type="text" 
+            name="{{ form.last_name.name }}" 
+            id="{{ form.last_name.id_for_label }}" 
+            class="form-control{% if form.last_name.errors %} error{% endif %}"
+            value="{{ form.last_name.value|default_if_none:'' }}"
+            placeholder="Votre nom"
+            {% if form.last_name.field.required %}required{% endif %}
+            autocomplete="family-name"
+          >
+          {% if form.last_name.errors %}
+            <ul class="field-errors">
+              {% for error in form.last_name.errors %}
+                <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Champ mot de passe -->
+      {% if form.password1 %}
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">
+          <i class="fas fa-lock"></i>
+          {{ form.password1.label|default:"Mot de passe" }}
+          {% if form.password1.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <div class="password-field">
+          <input 
+            type="password" 
+            name="{{ form.password1.name }}" 
+            id="{{ form.password1.id_for_label }}" 
+            class="form-control{% if form.password1.errors %} error{% endif %}"
+            placeholder="Créez un mot de passe sécurisé"
+            {% if form.password1.field.required %}required{% endif %}
+            autocomplete="new-password"
+            minlength="8"
+          >
+          <button type="button" class="password-toggle" data-target="{{ form.password1.id_for_label }}" aria-label="Afficher/Masquer le mot de passe">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        
+        <!-- Indicateur de force du mot de passe -->
+        <div class="password-strength" id="passwordStrength" style="display: none;">
+          <div class="strength-bar">
+            <div class="strength-fill"></div>
+          </div>
+          <div class="strength-text"></div>
+        </div>
+        
+        <!-- Conditions du mot de passe -->
+        <div class="password-requirements" id="passwordRequirements">
+          <h6><i class="fas fa-shield-alt"></i> Conditions du mot de passe :</h6>
+          <ul class="requirements-list">
+            <li id="length-req">
+              <span class="icon"><i class="fas fa-times"></i></span>
+              Au moins 8 caractères
+            </li>
+            <li id="upper-req">
+              <span class="icon"><i class="fas fa-times"></i></span>
+              Au moins une majuscule
+            </li>
+            <li id="lower-req">
+              <span class="icon"><i class="fas fa-times"></i></span>
+              Au moins une minuscule
+            </li>
+            <li id="number-req">
+              <span class="icon"><i class="fas fa-times"></i></span>
+              Au moins un chiffre
+            </li>
+            <li id="special-req">
+              <span class="icon"><i class="fas fa-times"></i></span>
+              Au moins un caractère spécial
+            </li>
+          </ul>
+        </div>
+        
+        {% if form.password1.help_text %}
+          <div class="field-help">{{ form.password1.help_text }}</div>
+        {% endif %}
+        {% if form.password1.errors %}
+          <ul class="field-errors">
+            {% for error in form.password1.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Confirmation du mot de passe -->
+      {% if form.password2 %}
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">
+          <i class="fas fa-lock"></i>
+          {{ form.password2.label|default:"Confirmer le mot de passe" }}
+          {% if form.password2.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <div class="password-field">
+          <input 
+            type="password" 
+            name="{{ form.password2.name }}" 
+            id="{{ form.password2.id_for_label }}" 
+            class="form-control{% if form.password2.errors %} error{% endif %}"
+            placeholder="Confirmez votre mot de passe"
+            {% if form.password2.field.required %}required{% endif %}
+            autocomplete="new-password"
+          >
+          <button type="button" class="password-toggle" data-target="{{ form.password2.id_for_label }}" aria-label="Afficher/Masquer le mot de passe">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="field-help" id="passwordMatch" style="display: none;"></div>
+        {% if form.password2.help_text %}
+          <div class="field-help">{{ form.password2.help_text }}</div>
+        {% endif %}
+        {% if form.password2.errors %}
+          <ul class="field-errors">
+            {% for error in form.password2.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% endif %}
+
+
+      <!-- Bouton -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-user-plus"></i>
+        <span>Créer un compte</span>
+      </button>
+    </form>
+
+    <!-- Liens -->
+    <div class="auth-links">
+      <p>
+        Déjà un compte ?
+        <a href="{% url 'login' %}">
+          <i class="fas fa-sign-in-alt"></i>
+          Se connecter
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- JavaScript pour l'interactivité -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const passwordToggle = document.querySelector('.password-toggle');
+    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+
+    // Gestion du toggle du mot de passe
+    if (passwordToggle && passwordField) {
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+            
+            const icon = this.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Gestion de la soumission du formulaire
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Animation du bouton de soumission
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+            
+            // Validation côté client
+            const username = form.querySelector('[name="username"]').value.trim();
+            const password = form.querySelector('[name="password"]').value;
+            
+            if (!username || !password) {
+                e.preventDefault();
+                showFieldError('Veuillez remplir tous les champs requis.');
+                resetSubmitButton();
+                return;
+            }
+        });
+    }
+
+    // Validation en temps réel
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                this.classList.remove('error');
+                const errorList = this.parentNode.querySelector('.field-errors');
+                if (errorList) {
+                    errorList.remove();
+                }
+            }
+        });
+    });
+
+    // Fonctions utilitaires
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        
+        if (field.required && !value) {
+            showFieldError(`Le champ ${getFieldLabel(fieldName)} est requis.`, field);
+            return false;
+        }
+        
+        if (fieldName === 'username' && value) {
+            // Validation basique pour email ou nom d'utilisateur
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isEmail = emailRegex.test(value);
+            const isValidUsername = /^[a-zA-Z0-9_.-]{3,}$/.test(value);
+            
+            if (!isEmail && !isValidUsername) {
+                showFieldError('Format invalide. Utilisez un email ou un nom d\'utilisateur valide.', field);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    function showFieldError(message, field = null) {
+        if (field) {
+            field.classList.add('error');
+            
+            // Supprimer l'ancien message d'erreur
+            const existingError = field.parentNode.querySelector('.field-errors');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Ajouter le nouveau message
+            const errorDiv = document.createElement('ul');
+            errorDiv.className = 'field-errors';
+            errorDiv.innerHTML = `<li><i class="fas fa-exclamation-triangle"></i> ${message}</li>`;
+            field.parentNode.appendChild(errorDiv);
+        } else {
+            // Message d'erreur général
+            const existingAlert = document.querySelector('.messages .alert-error');
+            if (!existingAlert) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'messages';
+                alertDiv.innerHTML = `
+                    <div class="alert alert-error" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        ${message}
+                    </div>
+                `;
+                form.insertBefore(alertDiv, form.firstChild);
+                
+                // Auto-suppression après 5 secondes
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+    }
+
+    function getFieldLabel(fieldName) {
+        const labels = {
+            'username': 'nom d\'utilisateur',
+            'password': 'mot de passe'
+        };
+        return labels[fieldName] || fieldName;
+    }
+
+    function resetSubmitButton() {
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.disabled = false;
+    }
+
+    // Auto-focus sur le premier champ
+    const firstInput = form.querySelector('.form-control');
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+    // Suppression automatique des messages après 5 secondes
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 300);
+        }, 5000);
+    });
+});
+</script>
 {% endblock %}

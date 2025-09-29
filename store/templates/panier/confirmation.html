@@ -1,23 +1,122 @@
 {% extends 'base.html' %}
 
 {% load static %}
+
+{% block title %}Confirmer la suppression - {{ produit.nom }}{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/supprimer.css' %}" />
+<link rel="stylesheet" href="{% static 'css/confirmation_suppression.css' %}">
 {% endblock %}
 
 {% block content %}
 
 
-<div class="confirmation-container text-center">
-    <h3 class="display-6 text-danger mb-4">Confirmer la suppression</h3>
-    <p class="lead">Êtes-vous sûr de vouloir supprimer <strong>{{ produit.nom }}</strong> du panier ?</p>
-
-    <form method="post" class="mt-4">
-        {% csrf_token %}
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-danger btn-lg">Supprimer</button>
-            <a href="{% url 'afficher_panier' %}" class="btn btn-secondary btn-lg">Annuler</a>
+<div class="confirmation-wrapper">
+    <div class="confirmation-card">
+        <!-- Icon de confirmation -->
+        <div class="confirmation-icon mb-3">
+            <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: #dc3545;"></i>
         </div>
-    </form>
+
+        <!-- Titre principal -->
+        <h2 style="color: #dc3545; font-weight: 700; margin-bottom: 1rem;">
+            Confirmer la suppression
+        </h2>
+
+        <!-- Message de confirmation -->
+        <p style="font-size: 1.1rem; color: #6c757d; margin-bottom: 1.5rem;">
+            Êtes-vous sûr de vouloir supprimer ce produit de votre panier ?
+        </p>
+
+        <!-- Informations du produit -->
+        {% if produit %}
+        <div class="product-info mb-3">
+            <div class="product-name">{{ produit.nom }}</div>
+            {% if produit.prix %}
+            <div class="text-muted mt-1"><small>Prix : {{ produit.prix }}HTG</small></div>
+            {% endif %}
+            {% if produit.quantite %}
+            <div class="text-muted"><small>Quantité : {{ produit.quantite }}</small></div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Message d'avertissement -->
+        <div class="warning-text mb-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Attention :</strong> Cette action est irréversible. Le produit sera définitivement retiré de votre panier.
+        </div>
+
+        <!-- Formulaire de confirmation -->
+        <form method="post" id="deleteForm">
+            {% csrf_token %}
+            <div class="button-group" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-2"></i>Supprimer
+                </button>
+                <a href="{% url 'afficher_panier' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Annuler
+                </a>
+            </div>
+        </form>
+
+        <!-- Message de sécurité -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;">
+            <small class="text-muted">
+                <i class="fas fa-shield-alt"></i>
+                Vos données sont protégées et sécurisées
+            </small>
+        </div>
+    </div>
 </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Option : Ajouter une double confirmation
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const deleteForm = document.getElementById('deleteForm');
+    const doubleConfirmModal = new bootstrap.Modal(document.getElementById('doubleConfirmModal'));
+    const finalDeleteBtn = document.getElementById('finalDeleteBtn');
+    
+    // Optionnel : Activer la double confirmation
+    const enableDoubleConfirmation = false; // Changer à true pour activer
+    
+    if (enableDoubleConfirmation) {
+        confirmBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            doubleConfirmModal.show();
+        });
+        
+        finalDeleteBtn.addEventListener('click', function() {
+            doubleConfirmModal.hide();
+            deleteForm.submit();
+        });
+    }
+    
+    // Animation au hover des boutons
+    const actionBtns = document.querySelectorAll('.btn-action');
+    actionBtns.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Feedback visuel lors de la soumission
+    deleteForm.addEventListener('submit', function() {
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Suppression...';
+        confirmBtn.disabled = true;
+    });
+    
+    // Auto-focus sur le bouton annuler pour la navigation clavier
+    document.querySelector('.btn-secondary-custom').focus();
+});
+</script>
 {% endblock %}

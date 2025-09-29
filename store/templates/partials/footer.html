@@ -1,69 +1,269 @@
+<!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <h2><a href="{% url 'contact' %}">Contact</a></h2>
+            
+            <p>Inscrivez-vous à notre newsletter pour recevoir les dernières tendances, offres exclusives et réductions
+                spéciales directement dans votre boîte mail.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Votre adresse e-mail" required>
+                <button type="submit">S'inscrire</button>
+            </form>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-          <div class="footer-grid">
-              <div class="footer-widget footer-about">
-                  <h3 class="footer-title"> BaoulyStore</h3>
-                  <p>BaoulyStore est votre destination mode en ligne, proposant des vêtements et accessoires de qualité pour hommes et femmes. Notre mission est de vous aider à exprimer votre style personnel avec élégance et confiance.</p>
-                  
-                  <div class="footer-social">
-                      <a href="#"><i class="fab fa-facebook-f"></i></a>
-                      <a href="#"><i class="fab fa-instagram"></i></a>
-                      <a href="#"><i class="fab fa-twitter"></i></a>
-                      <a href="#"><i class="fab fa-pinterest-p"></i></a>
-                  </div>
-              </div>
-              <div class="footer-widget">
-                  <h3 class="footer-title">Liens utiles</h3>
-                  <ul class="footer-links">
-                    <li><a href="{% url 'index' %}"><i class="fas fa-chevron-right"></i> Accueil</a></li>
-                    <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i> À propos</a></li>
-                    <li><a href="{% url 'shop' %}"><i class="fas fa-chevron-right"></i> Boutique</a></li>
-                    <li><a href="{% url 'blog' %}"><i class="fas fa-chevron-right"></i> Blog</a></li>
-                    <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i> Contact</a></li>
-                    <li><a href="{% url 'faq' %}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-                  </ul>
-                  
-              </div>
-              <div class="footer-widget">
-                  <h3 class="footer-title">Contact</h3>
-                  <ul class="footer-contact">
-                      <li><i class="fas fa-map-marker-alt"></i> 123 Pelerin, Ouest Haiti</li>
-                      <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                      <li><i class="fas fa-envelope"></i> contact@baoulystore.com</li>
-                      <li><i class="fas fa-clock"></i> Lun-Sam: 9h00 - 20h00</li>
-                  </ul>
-              </div>
-              <div class="footer-widget">
-                  <h3 class="footer-title">Suivez-Nous</h3>
-                  <div class="">
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Élégance</h3>
+                    <p>Votre destination pour des vêtements et bijoux élégants et de haute qualité. Nous nous engageons
+                        à vous offrir le meilleur service et les meilleures pièces pour exprimer votre style unique.</p>
+              <div class="social-icons">
+                    <a href="https://www.facebook.com/BaoulyStore" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/BaoulyStore" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://twitter.com/BaoulyStore" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/BaoulyStore" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                    </div>
+
+                </div>
+                <div class="footer-column">
+                    <h3>Liens utiles</h3>
+                    <ul>
+                        <li><a href="{% url 'about'  %}">À propos de nous</a></li>
+                        <li><a href="{% url 'faq'  %}">FAQ</a></li>
+                        <li><a href="{% url 'return_policy'  %}">Conditions générales</a></li>
+                        <li><a href="{% url 'order_tracking'  %}">Politique de confidentialité</a></li>
+                        <li><a href="{% url 'shop'  %}">Livraison et retours</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Catégories</h3>
+                    <ul>
+                        <li><a href="{% url 'produits_par_categorie' 'femme' %}">Vêtements Femmes</a></li>
+                        <li><a href="{% url 'produits_par_categorie' 'homme' %}">Vêtements Hommes</a></li>
+                        <li><a href="{% url 'produits_par_categorie' 'enfant' %}">Enfants</a></li>
+                        <li><a href="#">Accessoires</a></li>
+                        <li><a href="{% url 'nouveaux'  %}">Nouveautés</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue Albin, Port-au-Prince</li>
+                        <li><i class="fas fa-phone"></i> +509 44 52 18 22</li>
+                        <li><i class="fas fa-envelope"></i> elconquistadorbaoulyn.com</li>
+                    </ul>
+                </div>
+            </div>
+           <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Élégance. Tous droits réservés.</p>
+            </div>
+
+        </div>
+    </footer>
+
+   <!-- BACK TO TOP BUTTON -->
+    <button class="back-to-top" id="backToTop" title="Retour en haut" aria-label="Retourner en haut de la page">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+
+<style>
+/* ===== BACK TO TOP BUTTON ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100px);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .back-to-top i {
+            transition: transform 0.3s ease;
+        }
+
+        .back-to-top:hover i {
+            transform: translateY(-2px);
+        }
+
+        /* Variante avec progress circle */
+        .back-to-top.progress-style {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 3px solid transparent;
+        }
+
+        .back-to-top.progress-style::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            background: conic-gradient(#667eea var(--progress, 0%), transparent 0%);
+            z-index: -1;
+        }
+
+        .back-to-top.progress-style:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-3px) scale(1.08);
+        }
+
+        /* Variante minimaliste */
+        .back-to-top.minimal {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-to-top.minimal:hover {
+            background: rgba(0, 0, 0, 0.9);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Variante colorée */
+        .back-to-top.colorful {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 300% 300%;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Animation de pulsation */
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(102, 126, 234, 0.8); }
+            100% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); }
+        }
+
+        .back-to-top.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .back-to-top {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 18px;
+            }
+        }
+
+</style>
+
+<script>
+         // ===== BACK TO TOP FUNCTIONALITY =====
+        (function() {
+            const backToTopButton = document.getElementById('backToTop');
+            let isThrottled = false;
+            
+            // Fonction de scroll avec throttle pour les performances
+            function handleScroll() {
+                if (isThrottled) return;
                 
-                      <a href="https://facebook.com" target="_blank" class="text-white mr-2"
-                        ><i class="fab fa-facebook-f"></i
-                      ></a>
-                      <a href="https://twitter.com" target="_blank" class="text-white mr-2"
-                        ><i class="fab fa-twitter"></i
-                      ></a>
-                      <a
-                        href="https://instagram.com"
-                        target="_blank"
-                        class="text-white mr-2"
-                        ><i class="fab fa-instagram"></i
-                      ></a>
-                      <a href="https://linkedin.com" target="_blank" class="text-white mr-2"
-                        ><i class="fab fa-linkedin-in"></i
-                      ></a>
-                  
-                  </div>
-              </div>
-          </div>
-      </div>
-      <div class="footer-bottom">
-          <div class="container">
-              <p>&copy; 2023 BaoulyStore. Tous droits réservés. Conçu par <a href="#">BaoulyNELSON</a></p>
-          </div>
-      </div>
-  </footer>
-
-
-
+                isThrottled = true;
+                requestAnimationFrame(() => {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    
+                    // Afficher/masquer le bouton
+                    if (scrollTop > 300) {
+                        backToTopButton.classList.add('show');
+                    } else {
+                        backToTopButton.classList.remove('show');
+                    }
+                    
+                    // Calculer le pourcentage de scroll pour la variante progress
+                    if (backToTopButton.classList.contains('progress-style')) {
+                        const scrollPercent = (scrollTop / documentHeight) * 100;
+                        backToTopButton.style.setProperty('--progress', scrollPercent + '%');
+                    }
+                    
+                    isThrottled = false;
+                });
+            }
+            
+            // Fonction de retour en haut
+            function scrollToTop() {
+                const scrollStep = -window.scrollY / (500 / 15); // 500ms d'animation
+                
+                function step() {
+                    if (window.scrollY !== 0) {
+                        window.scrollBy(0, scrollStep);
+                        requestAnimationFrame(step);
+                    }
+                }
+                requestAnimationFrame(step);
+            }
+            
+            // Alternative avec smooth scroll (plus simple mais moins de contrôle)
+            function scrollToTopSmooth() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Event listeners
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            backToTopButton.addEventListener('click', scrollToTopSmooth);
+            
+            // Gestion du clavier pour l'accessibilité
+            backToTopButton.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTopSmooth();
+                }
+            });
+        })();
+</script>

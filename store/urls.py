@@ -35,10 +35,10 @@ urlpatterns = [
     # Afficher le panier
     path('panier/', views.afficher_panier, name='afficher_panier'),
     
-    path('panier/count/', views.panier_context, name='panier_count'),
+ 
     
     # Modifier la quantité d'un produit dans le panier
-    path('modifier-quantite/<int:produit_id>/<int:quantite>/', views.modifier_quantite_panier, name='modifier_quantite_panier'),
+    path('modifier-quantite/<int:produit_id>/<int:quantite>/', views.modifier_quantite, name='modifier_quantite'),
 
     # Supprimer un produit du panier
     path('supprimer-du-panier/<int:produit_id>/', views.supprimer_du_panier, name='supprimer_du_panier'),
@@ -59,6 +59,8 @@ urlpatterns = [
   
     # Vue du profil utilisateur
     path('profile/', views.profile_view, name='profile'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
+
 
     # Changer de mot de passe
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
@@ -90,7 +92,7 @@ urlpatterns = [
     path('confirmer-deconnexion/', views.confirmer_deconnexion, name='confirmer_deconnexion'),
 
     # Ajouter un commentaire à un produit
-    path('ajouter_commentaire/<int:produit_id>/', views.ajouter_commentaire, name='ajouter_commentaire'),
+    path("ajouter-commentaire/", views.ajouter_commentaire, name="ajouter_commentaire"),
 
     # Supprimer un commentaire d'un produit
     path('supprimer_commentaire/<int:commentaire_id>/', views.supprimer_commentaire, name='supprimer_commentaire'),
@@ -102,4 +104,5 @@ urlpatterns = [
     path('order-tracking/', views.order_tracking, name='order_tracking'),
     path('about/', views.about, name='about'),
     path('shop/', views.produits_nouveaux, name='shop'),
+
 ]

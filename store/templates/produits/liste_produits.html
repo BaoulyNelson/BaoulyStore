@@ -1,100 +1,833 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Produits - {{ categorie|title }}{% endblock %}
+{% block title %}Liste des Produits - Boutique Mode{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/liste_produit.css' %}" />
+{% endblock %}
 
 {% block content %}
 
 
+<div class="container">
 
-<div class="container my-5">
-  
-  <h2 class="text-center mb-4">Produits - {{ categorie|title }}</h2>
 
-  <!-- ✅ Barre de navigation par catégorie -->
-  <div class="text-center mb-4">
-    <a href="{% url 'liste_produits' %}" class="btn {% if not categorie %}btn-primary{% else %}btn-outline-primary{% endif %}">
-      Tous
-    </a>
-    <a href="{% url 'produits_par_categorie' 'homme' %}" class="btn {% if categorie == 'homme' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-      Homme
-    </a>
-    <a href="{% url 'produits_par_categorie' 'femme' %}" class="btn {% if categorie == 'femme' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-      Femme
-    </a>
-    <a href="{% url 'produits_par_categorie' 'enfant' %}" class="btn {% if categorie == 'enfant' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-      Enfant
-    </a>
-  </div>
-
-<!-- ✅ AFFICHAGE DES CATEGORIES -->
-<div class="container mt-4 text-center">
-    <div class="row">
-      {% for produit in produits %}
-        <div class="col-md-3 col-sm-4 col-6 mb-4">
-          <a href="{% url 'detail_produit' produit.id %}" class="text-decoration-none text-dark">
-            <div class="d-flex flex-column align-items-center">
-              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; overflow: hidden;">
-                <img src="{% if produit.image_url %}{{ produit.image_url }}{% else %}{{ produit.image.url }}{% endif %}" 
-                alt="{{ produit.nom }}" 
-                style="width: 100%; height: 100%; object-fit: cover;">
-           
-                
-              </div>
-              <p class="mt-2 fw-bold">{{ produit.nom }}</p>
-               <!-- ⭐ Affichage des étoiles -->
-          <div class="mb-2">
-            {% for i in "12345" %}
-              {% if produit.note >= i|add:"0" %}
-                <i class="fas fa-star text-warning"></i>
-              {% else %}
-                <i class="fas fa-star text-secondary"></i>
-              {% endif %}
-            {% endfor %}
-            <span class="small text-muted">({{ produit.avis_count }})</span>
-          </div>
-              <p class="text-primary fw-bold">{{ produit.prix }} HTG</p>
-            </div>
-          </a>
+    <!-- En-tête des produits -->
+    <div class="products-header">
+        <div class="products-count">
+            <i class="fas fa-list-ul"></i>
+            <span>{{ produits|length }} produit{{ produits|length|pluralize }} trouvé{{ produits|length|pluralize }}</span>
         </div>
-      {% empty %}
-        <p class="text-center text-muted">Aucun produit trouvé.</p>
-      {% endfor %}
+        
+        <div class="sort-section">
+            <label class="sort-label">Trier par:</label>
+            <select class="form-select" style="width: auto;" onchange="sortProducts(this.value)">
+                <option value="date_ajout">Plus récents</option>
+                <option value="nom">Nom A-Z</option>
+                <option value="-nom">Nom Z-A</option>
+                <option value="prix">Prix croissant</option>
+                <option value="-prix">Prix décroissant</option>
+                <option value="-populaire">Populaires</option>
+            </select>
+            
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="toggleView('grid')" data-view="grid">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button class="view-btn" onclick="toggleView('list')" data-view="list">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-  
 
-  <!-- ✅ PAGINATION -->
-  {% if produits.has_other_pages %}
-    <nav aria-label="Pagination">
-      <ul class="pagination justify-content-center">
-        {% if produits.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ produits.previous_page_number }}">Précédent</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">Précédent</span>
-          </li>
+    <!-- Loading spinner -->
+    <div class="loading-spinner" id="loading">
+        <div class="spinner"></div>
+        <p>Chargement des produits...</p>
+    </div>
+
+    {% if produits %}
+        <!-- Vue grille (par défaut) -->
+        <div class="products-grid active" id="grid-view">
+            {% for produit in produits %}
+                <div class="product-card" data-category="{{ produit.categorie }}" data-price="{{ produit.prix }}" data-date="{{ produit.date_ajout|date:'Y-m-d' }}">
+                    <div class="product-image-container">
+                   
+                        <img src="{{ produit.get_image }}" alt="{{ produit.nom }}" class="product-image">
+                        <div class="product-badges">
+                            {% if produit.nouveau %}
+                                <span class="badge badge-nouveau">
+                                    <i class="fas fa-sparkles"></i> Nouveau
+                                </span>
+                            {% endif %}
+                            {% if produit.populaire %}
+                                <span class="badge badge-populaire">
+                                    <i class="fas fa-fire"></i> Populaire
+                                </span>
+                            {% endif %}
+                            {% if produit.quantite_en_stock <= 5 and produit.quantite_en_stock > 0 %}
+                                <span class="badge badge-stock-bas">
+                                    <i class="fas fa-exclamation"></i> Stock limité
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="action-btn" title="Ajouter aux favoris">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            
+                            {% comment %} <a href="{% url 'detail_produit' produit.id %}" class="action-btn" title="Aperçu rapide"> {% endcomment %}
+                            <a href="{% url 'detail_produit' produit.id %}" class="btn-view-details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <button class="action-btn" title="Comparer">
+                                <i class="fas fa-balance-scale"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <div class="product-category">{{ produit.get_categorie_display }}</div>
+                        <h3 class="product-name">{{ produit.get_nom_display }}</h3>
+                        <p class="product-description">{{ produit.description|truncatewords:20 }}</p>
+                        
+                        <div class="product-details">
+                            <div class="product-price">{{ produit.prix }}HTG</div>
+                            <div class="product-stock 
+                                {% if produit.quantite_en_stock > 10 %}stock-disponible
+                                {% elif produit.quantite_en_stock > 0 %}stock-limite
+                                {% else %}stock-rupture{% endif %}">
+                                {% if produit.quantite_en_stock > 0 %}
+                                    <i class="fas fa-check"></i> {{ produit.quantite_en_stock }} en stock
+                                {% else %}
+                                    <i class="fas fa-times"></i> Rupture de stock
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="product-colors">
+                            <div class="color-dot" style="background-color: 
+                                {% if produit.couleur == 'noir' %}#000000
+                                {% elif produit.couleur == 'blanc' %}#ffffff
+                                {% elif produit.couleur == 'rouge' %}#dc3545
+                                {% elif produit.couleur == 'bleu' %}#007bff
+                                {% elif produit.couleur == 'vert' %}#28a745
+                                {% elif produit.couleur == 'jaune' %}#ffc107
+                                {% elif produit.couleur == 'rose' %}#e83e8c
+                                {% elif produit.couleur == 'gris' %}#6c757d
+                                {% else %}#6c757d{% endif %};" 
+                                title="{{ produit.get_couleur_display }}">
+                            </div>
+                        </div>
+                        
+                        <div class="product-footer">
+                            {% if produit.quantite_en_stock > 0 %}
+                              
+                             
+
+                              <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary" data-id="{{ produit.id }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Ajouter au panier
+                                </button>
+                            </form>
+
+
+                            {% else %}
+                                <button class="btn-add-cart" disabled>
+                                    <i class="fas fa-times"></i>
+                                    Indisponible
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'detail_produit' produit.id %}" class="btn-view-details">
+                                <i class="fas fa-info-circle"></i>
+                                 Voir détails
+                            </a>
+                   
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Vue liste -->
+        <div class="products-list" id="list-view">
+            {% for produit in produits %}
+                <div class="product-list-item">
+                    <div class="list-content">
+                        <div class="position-relative">
+                       <img src="{{ produit.get_image }}" alt="{{ item.produit.nom }}" class="list-image">
+
+
+                              
+                            <div class="product-badges" style="position: absolute; top: 10px; left: 10px;">
+                                {% if produit.nouveau %}
+                                    <span class="badge badge-nouveau">Nouveau</span>
+                                {% endif %}
+                                {% if produit.populaire %}
+                                    <span class="badge badge-populaire">Populaire</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="list-info">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="product-category">{{ produit.get_categorie_display }}</span>
+                                    <h3 class="product-name mb-2">{{ produit.get_nom_display }}</h3>
+                                </div>
+                                <div class="text-end">
+                                    <div class="product-price mb-1">{{ produit.prix }}HTG</div>
+                                    <div class="product-stock 
+                                        {% if produit.quantite_en_stock > 10 %}stock-disponible
+                                        {% elif produit.quantite_en_stock > 0 %}stock-limite
+                                        {% else %}stock-rupture{% endif %}">
+                                        {% if produit.quantite_en_stock > 0 %}
+                                            {{ produit.quantite_en_stock }} en stock
+                                        {% else %}
+                                            Rupture de stock
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="product-description">{{ produit.description|truncatewords:30 }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="product-colors">
+                                    <small class="text-muted me-2">Couleur:</small>
+                                    <div class="color-dot" style="background-color: 
+                                        {% if produit.couleur == 'noir' %}#000000
+                                        {% elif produit.couleur == 'blanc' %}#ffffff
+                                        {% elif produit.couleur == 'rouge' %}#dc3545
+                                        {% elif produit.couleur == 'bleu' %}#007bff
+                                        {% elif produit.couleur == 'vert' %}#28a745
+                                        {% elif produit.couleur == 'jaune' %}#ffc107
+                                        {% elif produit.couleur == 'rose' %}#e83e8c
+                                        {% elif produit.couleur == 'gris' %}#6c757d
+                                        {% else %}#6c757d{% endif %};" 
+                                        title="{{ produit.get_couleur_display }}">
+                                    </div>
+                                    <small class="text-muted ms-1">{{ produit.get_couleur_display }}</small>
+                                </div>
+                                
+                                <div class="text-muted small">
+                                    <i class="fas fa-calendar"></i>
+                                    Ajouté le {{ produit.date_ajout|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="list-actions">
+                            {% if produit.quantite_en_stock > 0 %}
+                         
+                            <form method="post" action="{% url 'ajouter_au_panier' produit.id %}" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary" data-id="{{ produit.id }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Ajouter au panier
+                                </button>
+                            </form>
+
+
+                          
+
+
+                            {% else %}
+                                <button class="btn-add-cart" disabled>
+                                    <i class="fas fa-times"></i>
+                                    Indisponible
+                                </button>
+                            {% endif %}
+                            
+                            <a href="{% url 'detail_produit' produit.id %}" class="btn-view-details">
+                                <i class="fas fa-info-circle"></i>
+                                Voir détails
+                            </a>
+                            
+                            <button class="action-btn" onclick="addToWishlist({{ produit.id }})" title="Ajouter aux favoris">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination-container">
+            <nav aria-label="Navigation des produits">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="page-link active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
         {% endif %}
 
-        {% for num in produits.paginator.page_range %}
-          <li class="page-item {% if produits.number == num %}active{% endif %}">
-            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-          </li>
-        {% endfor %}
-
-        {% if produits.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ produits.next_page_number }}">Suivant</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">Suivant</span>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+    {% else %}
+        <!-- État vide -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3 class="empty-title">Aucun produit trouvé</h3>
+            <p class="empty-message">
+                Désolé, nous n'avons trouvé aucun produit correspondant à vos critères de recherche.
+                <br>Essayez de modifier vos filtres ou parcourez toute notre collection.
+            </p>
+            <a href="{% url 'liste_produits' %}" class="btn-browse">
+                <i class="fas fa-shopping-bag"></i>
+                Parcourir tous les produits
+            </a>
+        </div>
+    {% endif %}
+        <!-- Filtres -->
+    <div class="filters-section">
+        <h3 class="filters-title">
+            <i class="fas fa-filter"></i>
+            Filtrer les produits
+        </h3>
+        
+        <form method="get" id="filter-form">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <label class="filter-label">Catégorie</label>
+                        <select name="categorie" class="form-select">
+                            <option value="">Toutes les catégories</option>
+                            <option value="homme" {% if request.GET.categorie == 'homme' %}selected{% endif %}>Homme</option>
+                            <option value="femme" {% if request.GET.categorie == 'femme' %}selected{% endif %}>Femme</option>
+                            <option value="enfant" {% if request.GET.categorie == 'enfant' %}selected{% endif %}>Enfant</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <label class="filter-label">Type de vêtement</label>
+                        <select name="nom" class="form-select">
+                            <option value="">Tous les types</option>
+                            <option value="jeans" {% if request.GET.nom == 'jeans' %}selected{% endif %}>Jeans</option>
+                            <option value="t_shirt" {% if request.GET.nom == 't_shirt' %}selected{% endif %}>T-shirt</option>
+                            <option value="chemise" {% if request.GET.nom == 'chemise' %}selected{% endif %}>Chemise</option>
+                            <option value="robe" {% if request.GET.nom == 'robe' %}selected{% endif %}>Robe</option>
+                            <option value="veste" {% if request.GET.nom == 'veste' %}selected{% endif %}>Veste</option>
+                            <option value="pull" {% if request.GET.nom == 'pull' %}selected{% endif %}>Pull</option>
+                            <option value="pantalon" {% if request.GET.nom == 'pantalon' %}selected{% endif %}>Pantalon</option>
+                            <option value="jupe" {% if request.GET.nom == 'jupe' %}selected{% endif %}>Jupe</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Couleur</label>
+                        <select name="couleur" class="form-select">
+                            <option value="">Toutes les couleurs</option>
+                            <option value="noir" {% if request.GET.couleur == 'noir' %}selected{% endif %}>Noir</option>
+                            <option value="blanc" {% if request.GET.couleur == 'blanc' %}selected{% endif %}>Blanc</option>
+                            <option value="rouge" {% if request.GET.couleur == 'rouge' %}selected{% endif %}>Rouge</option>
+                            <option value="bleu" {% if request.GET.couleur == 'bleu' %}selected{% endif %}>Bleu</option>
+                            <option value="vert" {% if request.GET.couleur == 'vert' %}selected{% endif %}>Vert</option>
+                            <option value="jaune" {% if request.GET.couleur == 'jaune' %}selected{% endif %}>Jaune</option>
+                            <option value="rose" {% if request.GET.couleur == 'rose' %}selected{% endif %}>Rose</option>
+                            <option value="gris" {% if request.GET.couleur == 'gris' %}selected{% endif %}>Gris</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Prix max (HTG)</label>
+                        <input type="number" name="prix_max" class="form-control" 
+                               placeholder="ex: 100" value="{{ request.GET.prix_max }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-search"></i>
+                                Filtrer
+                            </button>
+                            <a href="{% url 'liste_produits' %}" class="btn-reset">
+                                <i class="fas fa-undo"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <label class="filter-label">Recherche</label>
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Rechercher un produit..." value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" name="populaire" 
+                                   {% if request.GET.populaire %}checked{% endif %} id="populaire">
+                            <label class="form-check-label" for="populaire">
+                                <i class="fas fa-star text-warning"></i> Populaires uniquement
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" name="nouveau" 
+                                   {% if request.GET.nouveau %}checked{% endif %} id="nouveau">
+                            <label class="form-check-label" for="nouveau">
+                                <i class="fas fa-sparkles text-success"></i> Nouveautés uniquement
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Modal d'aperçu rapide -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickViewModalLabel">Aperçu rapide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Contenu chargé dynamiquement -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Variables globales
+let currentView = 'grid';
+let currentSort = 'date_ajout';
+
+// Fonction pour basculer entre les vues
+function toggleView(viewType) {
+    currentView = viewType;
+    
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const viewButtons = document.querySelectorAll('.view-btn');
+    
+    // Mise à jour des boutons
+    viewButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewType) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Basculement des vues
+    if (viewType === 'grid') {
+        gridView.classList.add('active');
+        gridView.style.display = 'grid';
+        listView.classList.remove('active');
+        listView.style.display = 'none';
+    } else {
+        listView.classList.add('active');
+        listView.style.display = 'block';
+        gridView.classList.remove('active');
+        gridView.style.display = 'none';
+    }
+    
+    // Sauvegarder la préférence
+    localStorage.setItem('preferred_view', viewType);
+}
+
+// Fonction de tri des produits
+function sortProducts(sortBy) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortBy);
+    
+    showLoading();
+    window.location.href = url.toString();
+}
+
+// Afficher le spinner de chargement
+function showLoading() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('grid-view').style.opacity = '0.5';
+    document.getElementById('list-view').style.opacity = '0.5';
+}
+
+// Masquer le spinner de chargement
+function hideLoading() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('grid-view').style.opacity = '1';
+    document.getElementById('list-view').style.opacity = '1';
+}
+
+// Ajouter au panier
+function addToCart(productId) {
+    // Simulation d'un appel AJAX
+    fetch(`/panier/ajouter/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            'quantite': 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('cartToast');
+            updateCartCounter();
+        } else {
+            alert('Erreur lors de l\'ajout au panier');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'ajout au panier');
+    });
+}
+
+// Ajouter aux favoris
+function addToWishlist(productId) {
+    // Simulation d'un appel AJAX
+    fetch(`/favoris/ajouter/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('wishlistToast');
+            // Mettre à jour l'icône du coeur
+            const heartIcon = event.target.closest('button').querySelector('i');
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
+            heartIcon.style.color = '#e74c3c';
+        } else {
+            alert('Erreur lors de l\'ajout aux favoris');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'ajout aux favoris');
+    });
+}
+
+// Afficher les notifications toast
+function showToast(toastId) {
+    const toast = new bootstrap.Toast(document.getElementById(toastId));
+    toast.show();
+}
+
+// Mettre à jour le compteur du panier
+function updateCartCounter() {
+    // Simulation de mise à jour du compteur
+    const cartCounter = document.querySelector('.cart-counter');
+    if (cartCounter) {
+        const currentCount = parseInt(cartCounter.textContent) || 0;
+        cartCounter.textContent = currentCount + 1;
+    }
+}
+
+// Obtenir le token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Filtrage en temps réel
+function setupLiveFilter() {
+    const searchInput = document.querySelector('input[name="search"]');
+    let searchTimeout;
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterProducts();
+            }, 500);
+        });
+    }
+    
+    // Filtrage par catégorie, couleur, etc.
+    const filterSelects = document.querySelectorAll('select[name="categorie"], select[name="nom"], select[name="couleur"]');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', filterProducts);
+    });
+    
+    // Checkboxes
+    const filterCheckboxes = document.querySelectorAll('input[name="populaire"], input[name="nouveau"]');
+    filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', filterProducts);
+    });
+}
+
+// Filtrer les produits côté client (optionnel)
+function filterProducts() {
+    const formData = new FormData(document.getElementById('filter-form'));
+    const params = new URLSearchParams();
+    
+    for (let [key, value] of formData.entries()) {
+        if (value.trim() !== '') {
+            params.append(key, value);
+        }
+    }
+    
+    // Redirection avec les nouveaux paramètres
+    window.location.search = params.toString();
+}
+
+// Animation d'apparition des cartes
+function animateCards() {
+    const cards = document.querySelectorAll('.product-card, .product-list-item');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '0';
+                entry.target.style.transform = 'translateY(20px)';
+                entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, 100);
+                
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+    
+    cards.forEach(card => observer.observe(card));
+}
+
+// Aperçu rapide
+function showQuickView(productId) {
+    // Charger les données du produit via AJAX
+    fetch(`/detail_produit/${productId}/`)
+
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('quickViewContent').innerHTML = html;
+            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors du chargement de l\'aperçu');
+        });
+}
+
+// Lazy loading des images
+function setupLazyLoading() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                observer.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+}
+
+// Gestion des favoris
+function toggleFavorite(productId, element) {
+    const icon = element.querySelector('i');
+    const isFavorite = icon.classList.contains('fas');
+    
+    fetch(`/favoris/${isFavorite ? 'retirer' : 'ajouter'}/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (isFavorite) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                icon.style.color = '';
+            } else {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                icon.style.color = '#e74c3c';
+                showToast('wishlistToast');
+            }
+        }
+    })
+    .catch(error => console.error('Erreur:', error));
+}
+
+// Gestion du scroll infini (optionnel)
+function setupInfiniteScroll() {
+    let loading = false;
+    let page = 1;
+    
+    window.addEventListener('scroll', () => {
+        if (loading) return;
+        
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+            loading = true;
+            loadMoreProducts();
+        }
+    });
+}
+
+function loadMoreProducts() {
+    // Implémentation du chargement de plus de produits
+    // Cette fonction devrait être adaptée selon votre backend
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    // Restaurer la vue préférée
+    const preferredView = localStorage.getItem('preferred_view');
+    if (preferredView && preferredView !== currentView) {
+        toggleView(preferredView);
+    }
+    
+    // Initialiser les fonctionnalités
+    setupLiveFilter();
+    animateCards();
+    setupLazyLoading();
+    hideLoading();
+    
+    // Gestion des événements sur les boutons d'action
+    document.addEventListener('click', function(e) {
+        // Aperçu rapide
+        if (e.target.closest('.action-btn[title="Aperçu rapide"]')) {
+            e.preventDefault();
+            const productCard = e.target.closest('.product-card');
+            const productId = productCard.dataset.productId || 1; // À adapter
+            showQuickView(productId);
+        }
+        
+        // Favoris
+        if (e.target.closest('.action-btn[title="Ajouter aux favoris"]')) {
+            e.preventDefault();
+            const productCard = e.target.closest('.product-card');
+            const productId = productCard.dataset.productId || 1; // À adapter
+            addToWishlist(productId);
+        }
+    });
+    
+    // Auto-submit du formulaire de tri
+    const sortSelect = document.querySelector('select[onchange="sortProducts(this.value)"]');
+    if (sortSelect) {
+        // Récupérer le tri actuel depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get('sort');
+        if (currentSort) {
+            sortSelect.value = currentSort;
+        }
+    }
+    
+    // Gestion responsive du toggle view sur mobile
+    if (window.innerWidth <= 768) {
+        // Par défaut en vue liste sur mobile
+        toggleView('list');
+    }
+});
+
+// Gestion du redimensionnement de la fenêtre
+window.addEventListener('resize', function() {
+    // Ajustements responsive si nécessaire
+    if (window.innerWidth <= 768 && currentView === 'grid') {
+        // Optionnel: basculer automatiquement en vue liste sur mobile
+        // toggleView('list');
+    }
+});
+
+// Fonction utilitaire pour formater les prix
+function formatPrice(price) {
+    return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR'
+    }).format(price);
+}
+
+// Fonction pour mettre à jour l'URL sans rechargement
+function updateURL(params) {
+    const url = new URL(window.location);
+    Object.keys(params).forEach(key => {
+        if (params[key]) {
+            url.searchParams.set(key, params[key]);
+        } else {
+            url.searchParams.delete(key);
+        }
+    });
+    history.pushState(null, '', url.toString());
+}
+</script>
 {% endblock %}

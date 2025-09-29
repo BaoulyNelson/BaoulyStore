@@ -1,27 +1,42 @@
 {% load static %}
-<section class="section testimonials">
-    <div class="container">
-        <h2 class="section-title">Ce que disent nos clients</h2>
-        <div class="testimonials-slider">
-          {% for commentaire in commentaires %}
-          <div class="testimonial-slide {% if forloop.first %}active{% endif %}">
-              {% if commentaire.photo %}
-              <img src="{{ commentaire.photo.url }}" alt="{{ commentaire.nom }}" class="testimonial-img">
-              {% else %}
-              <img src="{% static 'images/logo.jpg' %}" alt="{{ commentaire.nom }}" class="testimonial-img">
-              {% endif %}
-              <p class="testimonial-text">"{{ commentaire.texte }}"</p>
-              <h4 class="testimonial-name">{{ commentaire.nom }}</h4>
-              <p class="testimonial-role">{{ commentaire.role }}</p>
+<section class="testimonials">
+  <div class="container">
+    <h2 class="section-title">Ce que disent nos clients</h2>
+    <div class="testimonials-slider">
+      <div class="testimonial-slides" id="testimonialSlides">
+
+        {% for commentaire in commentaires %}
+        <div class="testimonial-slide">
+          <div class="testimonial-content">
+            <p>"{{ commentaire.texte }}"</p>
           </div>
-          {% endfor %}
+          <div class="testimonial-author">
+            {% if commentaire.photo %}
+              <img src="{{ commentaire.photo.url }}" alt="{{ commentaire.nom }}">
+            {% else %}
+              <img src="https://randomuser.me/api/portraits/lego/2.jpg" alt="{{ commentaire.nom }}">
+            {% endif %}
+            <h4>{{ commentaire.nom }}</h4>
+            <p>{{ commentaire.role }}</p>
+          </div>
+        </div>
+        {% endfor %}
+
       </div>
-      
-      <div class="testimonial-dots">
-          {% for commentaire in commentaires %}
-          <span class="dot {% if forloop.first %}active{% endif %}"></span>
-          {% endfor %}
+
+      <!-- Dots dynamiques -->
+      <div class="testimonial-dots" id="testimonialDots">
+        {% for commentaire in commentaires %}
+          <div class="testimonial-dot {% if forloop.first %}active{% endif %}"></div>
+        {% endfor %}
       </div>
-      
-  
-  </section>
+    </div>
+
+    <!-- 🚀 Bouton sous le slider -->
+    <div class="text-center mt-4">
+      <a href="{% url 'ajouter_commentaire' %}" class="btn btn-outline-primary">
+        ✍️ Laisser un commentaire
+      </a>
+    </div>
+  </div>
+</section>

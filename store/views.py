@@ -25,24 +25,31 @@ import requests
 import random
 from django.utils import timezone
 from datetime import timedelta
+from django.shortcuts import render
+from django.conf import settings
+from moncashify import API
+from .models import Panier
+from django.views.decorators.http import require_POST
+
+
 
 
 def index(request):
-    # Récupérer les commentaires du plus récent au plus ancien
     commentaires = Commentaire.objects.all().order_by('-date')
-
-    # Récupérer les produits et activer la pagination
-    produits_list = Produit.objects.all().order_by('-id')  # Trie par le plus récent
-    paginator = Paginator(produits_list, 8)  # 10 produits par page
-
-    # Récupérer le numéro de la page depuis l'URL
+    produits_list = Produit.objects.all().order_by('-id')
+    paginator = Paginator(produits_list, 12)
     page_number = request.GET.get('page')
-    # Obtenir les produits de la page
     produits = paginator.get_page(page_number)
+
+    # spécifiques
+    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:9]
+    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:9]
 
     return render(request, 'index.html', {
         'commentaires': commentaires,
-        'produits': produits,  # Passer les produits paginés au template
+        'produits': produits,
+        'nouveaux': nouveaux,
+        'populaires': populaires,
     })
 
 
@@ -206,15 +213,6 @@ def detail_produit(request, pk):
 
 
 
-def produits_populaires(request):
-    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:20]  # Limiter à 20 produits populaires
-    return render(request, 'produits/produits_populaires.html', {'populaires': populaires})
-
-
-def produits_nouveaux(request):
-    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:20]  # Limiter à 20 produits nouveaux
-    return render(request, 'produits/produits_nouveaux.html', {'nouveaux': nouveaux})
-
 
 def ajouter_au_panier(request, produit_id):
     # Si l'utilisateur n'est pas connecté
@@ -222,11 +220,17 @@ def ajouter_au_panier(request, produit_id):
         return redirect(f'{reverse("login")}?next={request.path}')
 
     produit = get_object_or_404(Produit, id=produit_id)
-    session_id = request.session.session_key or request.session.create()
 
-    # Récupérer ou créer le panier pour ce produit et cette session
+    # ✅ Assurer une session valide
+    if not request.session.session_key:
+        request.session.save()
+    session_id = request.session.session_key  # toujours disponible
+
+    # ✅ Récupérer ou créer le panier
     panier, created = Panier.objects.get_or_create(
-        produit=produit, session_id=session_id)
+        produit=produit,
+        session_id=session_id
+    )
 
     if not created:
         if panier.quantite < produit.quantite_en_stock:
@@ -234,34 +238,32 @@ def ajouter_au_panier(request, produit_id):
             panier.save()
             messages.success(request, "Le produit a été ajouté au panier.")
         else:
-            messages.error(request, "Stock epuisé.")
+            messages.error(request, "Stock épuisé.")
     else:
         panier.quantite = 1
         panier.save()
         messages.success(request, "Le produit a été ajouté au panier.")
 
-    # Mettre à jour le compteur du panier dans la session
-    request.session['panier_count'] = Panier.objects.filter(
-        session_id=session_id).aggregate(Sum('quantite'))['quantite__sum'] or 0
+    # ✅ Mise à jour du compteur
+    request.session['panier_count'] = (
+        Panier.objects.filter(session_id=session_id)
+        .aggregate(Sum('quantite'))['quantite__sum'] or 0
+    )
 
-    # Vérifier si la requête provient d'AJAX
+    # ✅ Réponse AJAX
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'panier_count': request.session['panier_count']})
 
-    # Si ce n'est pas une requête AJAX, rediriger vers la page du panier
     return redirect('afficher_panier')
 
 
-from django.shortcuts import render
-from django.conf import settings
-from moncashify import API
-from .models import Panier
+
 
 def afficher_panier(request):
     session_id = request.session.session_key
     if not session_id:
         request.session.create()
-        session_id = request.session.session_key
+    session_id = request.session.session_key
 
     panier = Panier.objects.filter(session_id=session_id)
     total = float(sum(item.produit.prix * item.quantite for item in panier))
@@ -303,73 +305,120 @@ def afficher_panier(request):
         'total': total,
         'payment_url': payment_url,
         'error_message': error_message
+        
     })
 
 
 
+def modifier_quantite(request, produit_id, quantite):
+    session_id = request.session.session_key
+    if not session_id:
+        request.session.create()
+    session_id = request.session.session_key
 
-def modifier_quantite_panier(request, produit_id, quantite):
-    produit = get_object_or_404(Produit, id=produit_id)
-    session_id = request.session.session_key or request.session.create()
-    panier = get_object_or_404(Panier, produit=produit, session_id=session_id)
+    panier_item = Panier.objects.get(session_id=session_id, produit_id=produit_id)
 
-    if quantite > 0 and quantite <= produit.quantite_en_stock:
-        panier.quantite = quantite
-        panier.save()
-    elif quantite == 0:
-        panier.delete()
+    if request.method == "POST":
+        # ⚡ on prend la quantité depuis l'URL
+        panier_item.quantite = quantite
+        panier_item.save()
 
-    # 🔹 Mise à jour du compteur du panier
-    request.session['panier_count'] = Panier.objects.filter(
-        session_id=session_id).aggregate(Sum('quantite'))['quantite__sum'] or 0
-    request.session.modified = True
+    # Recalcul total backend
+    panier = Panier.objects.filter(session_id=session_id)
+    total = sum(item.produit.prix * item.quantite for item in panier)
+    request.session["total_panier"] = float(total)
 
-    return redirect('afficher_panier')
+    # Générer une nouvelle payment_url
+    # payment_url = None
+    # if total > 0:
+    #     try:
+    #         moncash_api = API(
+    #             client_id=settings.MONCASH_CLIENT_ID,
+    #             secret_key=settings.MONCASH_SECRET_ID,
+    #             debug=settings.MONCASH_DEBUG
+    #         )
+    #         payment = moncash_api.payment(
+    #             order_id=f"order-{session_id}",
+    #             amount=total
+    #         )
+    #         payment_url = payment.redirect_url
+    #     except Exception:
+    #         pass
+    # print(total)
+    # print(payment_url)
+    payment_url = None
+    if total > 0:
+        try:
+            moncash_api = API(
+                client_id=settings.MONCASH_CLIENT_ID,
+                secret_key=settings.MONCASH_SECRET_ID,
+                debug=settings.MONCASH_DEBUG
+            )
+            total_float = float(total)  # ← convertir en float
+            payment = moncash_api.payment(
+                order_id=f"order-{session_id}",
+                amount=total_float
+            )
+            payment_url = payment.redirect_url
+        except Exception as e:
+            print("Erreur MonCash:", e)
 
+
+
+    return JsonResponse({
+        "item_total": float(panier_item.produit.prix * panier_item.quantite),
+        "total": float(total),
+        "panier_count": panier.count(),
+        "payment_url": payment_url,
+    })
+
+
+
+from django.views.decorators.http import require_POST
 
 def supprimer_du_panier(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
-    session_id = request.session.session_key or request.session.create()
 
-    if request.method == 'POST':
-        panier = get_object_or_404(
-            Panier, produit=produit, session_id=session_id)
-        panier.delete()
+    if not request.session.session_key:
+        request.session.save()
+    session_id = request.session.session_key  
 
-        # 🔹 Mise à jour du compteur du panier
-        request.session['panier_count'] = Panier.objects.filter(
-            session_id=session_id).aggregate(Sum('quantite'))['quantite__sum'] or 0
+    if request.method == "POST":
+        try:
+            panier = Panier.objects.get(produit=produit, session_id=session_id)
+            panier.delete()
+        except Panier.DoesNotExist:
+            messages.error(request, "Ce produit n'est plus dans votre panier.")
+            return redirect("afficher_panier")
+
+        # 🔹 Mise à jour du compteur
+        request.session['panier_count'] = (
+            Panier.objects.filter(session_id=session_id)
+            .aggregate(Sum('quantite'))['quantite__sum'] or 0
+        )
         request.session.modified = True
 
-        return redirect('afficher_panier')
+        messages.success(request, f"{produit.nom} a été supprimé du panier.")
+        return redirect("afficher_panier")
 
-    return render(request, 'panier/confirmation.html', {'produit': produit})
-
-
-def panier_context(request):
-    session_id = request.session.session_key or request.session.create()
-    panier_count = Panier.objects.filter(session_id=session_id).aggregate(
-        Sum('quantite'))['quantite__sum'] or 0
-    return {'panier_count': panier_count}
+    # 🔹 Si GET → afficher confirmation
+    return render(request, "panier/confirmation.html", {"produit": produit})
 
 
-@login_required
-def ajouter_commentaire(request, produit_id):
-    produit = get_object_or_404(Produit, id=produit_id)
 
-    if request.method == 'POST':
-        form = CommentaireForm(request.POST)
+
+
+
+def ajouter_commentaire(request):
+    if request.method == "POST":
+        form = CommentaireForm(request.POST, request.FILES)
         if form.is_valid():
-            commentaire = form.save(commit=False)
-            commentaire.produit = produit
-            commentaire.utilisateur = request.user
-            commentaire.save()
-            return redirect('detail_produit', pk=produit.id)
-
+            form.save()
+            return redirect("index")  # redirige vers la page d’accueil ou une autre
     else:
         form = CommentaireForm()
 
-    return render(request, 'index.html', {'form': form, 'produit': produit})
+    return render(request, "commentaires/ajouter_commentaire.html", {"form": form})
 
 
 # Vue pour supprimer un commentaire, réservée aux superusers
@@ -450,6 +499,15 @@ def search_results(request):
 
 
 
+
+def produits_populaires(request):
+    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:20]  # Limiter à 20 produits populaires
+    return render(request, 'produits/produits_populaires.html', {'populaires': populaires})
+
+
+def produits_nouveaux(request):
+    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:20]  # Limiter à 20 produits nouveaux
+    return render(request, 'produits/produits_nouveaux.html', {'nouveaux': nouveaux})
 
 def promotions(request):
     return render(request, 'promotions.html')

@@ -80,7 +80,6 @@ VETEMENTS_CHOICES = [
     ('echarpe', 'Écharpe'),
     ('gants', 'Gants'),
 ]
-
 class Produit(models.Model):
     nom = models.CharField(
         max_length=100,
@@ -88,8 +87,6 @@ class Produit(models.Model):
         default='jeans'
     )
     description = models.TextField()
-    
-    # Champ catégorie avec un menu déroulant
     categorie = models.CharField(
         max_length=20,
         choices=CATEGORIE_CHOICES,
@@ -97,10 +94,8 @@ class Produit(models.Model):
     )
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     quantite_en_stock = models.IntegerField()
-    image_url = models.URLField(blank=True, null=True)  # Pour Pexels
-    image = models.ImageField(upload_to='produits/', blank=True, null=True)  # Pour l'admin Django
-    # Champ couleur avec un menu déroulant
-    # Ajouter ces champs
+    image_url = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='produits/', blank=True, null=True)
     populaire = models.BooleanField(default=False)
     nouveau = models.BooleanField(default=False)
     couleur = models.CharField(
@@ -108,21 +103,33 @@ class Produit(models.Model):
         choices=COULEUR_CHOICES,
         default='noir'
     )
-
     date_ajout = models.DateTimeField(auto_now_add=True)
+    
+
     def __str__(self):
         return self.nom
 
+    # 🔥 méthode utilitaire
+    def get_image(self):
+        """Retourne la meilleure image disponible pour le produit"""
+        if self.image_url:
+            return self.image_url
+        elif self.image:
+            return self.image.url
+        return '/static/images/logo.jpg'  # chemin vers ton image par défaut
 
 
 class Panier(models.Model):
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
     session_id = models.CharField(max_length=255)  # Gérer le panier par session
+    date_ajout = models.DateTimeField(auto_now_add=True)  # 👈 ajouté
+
+    class Meta:
+        ordering = ['-date_ajout']  # ordre par défaut
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom}"
-
 
 
 class Commentaire(models.Model):

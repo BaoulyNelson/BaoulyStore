@@ -1,74 +1,86 @@
-
-<!-- Back to Top Button -->
-<a href="#" class="back-to-top" id="backToTop">
-  <i class="fas fa-arrow-up"></i>
-</a>
-
 <!-- Header -->
-<header class="header">
+<header>
+  <div class="container header-container">
 
-  <div class="container">
-    <nav class="navbar">
-      <a href="#" class="logo">Baouly<span>Store</span></a>
-      <div class="mobile-toggle" id="mobileToggle">
-        <i class="fas fa-bars"></i>
-      </div>
-      <ul class="nav-links" id="navLinks">
-        <div class="close-menu d-block d-md-none" id="closeMenu">
-          <i class="fas fa-times"></i>
-        </div>
+    <a href="#" class="logo">Ba<span>Nel</span></a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <i class="fas fa-bars"></i>
+    </button>
+    <nav id="mainNav">
+      <ul>
 
         <li><a href="{% url 'index' %}" class="active">Accueil</a></li>
         <li><a href="{% url 'liste_produits' %}" class="active">Tous</a></li>
         <li><a href="{% url 'produits_par_categorie' 'homme' %}">Hommes</a></li>
         <li><a href="{% url 'produits_par_categorie' 'femme' %}">Femmes</a></li>
         <li><a href="{% url 'produits_par_categorie' 'enfant' %}">Enfants</a></li>
-        
-      
+
         <li><a href="{% url 'nouveaux' %}">Nouveautes</a></li>
-    
-
-        <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="{% url 'populaires' %}">Populaires</a></li>
+       
       </ul>
+      </nav>
 
-      <div class="nav-icons">
-        <a href="{% url 'recherche' %}" class="nav-icon">
-          <i class="fas fa-search"></i>
-        </a>
-        <a href="{% url 'afficher_panier' %}" class="nav-icon">
-          <i class="fas fa-shopping-bag"></i>
-          <span id="panier-count">
-              {% if request.session.panier_count %}
-                  <sup>{{ request.session.panier_count }}</sup>
-              {% endif %}
-          </span>
-      </a>
-      
-    
-        {% if user.is_superuser %}
-        <a href="{% url 'admin:index' %}" class="nav-icon">
-          <i class="fas fa-user"></i>
-        </a>
-        {% elif user.is_staff %}
-        <a href="{% url 'add_article' %}" class="nav-icon">
-          <i class="fas fa-plus-circle"></i>
-        </a>
-        {% elif user.is_authenticated %}
-        <a href="{% url 'profile' %}" class="nav-icon">
-          <i class="fas fa-user-circle"></i>
-        </a>
-        {% else %}
-        <a href="{% url 'login' %}" class="nav-icon">
-          <i class="fas fa-user-plus"></i>
-        </a>
-        {% endif %}
+      <div class="header-icons">
+  <a href="{% url 'recherche' %}" class="nav-icon">
+    <i class="fas fa-search"></i>
+  </a>
 
-      </div>
-    </nav>
+  <a href="{% url 'afficher_panier' %}" id="cartBtn" class="nav-icon">
+    <i class="fas fa-shopping-bag"></i>
+    {% if panier_count %}
+      <span class="cart-count">{{ panier_count }}</span>
+    {% endif %}
+  </a>
+
+
+  {% if user.is_authenticated %}
+  <div class="dropdown d-inline">
+    <a href="#" class="nav-icon dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fas fa-user-circle"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+
+      <!-- Option pour tout utilisateur -->
+      <li>
+        <a class="dropdown-item" href="{% url 'profile' %}">
+          <i class="fas fa-id-card"></i> Mon profil
+        </a>
+      </li>
+
+      <!-- Option staff -->
+      {% if user.is_staff %}
+      <li>
+        <a class="dropdown-item" href="{% url 'add_article' %}">
+          <i class="fas fa-plus-circle"></i> Ajouter un article
+        </a>
+      </li>
+      {% endif %}
+
+      <!-- Option superuser -->
+      {% if user.is_superuser %}
+      <li>
+        <a class="dropdown-item" href="{% url 'admin:index' %}">
+          <i class="fas fa-user-shield"></i> Admin
+        </a>
+      </li>
+      {% endif %}
+
+      <!-- Déconnexion -->
+      <li>
+        <a class="dropdown-item text-danger" href="{% url 'confirmer_deconnexion' %}">
+          <i class="fas fa-sign-out-alt"></i> Déconnexion
+        </a>
+      </li>
+    </ul>
+  </div>
+{% else %}
+  <a href="{% url 'login' %}" class="nav-icon">
+    <i class="fas fa-user-plus"></i>
+  </a>
+{% endif %}
+
+</div>
+
   </div>
 </header>
-
-
-
-
-

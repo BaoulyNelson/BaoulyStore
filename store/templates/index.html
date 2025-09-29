@@ -1,30 +1,24 @@
-{% extends 'base.html' %} {% load static %}
- {% block extra_css %}
+{% extends 'base.html' %} 
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/offres.css' %}" />
 
 {% endblock %} 
 {% block content %}
 
 <!-- Hero Section -->
-<section class="hero d-flex align-items-center" style="min-height: 100vh;">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8 text-center">
-        <h3 class="hero-subtitle">Nouvelle Collection</h3>
-        <h1 class="hero-title">Découvrez Votre Style Unique</h1>
-        <p class="hero-description">Explorez notre collection exclusive de vêtements et accessoires tendance pour exprimer votre personnalité avec élégance.</p>
-        <a href="{% url 'liste_produits' %}" class="btn btn-primary">Acheter Maintenant</a>
-      </div>
-    </div>
+<section class="hero d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+  <div class="container text-center">
+    <h3 class="hero-subtitle">Nouvelle Collection</h3>
+    <h1 class="hero-title">Découvrez Votre Style Unique</h1>
+    <p class="hero-description">Explorez notre collection exclusive de vêtements et accessoires tendance pour exprimer votre personnalité avec élégance.</p>
+    <a href="{% url 'liste_produits' %}" class="btn btn-primary">Acheter Maintenant</a>
   </div>
 </section>
 
 
+
 {% include 'partials/categorie.html' %}
-
-
-  
-
-
 
   <!-- ✅ PAGINATION -->
   {% if produits.has_other_pages %}
@@ -69,8 +63,5 @@
 
 
 {% include 'commentaires/commentaires.html' %}
-
-
-
 
 {% endblock %}

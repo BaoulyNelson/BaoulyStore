@@ -3,7 +3,7 @@ from django.urls import path
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from .models import Produit, Commentaire
-from django.utils.safestring import mark_safe
+from django.utils.html import mark_safe
 
 
 class MyAdminSite(admin.AdminSite):
@@ -29,25 +29,37 @@ class MyAdminSite(admin.AdminSite):
         }
         return render(request, 'admin/admin_dashboard_stats.html', context)
 
+
+# ✅ Créer ton site admin personnalisé
 admin_site = MyAdminSite(name='myadmin')
 
+
+# --- Admin Produit ---
 class ProduitAdmin(admin.ModelAdmin):
     list_display = ('nom', 'categorie', 'prix', 'image_display')
 
     def image_display(self, obj):
-        if obj.image_url:  # ✅ Utilise le champ `image_url` pour les images distantes
-            return mark_safe(f'<img src="{obj.image_url}" width="50" height="50" />')
-        elif obj.image:  # ✅ Utilise `image.url` pour les images locales
-            return mark_safe(f'<img src="{obj.image.url}" width="50" height="50" />')
+        if obj.get_image():  # suppose que ton modèle a une méthode get_image()
+            return mark_safe(f'<img src="{obj.get_image()}" width="50" height="50" />')
         return "Pas d'image"
 
     image_display.short_description = "Aperçu"
 
-admin.site.register(Produit, ProduitAdmin)
 
-# 📌 Enregistrer correctement les modèles dans `admin_site` au lieu de `admin`
+# --- Admin Commentaire ---
+class CommentaireAdmin(admin.ModelAdmin):
+    list_display = ("nom", "role", "date", "aperçu_texte")
+    search_fields = ("nom", "texte", "role")
+    list_filter = ("role", "date")
+    ordering = ("-date",)
+
+    def aperçu_texte(self, obj):
+        return obj.texte[:50] + ("..." if len(obj.texte) > 50 else "")
+    aperçu_texte.short_description = "Aperçu du commentaire"
+
+
+# ✅ Enregistrer tout sur admin_site
 admin_site.register(User)
 admin_site.register(Group)
-admin_site.register(Produit, ProduitAdmin)  # ✅ Corrigé ici
-admin_site.register(Commentaire)
- 
+admin_site.register(Produit, ProduitAdmin)
+admin_site.register(Commentaire, CommentaireAdmin)

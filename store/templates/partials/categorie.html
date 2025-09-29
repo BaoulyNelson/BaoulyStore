@@ -1,37 +1,28 @@
 {% load static %}
-<section class="section categories">
+<section class="categories">
     <div class="container">
-      {% if categorie_actuelle %}
-        <h2 class="section-title">Catégorie : {{ categorie_actuelle }}</h2>
-      {% else %}
-        <h2 class="section-title">Tous les Produits</h2>
-      {% endif %}
-  
-      <div class="categories-grid">
-        {% for produit in produits %}
-          <div class="category-card">
-            {% if produit.image %}
-            <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="category-img">
-        {% elif produit.image_url %}
-            <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="category-img">
-        {% else %}
-            <img src="{% static 'images/logo.jpg' %}" alt="Image non disponible" class="category-img">
-        {% endif %}
-        
-  
-            <div class="category-content">
-              <h3 class="category-title">{{ produit.nom }}</h3>
-              <a href="{% url 'detail_produit' produit.id %}" class="category-link">
-                Explorer <i class="fas fa-arrow-right"></i>
-              </a>
-            </div>
-          </div>
-        {% empty %}
-          <p>Aucun produit trouvé dans cette catégorie.</p>
-        {% endfor %}
-      </div>
-  
-      
+        <h2 class="section-title">Nos Catégories</h2>
+        <div class="categories-grid">
+            {% for produit in produits %}
+                <div class="category-card">
+                    {% if produit.image %}
+                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="category-img">
+                    {% elif produit.image_url %}
+                        <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="category-img">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                             alt="Image non disponible"
+                             class="category-img">
+                    {% endif %}
+
+                    <div class="category-overlay">
+                        <h3>{{ produit.nom }}</h3>
+                        <a href="{% url 'detail_produit' produit.id %}" class="btn btn-outline">Explorer</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Aucun produit trouvé dans cette catégorie.</p>
+            {% endfor %}
+        </div>
     </div>
-  </section>
-  
+</section>

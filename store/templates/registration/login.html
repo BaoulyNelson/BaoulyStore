@@ -1,34 +1,784 @@
 {% extends "base.html" %}
-
-{% block title %}Connexion{% endblock %}
 {% load static %}
+
+{% block title %}Connexion - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
+<style>
+  /* Styles pour le conteneur d'authentification */
+  .auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    position: relative;
+  }
 
+  .auth-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("{% static 'images/pattern.svg' %}") repeat;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .auth-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    background: linear-gradient(135deg, #2c3e50, #667eea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .auth-subtitle {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 0;
+  }
+
+  /* Messages d'alerte */
+  .messages {
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .alert {
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border: none;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+
+  .alert-success {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border-left: 4px solid #27ae60;
+  }
+
+  .alert-error, .alert-danger {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border-left: 4px solid #e74c3c;
+  }
+
+  .alert-info {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border-left: 4px solid #3498db;
+  }
+
+  .alert-warning {
+    background: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+  }
+
+  /* Formulaire */
+  .auth-form {
+    position: relative;
+    z-index: 1;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .form-control.error {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
+  }
+
+  .form-control.error:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  }
+
+  /* Messages d'erreur des champs */
+  .field-errors {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .field-errors li {
+    margin-bottom: 0.25rem;
+  }
+
+  /* Checkbox "Se souvenir de moi" */
+  .remember-me {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 10px;
+  }
+
+  .remember-me input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #667eea;
+    cursor: pointer;
+  }
+
+  .remember-me label {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* Bouton de connexion */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-loading {
+    position: relative;
+    color: transparent;
+  }
+
+  .btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: button-loading-spinner 1s ease infinite;
+  }
+
+  @keyframes button-loading-spinner {
+    from { transform: rotate(0turn); }
+    to { transform: rotate(1turn); }
+  }
+
+  /* Liens d'authentification */
+  .auth-links {
+    text-align: center;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-links p {
+    margin: 0.75rem 0;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .auth-links a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .auth-links a:hover {
+    color: #764ba2;
+    text-decoration: none;
+  }
+
+  .auth-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+
+  .auth-links a:hover::after {
+    width: 100%;
+  }
+
+  /* Diviseur "ou" */
+  .divider {
+    position: relative;
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e9ecef;
+  }
+
+  .divider span {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0 1rem;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+  }
+
+  /* Connexion avec les réseaux sociaux */
+  .social-auth {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .social-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: white;
+    color: #555;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+  }
+
+  .social-btn.google {
+    border-color: #db4437;
+    color: #db4437;
+  }
+
+  .social-btn.google:hover {
+    background: #db4437;
+    color: white;
+  }
+
+  .social-btn.facebook {
+    border-color: #4267B2;
+    color: #4267B2;
+  }
+
+  .social-btn.facebook:hover {
+    background: #4267B2;
+    color: white;
+  }
+
+  /* Animation d'entrée */
+  .auth-container {
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .auth-wrapper {
+      padding: 10px;
+    }
+
+    .auth-container {
+      padding: 2rem 1.5rem;
+      border-radius: 15px;
+    }
+
+    .auth-title {
+      font-size: 1.75rem;
+    }
+
+    .social-auth {
+      flex-direction: column;
+    }
+  }
+
+  /* Mode sombre (optionnel) */
+  @media (prefers-color-scheme: dark) {
+    .auth-container {
+      background: rgba(45, 55, 72, 0.95);
+      color: #e2e8f0;
+    }
+
+    .auth-title {
+      background: linear-gradient(135deg, #e2e8f0, #667eea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <h2>Connexion</h2>
-
-
- <form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-
-  <!-- Checkbox "Se souvenir de moi" -->
-  <label>
-    <input type="checkbox" name="remember_me"> Se souvenir de moi
-  </label>
-  
-  <button type="submit" class="btn btn-primary">Connexion</button>
-</form>
-
-    
-    <div class="auth-links">
-        <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
-        <p>Vous n'avez pas encore de compte ? <a href="{% url 'signup' %}">Créer un compte</a></p>
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <!-- En-tête -->
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h2 class="auth-title">Connexion</h2>
+      <p class="auth-subtitle">Accédez à votre compte</p>
     </div>
+
+    <!-- Messages d'alerte -->
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Erreurs non-field -->
+    {% if form.non_field_errors %}
+      <div class="messages">
+        <div class="alert alert-error" role="alert">
+          <i class="fas fa-exclamation-circle"></i>
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Connexion avec réseaux sociaux (optionnel) -->
+    {% comment %}
+    <div class="social-auth">
+      <a href="#" class="social-btn google">
+        <i class="fab fa-google"></i>
+        Google
+      </a>
+      <a href="#" class="social-btn facebook">
+        <i class="fab fa-facebook-f"></i>
+        Facebook
+      </a>
+    </div>
+
+    <div class="divider">
+      <span>ou</span>
+    </div>
+    {% endcomment %}
+
+    <!-- Formulaire de connexion -->
+    <form method="post" class="auth-form" id="loginForm" novalidate>
+      {% csrf_token %}
+      
+      <!-- Champ nom d'utilisateur/email -->
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">
+          <i class="fas fa-user"></i>
+          {% if form.username.label %}
+            {{ form.username.label }}
+          {% else %}
+            Nom d'utilisateur ou Email
+          {% endif %}
+          {% if form.username.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <input 
+          type="text" 
+          name="{{ form.username.name }}" 
+          id="{{ form.username.id_for_label }}" 
+          class="form-control{% if form.username.errors %} error{% endif %}"
+          value="{{ form.username.value|default_if_none:'' }}"
+          placeholder="Saisissez votre nom d'utilisateur ou email"
+          {% if form.username.field.required %}required{% endif %}
+          autocomplete="username"
+        >
+        {% if form.username.errors %}
+          <ul class="field-errors">
+            {% for error in form.username.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <!-- Champ mot de passe -->
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">
+          <i class="fas fa-lock"></i>
+          {{ form.password.label|default:"Mot de passe" }}
+          {% if form.password.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <div class="password-field">
+          <input 
+            type="password" 
+            name="{{ form.password.name }}" 
+            id="{{ form.password.id_for_label }}" 
+            class="form-control{% if form.password.errors %} error{% endif %}"
+            placeholder="Saisissez votre mot de passe"
+            {% if form.password.field.required %}required{% endif %}
+            autocomplete="current-password"
+          >
+          <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        {% if form.password.errors %}
+          <ul class="field-errors">
+            {% for error in form.password.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <!-- Checkbox "Se souvenir de moi" -->
+      <div class="remember-me">
+        <input type="checkbox" name="remember_me" id="remember_me">
+        <label for="remember_me">
+          <i class="fas fa-memory"></i>
+          Se souvenir de moi
+        </label>
+      </div>
+      
+      <!-- Bouton de connexion -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Se connecter</span>
+      </button>
+    </form>
+    
+    <!-- Liens d'authentification -->
+    <div class="auth-links">
+      <p>
+        <a href="{% url 'password_reset' %}">
+          <i class="fas fa-key"></i>
+          Mot de passe oublié ?
+        </a>
+      </p>
+      <p>
+        Vous n'avez pas encore de compte ?
+        <a href="{% url 'signup' %}">
+          <i class="fas fa-user-plus"></i>
+          Créer un compte
+        </a>
+      </p>
+    </div>
+  </div>
 </div>
+
+<!-- JavaScript pour l'interactivité -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const passwordToggle = document.querySelector('.password-toggle');
+    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+
+    // Gestion du toggle du mot de passe
+    if (passwordToggle && passwordField) {
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+            
+            const icon = this.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Gestion de la soumission du formulaire
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Animation du bouton de soumission
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+            
+            // Validation côté client
+            const username = form.querySelector('[name="username"]').value.trim();
+            const password = form.querySelector('[name="password"]').value;
+            
+            if (!username || !password) {
+                e.preventDefault();
+                showFieldError('Veuillez remplir tous les champs requis.');
+                resetSubmitButton();
+                return;
+            }
+        });
+    }
+
+    // Validation en temps réel
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                this.classList.remove('error');
+                const errorList = this.parentNode.querySelector('.field-errors');
+                if (errorList) {
+                    errorList.remove();
+                }
+            }
+        });
+    });
+
+    // Fonctions utilitaires
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        
+        if (field.required && !value) {
+            showFieldError(`Le champ ${getFieldLabel(fieldName)} est requis.`, field);
+            return false;
+        }
+        
+        if (fieldName === 'username' && value) {
+            // Validation basique pour email ou nom d'utilisateur
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isEmail = emailRegex.test(value);
+            const isValidUsername = /^[a-zA-Z0-9_.-]{3,}$/.test(value);
+            
+            if (!isEmail && !isValidUsername) {
+                showFieldError('Format invalide. Utilisez un email ou un nom d\'utilisateur valide.', field);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    function showFieldError(message, field = null) {
+        if (field) {
+            field.classList.add('error');
+            
+            // Supprimer l'ancien message d'erreur
+            const existingError = field.parentNode.querySelector('.field-errors');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Ajouter le nouveau message
+            const errorDiv = document.createElement('ul');
+            errorDiv.className = 'field-errors';
+            errorDiv.innerHTML = `<li><i class="fas fa-exclamation-triangle"></i> ${message}</li>`;
+            field.parentNode.appendChild(errorDiv);
+        } else {
+            // Message d'erreur général
+            const existingAlert = document.querySelector('.messages .alert-error');
+            if (!existingAlert) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'messages';
+                alertDiv.innerHTML = `
+                    <div class="alert alert-error" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        ${message}
+                    </div>
+                `;
+                form.insertBefore(alertDiv, form.firstChild);
+                
+                // Auto-suppression après 5 secondes
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+    }
+
+    function getFieldLabel(fieldName) {
+        const labels = {
+            'username': 'nom d\'utilisateur',
+            'password': 'mot de passe'
+        };
+        return labels[fieldName] || fieldName;
+    }
+
+    function resetSubmitButton() {
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.disabled = false;
+    }
+
+    // Auto-focus sur le premier champ
+    const firstInput = form.querySelector('.form-control');
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+    // Suppression automatique des messages après 5 secondes
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 300);
+        }, 5000);
+    });
+});
+</script>
 {% endblock %}

@@ -1,22 +1,304 @@
 {% extends 'base.html' %}
-
 {% load static %}
+
+{% block title %}Confirmation de déconnexion - {{ user.username }}{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/deconnexion.css' %}" />
+<link rel="stylesheet" href="{% static 'css/confirmation_deconnexion.css' %}">
+
 {% endblock %}
 
 {% block content %}
-
-<div class="confirmation-container text-center">
-    <h3 class="display-6 text-danger mb-4">Confirmer la déconnexion</h3>
-    <p class="lead">Êtes-vous sûr de vouloir vous déconnecter ?</p>
-
-    <form method="post" class="mt-4">
-        {% csrf_token %}
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-danger btn-lg">Se déconnecter</button>
-            <a href="{% url 'profile' %}" class="btn btn-secondary btn-lg">Annuler</a>
+<div class="logout-container">
+    <div class="confirmation-card">
+        <!-- Icône de déconnexion -->
+        <div class="logout-icon">
+            <i class="fas fa-sign-out-alt"></i>
         </div>
-    </form>
+        
+        <!-- Titre principal -->
+        <h3 class="logout-title">Confirmation de déconnexion</h3>
+        
+        <!-- Message principal -->
+        <p class="logout-message">
+            Êtes-vous sûr de vouloir vous déconnecter de votre session ?
+        </p>
+        
+        <!-- Informations utilisateur -->
+        <div class="user-info">
+            <h5>
+                <i class="fas fa-user"></i>
+                {{ user.get_full_name|default:user.username }}
+            </h5>
+            <p>{{ user.email }}</p>
+        </div>
+        
+        <!-- Informations de session -->
+        <div class="session-info">
+            <div class="session-item">
+                <i class="fas fa-clock"></i>
+                <strong>Dernière connexion</strong>
+                <span>
+                    {% if user.last_login %}
+                        {{ user.last_login|date:"d/m/Y à H:i" }}
+                    {% else %}
+                        Première connexion
+                    {% endif %}
+                </span>
+            </div>
+            <div class="session-item">
+                <i class="fas fa-calendar-alt"></i>
+                <strong>Membre depuis</strong>
+                <span>{{ user.date_joined|timesince }}</span>
+            </div>
+        </div>
+        
+        <!-- Avertissement -->
+        <div class="warning-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Attention :</strong> Vous devrez vous reconnecter pour accéder à votre compte.
+        </div>
+        
+        <!-- Formulaire de déconnexion -->
+        <form method="post" class="logout-form" id="logout-form">
+            {% csrf_token %}
+            <div class="button-group">
+                <button type="submit" class="btn-logout" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Oui, me déconnecter
+                </button>
+                <a href="{% url 'profile' %}" class="btn-cancel">
+                    <i class="fas fa-arrow-left"></i>
+                    Non, rester connecté
+                </a>
+            </div>
+        </form>
+        
+        <!-- Informations de sécurité -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;">
+            <small class="text-muted">
+                <i class="fas fa-shield-alt"></i>
+                Pour votre sécurité, fermez votre navigateur après déconnexion sur un ordinateur partagé.
+            </small>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutForm = document.getElementById('logout-form');
+    const logoutBtn = document.getElementById('logout-btn');
+    const cancelBtn = document.querySelector('.btn-cancel');
+    
+    // Compteur de déconnexion automatique (optionnel)
+    let autoLogoutTimer = null;
+    let countdown = 300; // 5 minutes en secondes
+    
+    function startAutoLogoutCountdown() {
+        const countdownDisplay = document.createElement('div');
+        countdownDisplay.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        `;
+        document.body.appendChild(countdownDisplay);
+        
+        function updateCountdown() {
+            const minutes = Math.floor(countdown / 60);
+            const seconds = countdown % 60;
+            countdownDisplay.innerHTML = `
+                <i class="fas fa-clock"></i>
+                Déconnexion automatique dans : ${minutes}:${seconds.toString().padStart(2, '0')}
+            `;
+            
+            if (countdown <= 0) {
+                clearInterval(autoLogoutTimer);
+                logoutForm.submit();
+            } else if (countdown <= 30) {
+                countdownDisplay.style.background = 'rgba(220, 53, 69, 1)';
+                countdownDisplay.classList.add('shake-attention');
+            }
+            
+            countdown--;
+        }
+        
+        updateCountdown();
+        autoLogoutTimer = setInterval(updateCountdown, 1000);
+        
+        // Arrêter le countdown si l'utilisateur interagit
+        document.addEventListener('click', () => {
+            clearInterval(autoLogoutTimer);
+            countdownDisplay.remove();
+        }, { once: true });
+    }
+    
+    // Démarrer le countdown automatique après 30 secondes d'inactivité
+    // setTimeout(startAutoLogoutCountdown, 30000);
+    
+    // Gestion du formulaire de déconnexion
+    logoutForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Animation de chargement
+        logoutBtn.classList.add('loading');
+        logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Déconnexion...';
+        logoutBtn.disabled = true;
+        
+        // Simulation d'un délai pour l'UX (optionnel)
+        setTimeout(() => {
+            // Soumission réelle du formulaire
+            this.submit();
+        }, 1000);
+    });
+    
+    // Double confirmation avec un clic maintenu
+    let confirmationTimer = null;
+    let isConfirming = false;
+    
+    logoutBtn.addEventListener('mousedown', function() {
+        if (!isConfirming) {
+            isConfirming = true;
+            this.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+            this.innerHTML = '<i class="fas fa-check"></i> Maintenir pour confirmer';
+            
+            confirmationTimer = setTimeout(() => {
+                this.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+                this.innerHTML = '<i class="fas fa-sign-out-alt"></i> Déconnexion confirmée !';
+                setTimeout(() => {
+                    logoutForm.dispatchEvent(new Event('submit'));
+                }, 500);
+            }, 2000);
+        }
+    });
+    
+    logoutBtn.addEventListener('mouseup', function() {
+        if (isConfirming && confirmationTimer) {
+            clearTimeout(confirmationTimer);
+            isConfirming = false;
+            this.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+            this.innerHTML = '<i class="fas fa-sign-out-alt"></i> Oui, me déconnecter';
+        }
+    });
+    
+    logoutBtn.addEventListener('mouseleave', function() {
+        if (isConfirming && confirmationTimer) {
+            clearTimeout(confirmationTimer);
+            isConfirming = false;
+            this.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+            this.innerHTML = '<i class="fas fa-sign-out-alt"></i> Oui, me déconnecter';
+        }
+    });
+    
+    // Gestion des raccourcis clavier
+    document.addEventListener('keydown', function(e) {
+        // Entrée pour confirmer
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            logoutForm.dispatchEvent(new Event('submit'));
+        }
+        
+        // Escape pour annuler
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            window.location.href = cancelBtn.href;
+        }
+        
+        // Y pour Yes (Oui)
+        if (e.key.toLowerCase() === 'y') {
+            e.preventDefault();
+            logoutForm.dispatchEvent(new Event('submit'));
+        }
+        
+        // N pour No (Non)
+        if (e.key.toLowerCase() === 'n') {
+            e.preventDefault();
+            window.location.href = cancelBtn.href;
+        }
+    });
+    
+    // Analytics ou tracking (optionnel)
+    function trackLogoutAttempt() {
+        // Ici vous pourriez envoyer des analytics
+        console.log('Logout confirmation page viewed', {
+            user: '{{ user.username }}',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+        });
+    }
+    
+    trackLogoutAttempt();
+    
+    // Effet de particules en arrière-plan (optionnel)
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 4s linear infinite;
+        `;
+        
+        particle.style.left = Math.random() * window.innerWidth + 'px';
+        particle.style.top = window.innerHeight + 'px';
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                to {
+                    transform: translateY(-${window.innerHeight + 100}px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.querySelector('.logout-container').appendChild(particle);
+        
+        setTimeout(() => {
+            particle.remove();
+            style.remove();
+        }, 4000);
+    }
+    
+    // Créer des particules périodiquement
+    setInterval(createParticle, 800);
+    
+    // Focus management pour l'accessibilité
+    logoutBtn.focus();
+    
+    // Trap focus dans la modal
+    const focusableElements = document.querySelectorAll('button, a, [tabindex]:not([tabindex="-1"])');
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            if (e.shiftKey) {
+                if (document.activeElement === firstFocusable) {
+                    e.preventDefault();
+                    lastFocusable.focus();
+                }
+            } else {
+                if (document.activeElement === lastFocusable) {
+                    e.preventDefault();
+                    firstFocusable.focus();
+                }
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

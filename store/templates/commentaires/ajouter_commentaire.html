@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter un commentaire{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comment-form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 1rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #545b62;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .alert {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    
+    .photo-preview {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 0.5rem;
+        border-radius: 5px;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="comment-form-container">
+        <h2 class="text-center mb-4">Ajouter un commentaire</h2>
+        
+        <!-- Messages de succès/erreur -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" id="commentForm">
+            {% csrf_token %}
+            
+            <!-- Nom -->
+            <div class="form-group">
+                <label for="{{ form.nom.id_for_label }}" class="form-label">
+                    Nom <span class="text-danger">*</span>
+                </label>
+                {{ form.nom }}
+                {% if form.nom.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.nom.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Rôle -->
+            <div class="form-group">
+                <label for="{{ form.role.id_for_label }}" class="form-label">
+                    Rôle <span class="text-danger">*</span>
+                </label>
+                {{ form.role }}
+                <div class="form-text">
+                    Exemple : Client, Étudiant, Collègue, etc.
+                </div>
+                {% if form.role.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.role.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Photo -->
+            <div class="form-group">
+                <label for="{{ form.photo.id_for_label }}" class="form-label">
+                    Photo (optionnelle)
+                </label>
+                {{ form.photo }}
+                <div class="form-text">
+                    Formats acceptés : JPG, PNG, GIF. Taille maximale : 5MB
+                </div>
+                <img id="photoPreview" class="photo-preview" alt="Aperçu de la photo">
+                {% if form.photo.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.photo.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Texte du commentaire -->
+            <div class="form-group">
+                <label for="{{ form.texte.id_for_label }}" class="form-label">
+                    Commentaire <span class="text-danger">*</span>
+                </label>
+                {{ form.texte }}
+                <div class="form-text">
+                    Partagez votre expérience, vos impressions...
+                </div>
+                {% if form.texte.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.texte.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Erreurs générales du formulaire -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Boutons -->
+            <div class="text-center">
+                <a href="{% url 'index' %}" class="btn-secondary">Annuler</a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane me-1"></i>
+                    Publier le commentaire
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aperçu de la photo
+    const photoInput = document.getElementById('{{ form.photo.id_for_label }}');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Vérification du type de fichier
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Veuillez sélectionner un fichier image valide (JPG, PNG, GIF)');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+                
+                // Vérification de la taille (5MB max)
+                const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+                if (file.size > maxSize) {
+                    alert('La taille du fichier ne doit pas dépasser 5MB');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+                
+                // Affichage de l'aperçu
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                photoPreview.style.display = 'none';
+            }
+        });
+    }
+    
+    // Validation côté client
+    const form = document.getElementById('commentForm');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const requiredFields = ['{{ form.nom.id_for_label }}', '{{ form.role.id_for_label }}', '{{ form.texte.id_for_label }}'];
+        
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field && !field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires');
+        }
+    });
+    
+    // Compteur de caractères pour le texte
+    const textareaTexte = document.getElementById('{{ form.texte.id_for_label }}');
+    if (textareaTexte) {
+        const maxLength = 500; // Ajustez selon vos besoins
+        
+        // Créer l'élément compteur
+        const counter = document.createElement('div');
+        counter.className = 'form-text text-end mt-1';
+        counter.id = 'texte-counter';
+        textareaTexte.parentNode.appendChild(counter);
+        
+        // Fonction pour mettre à jour le compteur
+        function updateCounter() {
+            const currentLength = textareaTexte.value.length;
+            counter.textContent = `${currentLength}/${maxLength} caractères`;
+            
+            if (currentLength > maxLength * 0.9) {
+                counter.classList.add('text-warning');
+            } else {
+                counter.classList.remove('text-warning');
+            }
+            
+            if (currentLength > maxLength) {
+                counter.classList.add('text-danger');
+                counter.classList.remove('text-warning');
+            } else {
+                counter.classList.remove('text-danger');
+            }
+        }
+        
+        // Événements
+        textareaTexte.addEventListener('input', updateCounter);
+        textareaTexte.addEventListener('paste', () => setTimeout(updateCounter, 0));
+        
+        // Initialisation
+        updateCounter();
+    }
+});
+</script>
+{% endblock %}

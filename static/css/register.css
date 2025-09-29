@@ -1,4 +1,4 @@
-  /* Styles pour le conteneur d'authentification */
+ /* Styles pour le conteneur d'authentification */
   .auth-wrapper {
     min-height: 100vh;
     display: flex;
@@ -27,7 +27,7 @@
     border-radius: 20px;
     padding: 3rem;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     position: relative;
@@ -158,6 +158,11 @@
     font-size: 0.9rem;
   }
 
+  .required {
+    color: #e74c3c;
+    margin-left: 3px;
+  }
+
   .form-control {
     width: 100%;
     padding: 15px 20px;
@@ -186,6 +191,33 @@
     box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
   }
 
+  .form-control.success {
+    border-color: #27ae60;
+    background: rgba(39, 174, 96, 0.05);
+  }
+
+  .password-field {
+    position: relative;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: color 0.3s ease;
+  }
+
+  .password-toggle:hover {
+    color: #667eea;
+  }
+
   /* Messages d'erreur des champs */
   .field-errors {
     color: #e74c3c;
@@ -197,32 +229,164 @@
 
   .field-errors li {
     margin-bottom: 0.25rem;
-  }
-
-  /* Checkbox "Se souvenir de moi" */
-  .remember-me {
     display: flex;
     align-items: center;
-    margin-bottom: 2rem;
-    gap: 10px;
+    gap: 5px;
   }
 
-  .remember-me input[type="checkbox"] {
+  /* Aide pour les champs */
+  .field-help {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+
+  /* Indicateur de force du mot de passe */
+  .password-strength {
+    margin-top: 0.5rem;
+  }
+
+  .strength-bar {
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+
+  .strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .strength-weak .strength-fill {
+    width: 33%;
+    background: #e74c3c;
+  }
+
+  .strength-medium .strength-fill {
+    width: 66%;
+    background: #f39c12;
+  }
+
+  .strength-strong .strength-fill {
+    width: 100%;
+    background: #27ae60;
+  }
+
+  .strength-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .strength-weak .strength-text {
+    color: #e74c3c;
+  }
+
+  .strength-medium .strength-text {
+    color: #f39c12;
+  }
+
+  .strength-strong .strength-text {
+    color: #27ae60;
+  }
+
+  /* Conditions du mot de passe */
+  .password-requirements {
+    background: rgba(52, 152, 219, 0.05);
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .password-requirements h6 {
+    margin: 0 0 0.5rem;
+    color: #3498db;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .requirements-list li {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .requirements-list li.valid {
+    color: #27ae60;
+  }
+
+  .requirements-list li .icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+  }
+
+  .requirements-list li.valid .icon {
+    background: #27ae60;
+    border-color: #27ae60;
+    color: white;
+  }
+
+  /* Checkbox conditions d'utilisation */
+  .terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+  }
+
+  .terms-checkbox input[type="checkbox"] {
     width: 18px;
     height: 18px;
     accent-color: #667eea;
     cursor: pointer;
+    margin-top: 2px;
+    flex-shrink: 0;
   }
 
-  .remember-me label {
+  .terms-checkbox label {
     margin: 0;
     font-size: 0.9rem;
     color: #555;
     cursor: pointer;
     user-select: none;
+    line-height: 1.4;
   }
 
-  /* Bouton de connexion */
+  .terms-checkbox a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .terms-checkbox a:hover {
+    text-decoration: underline;
+  }
+
+  /* Bouton de création de compte */
   .btn-primary {
     width: 100%;
     padding: 15px;
@@ -422,6 +586,7 @@
     .auth-container {
       padding: 2rem 1.5rem;
       border-radius: 15px;
+      max-width: 100%;
     }
 
     .auth-title {
@@ -430,6 +595,11 @@
 
     .social-auth {
       flex-direction: column;
+    }
+
+    .terms-checkbox {
+      flex-direction: column;
+      gap: 8px;
     }
   }
 
