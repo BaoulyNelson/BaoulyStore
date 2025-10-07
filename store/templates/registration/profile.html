@@ -248,14 +248,12 @@
                         {% if user.is_staff %}
                             <span class="badge bg-warning text-dark">Administrateur</span>
                         {% endif %}
-                        {% if user.last_login %}
-                            {% now "c" as current_time %}
-                            {% if user.last_login|timesince:"now" < "1 day" %}
-                                <span class="activity-badge">En ligne</span>
-                            {% else %}
-                                <span class="activity-badge offline">Hors ligne</span>
-                            {% endif %}
+                        {% if user.is_authenticated %}
+                            <span class="activity-badge">En ligne</span>
+                        {% else %}
+                            <span class="activity-badge offline">Hors ligne</span>
                         {% endif %}
+
                     </div>
                     
                     <div class="p-4">

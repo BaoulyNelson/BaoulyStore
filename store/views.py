@@ -37,7 +37,7 @@ from django.views.decorators.http import require_POST
 def index(request):
     commentaires = Commentaire.objects.all().order_by('-date')
     produits_list = Produit.objects.all().order_by('-id')
-    paginator = Paginator(produits_list, 12)
+    paginator = Paginator(produits_list, 102)
     page_number = request.GET.get('page')
     produits = paginator.get_page(page_number)
 
@@ -169,7 +169,7 @@ def produits_par_categorie(request, categorie):
         categorie=categorie).order_by('-id')  # Trier par le plus récent
 
     # 📌 PAGINATION : 9 produits par page
-    paginator = Paginator(produits_list, 12)
+    paginator = Paginator(produits_list, 100)
     page_number = request.GET.get('page')
     produits = paginator.get_page(page_number)
 
@@ -189,7 +189,7 @@ def liste_produits(request):
     else:
         produits_list = Produit.objects.all().order_by('-id')  # Tous les produits
 
-    paginator = Paginator(produits_list, 20)  # 9 produits par page
+    paginator = Paginator(produits_list, 100)  # 9 produits par page
     page_number = request.GET.get('page')
     produits = paginator.get_page(page_number)
 
@@ -328,24 +328,7 @@ def modifier_quantite(request, produit_id, quantite):
     total = sum(item.produit.prix * item.quantite for item in panier)
     request.session["total_panier"] = float(total)
 
-    # Générer une nouvelle payment_url
-    # payment_url = None
-    # if total > 0:
-    #     try:
-    #         moncash_api = API(
-    #             client_id=settings.MONCASH_CLIENT_ID,
-    #             secret_key=settings.MONCASH_SECRET_ID,
-    #             debug=settings.MONCASH_DEBUG
-    #         )
-    #         payment = moncash_api.payment(
-    #             order_id=f"order-{session_id}",
-    #             amount=total
-    #         )
-    #         payment_url = payment.redirect_url
-    #     except Exception:
-    #         pass
-    # print(total)
-    # print(payment_url)
+
     payment_url = None
     if total > 0:
         try:
@@ -374,7 +357,6 @@ def modifier_quantite(request, produit_id, quantite):
 
 
 
-from django.views.decorators.http import require_POST
 
 def supprimer_du_panier(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
@@ -409,27 +391,29 @@ def supprimer_du_panier(request, produit_id):
 
 
 
+
 def ajouter_commentaire(request):
     if request.method == "POST":
         form = CommentaireForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect("index")  # redirige vers la page d’accueil ou une autre
+            messages.success(request, "✅ Votre commentaire a été ajouté avec succès !")
+            return redirect("index")
+        else:
+            messages.error(request, "❌ Une erreur est survenue. Veuillez vérifier le formulaire.")
     else:
         form = CommentaireForm()
 
     return render(request, "commentaires/ajouter_commentaire.html", {"form": form})
 
 
-# Vue pour supprimer un commentaire, réservée aux superusers
-@user_passes_test(lambda u: u.is_superuser)
-def supprimer_commentaire(request, commentaire_id):
-    commentaire = get_object_or_404(Commentaire, id=commentaire_id)
-    # Récupère l'ID du produit avant la suppression
-    produit_id = commentaire.produit.pk
-    commentaire.delete()
-    return redirect('index')  # Redirige correctement avec 'pk'
 
+
+from django.conf import settings
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from .forms import ContactForm
 
 def contact_view(request):
     if request.method == "POST":
@@ -437,25 +421,28 @@ def contact_view(request):
         if form.is_valid():
             name = form.cleaned_data["name"]
             email = form.cleaned_data["email"]
-            message = form.cleaned_data["message"]
+            message_content = form.cleaned_data["message"]
 
-            # 📩 Envoyer un email (assure-toi que les paramètres SMTP sont bien configurés)
+            # Préparer le message
+            message = f"De : {name} <{email}>\n\n{message_content}"
+
+            # Envoyer l'email
             send_mail(
                 subject=f"Nouveau message de {name}",
                 message=message,
-                from_email=email,
-                recipient_list=["elconquistadorbaoulyn@example.com"],  #
+                from_email=settings.EMAIL_HOST_USER,  # ton Gmail
+                recipient_list=[settings.ADMIN_EMAIL],  # ton Gmail aussi
                 fail_silently=False,
             )
 
-            messages.success(request, "Votre message a bien été envoyé !")
-            # Redirige vers la page de succès
+            messages.success(request, "✅ Votre message a bien été envoyé !")
             return redirect("contact_success")
 
     else:
         form = ContactForm()
 
     return render(request, "contact/contact.html", {"form": form})
+
 
 
 def contact_success_view(request):
@@ -501,12 +488,12 @@ def search_results(request):
 
 
 def produits_populaires(request):
-    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:20]  # Limiter à 20 produits populaires
+    populaires = Produit.objects.filter(populaire=True).order_by('-id')[:100]  # Limiter à 20 produits populaires
     return render(request, 'produits/produits_populaires.html', {'populaires': populaires})
 
 
 def produits_nouveaux(request):
-    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:20]  # Limiter à 20 produits nouveaux
+    nouveaux = Produit.objects.filter(nouveau=True).order_by('-id')[:100]  # Limiter à 20 produits nouveaux
     return render(request, 'produits/produits_nouveaux.html', {'nouveaux': nouveaux})
 
 def promotions(request):

@@ -1,23 +1,12 @@
-<!-- Newsletter -->
-    <section class="newsletter">
-        <div class="container">
-            <h2><a href="{% url 'contact' %}">Contact</a></h2>
-            
-            <p>Inscrivez-vous à notre newsletter pour recevoir les dernières tendances, offres exclusives et réductions
-                spéciales directement dans votre boîte mail.</p>
-            <form class="newsletter-form">
-                <input type="email" placeholder="Votre adresse e-mail" required>
-                <button type="submit">S'inscrire</button>
-            </form>
-        </div>
-    </section>
+
 
     <!-- Footer -->
     <footer>
+
         <div class="container">
             <div class="footer-container">
                 <div class="footer-column">
-                    <h3>Élégance</h3>
+                    <h3>BaNel</h3>
                     <p>Votre destination pour des vêtements et bijoux élégants et de haute qualité. Nous nous engageons
                         à vous offrir le meilleur service et les meilleures pièces pour exprimer votre style unique.</p>
               <div class="social-icons">
@@ -62,11 +51,13 @@
                         <li><i class="fas fa-map-marker-alt"></i> 123 Rue Albin, Port-au-Prince</li>
                         <li><i class="fas fa-phone"></i> +509 44 52 18 22</li>
                         <li><i class="fas fa-envelope"></i> elconquistadorbaoulyn.com</li>
+                        <li><a href="{% url 'contact' %}">Cliquez ici</a></li>
+
                     </ul>
                 </div>
             </div>
            <div class="footer-bottom">
-                <p>&copy; {% now "Y" %} Élégance. Tous droits réservés.</p>
+                <p>&copy; {% now "Y" %} BaNel. Tous droits réservés.</p>
             </div>
 
         </div>

@@ -95,8 +95,7 @@ urlpatterns = [
     path("ajouter-commentaire/", views.ajouter_commentaire, name="ajouter_commentaire"),
 
     # Supprimer un commentaire d'un produit
-    path('supprimer_commentaire/<int:commentaire_id>/', views.supprimer_commentaire, name='supprimer_commentaire'),
-    
+  
     path('promotions/', views.promotions, name='promotions'),
     path('blog/', views.blog, name='blog'),
     path('faq/', views.faq, name='faq'),

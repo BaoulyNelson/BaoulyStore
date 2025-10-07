@@ -257,41 +257,50 @@
                 </div>
             {% endfor %}
         </div>
+            {% if produits.has_other_pages %}
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
 
-        <!-- Pagination -->
-        {% if is_paginated %}
-        <div class="pagination-container">
-            <nav aria-label="Navigation des produits">
-                <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page=1{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
-                            <i class="fas fa-angle-double-left"></i>
+                    {% if produits.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ produits.previous_page_number }}{% if categorie_actuelle %}&categorie={{ categorie_actuelle }}{% endif %}" aria-label="Précédent">
+                            <span aria-hidden="true">&laquo;</span>
                         </a>
-                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
-                            <i class="fas fa-angle-left"></i>
-                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;</span>
+                    </li>
                     {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <span class="page-link active">{{ num }}</span>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <a href="?page={{ num }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">{{ num }}</a>
+
+                    {% for num in produits.paginator.page_range %}
+                        {% if produits.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > produits.number|add:'-3' and num < produits.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if categorie_actuelle %}&categorie={{ categorie_actuelle }}{% endif %}">{{ num }}</a>
+                            </li>
                         {% endif %}
                     {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
-                            <i class="fas fa-angle-right"></i>
+
+                    {% if produits.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ produits.next_page_number }}{% if categorie_actuelle %}&categorie={{ categorie_actuelle }}{% endif %}" aria-label="Suivant">
+                            <span aria-hidden="true">&raquo;</span>
                         </a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.items %}&{{ request.GET.urlencode }}{% endif %}" class="page-link">
-                            <i class="fas fa-angle-double-right"></i>
-                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;</span>
+                    </li>
                     {% endif %}
-                </div>
+
+                </ul>
             </nav>
-        </div>
-        {% endif %}
+            {% endif %}
+
 
     {% else %}
         <!-- État vide -->
@@ -442,10 +451,10 @@
 </div>
 
 
+
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 // Variables globales
@@ -813,7 +822,7 @@ window.addEventListener('resize', function() {
 function formatPrice(price) {
     return new Intl.NumberFormat('fr-FR', {
         style: 'currency',
-        currency: 'EUR'
+        currency: 'HTG'
     }).format(price);
 }
 
