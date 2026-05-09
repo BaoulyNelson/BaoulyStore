@@ -1,0 +1,90 @@
+<!-- Header -->
+<header>
+  <div class="container header-container">
+    <a href="{% url 'catalogue:index' %}" class="logo">Ba<span>Nel</span></a>
+    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+    <nav id="mainNav">
+      <ul>
+        <li><a href="{% url 'catalogue:index' %}">Accueil</a></li>
+        <li><a href="{% url 'catalogue:liste' %}">Tous</a></li>
+        <li><a href="{% url 'catalogue:categorie' 'homme' %}">Hommes</a></li>
+        <li><a href="{% url 'catalogue:categorie' 'femme' %}">Femmes</a></li>
+        <li><a href="{% url 'catalogue:categorie' 'enfant' %}">Enfants</a></li>
+        <li><a href="{% url 'catalogue:nouveaux' %}">Nouveautés</a></li>
+        <li><a href="{% url 'catalogue:populaires' %}">Populaires</a></li>
+      </ul>
+    </nav>
+    <div class="header-icons">
+      <a href="{% url 'catalogue:recherche' %}" class="nav-icon" title="Rechercher">
+        <i class="fas fa-search"></i>
+      </a>
+      <a href="{% url 'cart:view' %}" id="cartBtn" class="nav-icon" title="Mon panier">
+        <i class="fas fa-shopping-bag"></i>
+        {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+      </a>
+      {% if user.is_authenticated %}
+      <div class="dropdown d-inline">
+        <div class="user-pill" data-bs-toggle="dropdown" role="button">
+          <div class="user-avatar-initials">{{ user.username|first|upper }}</div>
+          <span class="user-name d-none d-sm-block">{{ user.get_full_name|default:user.email|truncatechars:20 }}</span>
+          <i class="fas fa-chevron-down" style="font-size:10px; opacity:.5;"></i>
+        </div>
+
+  <ul class="dropdown-menu dropdown-menu-end" style="min-width:210px;">
+    <!-- Infos utilisateur -->
+    <li class="px-3 py-2" style="border-bottom:1px solid #f0f0f0;">
+      <div style="font-size:12px; font-weight:600; color:#1a1a1a;">
+        {{ user.get_full_name|default:"Mon compte" }}
+      </div>
+      <div style="font-size:11px; color:#888;">{{ user.email }}</div>
+    </li>
+
+    <li style="height:6px;"></li>
+
+    <li>
+      <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+        <i class="fas fa-id-card me-2" style="width:16px; opacity:.55;"></i>Mon profil
+      </a>
+    </li>
+<li>
+  <a class="dropdown-item" href="{% url 'cart:view' %}">
+    <i class="fas fa-shopping-bag me-2" style="width:16px; opacity:.55;"></i>Mon panier
+    {% if cart_count %}
+      <span class="badge bg-dark ms-1">{{ cart_count }}</span>
+    {% endif %}
+  </a>
+</li>
+    {% if user.is_staff %}
+    <li>
+      <a class="dropdown-item" href="{% url 'catalogue:add_article' %}">
+        <i class="fas fa-plus-circle me-2" style="width:16px; opacity:.55;"></i>Ajouter un article
+      </a>
+    </li>
+    {% endif %}
+
+    {% if user.is_superuser %}
+    <li>
+      <a class="dropdown-item" href="{% url 'admin:index' %}">
+        <i class="fas fa-user-shield me-2" style="width:16px; opacity:.55;"></i>Administration
+      </a>
+    </li>
+    {% endif %}
+
+    <li><hr class="dropdown-divider"></li>
+
+    <li>
+      <a class="dropdown-item text-danger" href="{% url 'accounts:confirmer_deconnexion' %}">
+        <i class="fas fa-sign-out-alt me-2" style="width:16px;"></i>Déconnexion
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% else %}
+<a href="{% url 'accounts:login' %}" class="nav-icon" title="Se connecter">
+  <i class="fas fa-user-plus"></i>
+</a>
+{% endif %}
+    </div>
+  </div>
+</header>

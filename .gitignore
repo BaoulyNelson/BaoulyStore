@@ -1,20 +1,41 @@
-.env
-# Ignorer les environnements virtuels
-venv/
-.env/
-
-# Ignorer les fichiers Python compilés
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
 
-# Ignorer les fichiers de logs
+# Django
 *.log
-
-# Ignorer la base de données SQLite
+local_settings.py
 db.sqlite3
-
-# Ignorer les fichiers médias (optionnel)
+db.sqlite3-journal
 media/
+staticfiles/
 
-# Ignorer les fichiers secrets
+# Environment
 .env
+.env.*
+!.env.example
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Coverage / testing
+.coverage
+htmlcov/
+.pytest_cache/

@@ -1,0 +1,128 @@
+{% load static %}
+<!-- Cart Modal -->
+<div class="modal" id="cartModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Votre Panier</h3>
+                    {% if cart_count %}
+                        <span>({{ cart_count }})</span>
+                    {% endif %}
+            <button class="modal-close" id="closeCartModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="cart-items">
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <!-- ⚠️ Ajout de data-produit-id -->
+                        <div class="cart-item" data-produit-id="{{ item.produit.id }}">
+                            <!-- Image -->
+                            <div class="cart-item-img">
+                                <img src="{{ item.produit.get_image }}" alt="{{ item.produit.nom }}">
+                            </div>
+
+                            <!-- Détails -->
+                            <div class="cart-item-details">
+                                <div class="cart-item-title">{{ item.produit.nom }}</div>
+                                <div class="cart-item-price">{{ item.produit.prix }} HTG</div>
+
+                                <!-- Sous-total pour cet article -->
+                                <div>
+                                    Sous-total : 
+                                    <span class="item-total">{{ item.subtotal|floatformat:2 }}</span> HTG
+                                </div>
+
+                                <!-- Quantité +/– -->
+                                <div class="cart-item-quantity">
+                                    <!-- Bouton - -->
+                                    <button type="button" class="quantity-btn decrease">-</button>
+
+                                    <!-- Input avec data-produit-id -->
+                                    <input type="number"
+                                           class="quantity-input"
+                                           value="{{ item.quantite }}"
+                                           min="1"
+                                           max="{{ item.produit.quantite_en_stock }}"
+                                           readonly
+                                           data-produit-id="{{ item.produit.id }}">
+
+                                    <!-- Bouton + -->
+                                    {% if item.quantite < item.produit.quantite_en_stock %}
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    {% else %}
+                                        <span class="text-muted">+</span>
+                                    {% endif %}
+
+
+
+                                  <a href="{% url 'cart:remove' item.produit.id %}" class="cart-item-remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center alert alert-info">Votre panier est vide.</p>
+                {% endif %}
+            </div>
+
+            <!-- Résumé du panier -->
+            {% if cart_items %}
+              <div class="cart-summary">
+              <div class="cart-summary-row">
+                <span>Sous-total</span>
+                {# ✅ 'cart_total' vient du context processor, disponible partout #}
+                <span id="subtotal-panier">{{ cart_total|floatformat:2 }} HTG</span>
+
+              </div>
+              <div class="cart-summary-row">
+                <span>Livraison</span>
+                <span id="livraison">Gratuite</span>
+              </div>
+              <div class="cart-summary-row total">
+                <span>Total</span>
+                <span id="total-panier">{{ cart_total|floatformat:2 }} HTG</span>
+
+              </div>
+            </div>
+
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <!-- Footer -->
+        <div class="modal-footer">
+            <!-- Message d'erreur si présent -->
+            {% if error_message %}
+                <div class="alert alert-danger w-100 mb-3">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <!-- Continuer les achats -->
+            <button class="btn btn-outline-primary" id="continueShopping">
+            Continuer les achats
+            </button>
+            <!-- Payer avec MonCash -->
+            {% if payment_url %}
+                <a id="btn-payer" href="{{ payment_url }}" class="btn btn-warning">
+                    <img src="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/resources/assets/images/MC_button_kr.png" 
+                        alt="MonCash" style="height: 20px; vertical-align: middle;"> 
+                    Payer avec MonCash
+                </a>
+            {% else %}
+                <button class="btn btn-secondary" disabled title="{{ error_message|default:'Panier vide ou MonCash non disponible' }}">
+                    MonCash non disponible
+                </button>
+            {% endif %}
+            
+            <!-- Debug info (à retirer en prod) -->
+            {% if moncash_debug %}
+                <small class="text-muted">Mode: {% if moncash_debug %}Sandbox{% else %}Production{% endif %}</small>
+            {% endif %}
+        </div>
+    </div>
+</div>

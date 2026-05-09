@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Message envoyé — Baouly's Store{% endblock %}
+{% block content %}
+<div class="container my-5 text-center">
+  <div class="card shadow-sm p-5 mx-auto" style="max-width:480px">
+    <i class="fas fa-envelope-open-text fa-4x text-success mb-3"></i>
+    <h3>Merci pour votre message !</h3>
+    <p class="text-muted">Nous vous répondrons dans les plus brefs délais.</p>
+    <a href="{% url 'catalogue:index' %}" class="btn btn-dark mt-2">Retour à l'accueil</a>
+  </div>
+</div>
+{% endblock %}

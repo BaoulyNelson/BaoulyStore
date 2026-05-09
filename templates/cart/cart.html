@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon Panier — {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart_page.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="cart-page-wrapper">
+  <div class="container py-5">
+
+    <!-- En-tête -->
+<div class="d-flex justify-content-center align-items-baseline gap-2 border-bottom pb-3 mb-4">
+    <h1 class="cart-page-title mb-0">
+        <i class="fas fa-shopping-bag me-2"></i>
+        Votre Panier
+    </h1>
+
+    {% if cart_count %}
+        <span class="text-muted fs-6 fw-normal">
+            ({{ cart_count }} article{{ cart_count|pluralize }})
+        </span>
+    {% endif %}
+</div>
+
+    {% if cart_items %}
+    <div class="row g-4">
+
+      <!-- ── Colonne gauche : articles ── -->
+      <div class="col-lg-8">
+
+        <div class="card border rounded-3 shadow-sm overflow-hidden">
+          {% for item in cart_items %}
+          <div class="d-flex align-items-center gap-3 p-3
+                      {% if not forloop.last %}border-bottom{% endif %}
+                      cart-item-row"
+               data-produit-id="{{ item.produit.id }}">
+
+            <!-- Image -->
+            <div class="cart-item-img rounded-3 overflow-hidden flex-shrink-0">
+              <img src="{{ item.produit.get_image }}"
+                   alt="{{ item.produit.get_nom_display }}"
+                   class="w-100 h-100 object-fit-cover"
+                   onerror="this.src='{% static 'images/placeholder.png' %}'">
+            </div>
+
+            <!-- Infos -->
+            <div class="flex-grow-1">
+              <h5 class="cart-item-name mb-1">{{ item.produit.get_nom_display }}</h5>
+              <p class="cart-item-price text-muted small mb-2">{{ item.produit.prix|floatformat:2 }} HTG</p>
+              <!-- Quantité -->
+              <div class="input-group input-group-sm cart-qty-group">
+                <button type="button"
+                        class="btn btn-outline-secondary qty-btn decrease px-2"
+                        data-produit-id="{{ item.produit.id }}">−</button>
+                <input type="number"
+                       class="form-control text-center qty-input"
+                       value="{{ item.quantite }}"
+                       min="1" max="{{ item.produit.quantite_en_stock }}"
+                       readonly
+                       data-produit-id="{{ item.produit.id }}">
+                {% if item.quantite < item.produit.quantite_en_stock %}
+                  <button type="button"
+                          class="btn btn-outline-secondary qty-btn increase px-2"
+                          data-produit-id="{{ item.produit.id }}">+</button>
+                {% else %}
+                  <span class="input-group-text text-warning small fw-semibold">max</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Sous-total + Supprimer -->
+            <div class="d-flex flex-column align-items-end gap-2 ms-auto">
+              <span class="cart-item-subtotal fw-semibold"
+                    id="subtotal-{{ item.produit.id }}">
+                {{ item.subtotal|floatformat:2 }} HTG
+              </span>
+              <form method="post"
+                    action="{% url 'cart:remove' item.produit.id %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger border-0 btn-remove"
+                        title="Retirer du panier">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Continuer les achats -->
+        <div class="mt-3">
+          <a href="{% url 'catalogue:index' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-2"></i>Continuer les achats
+          </a>
+        </div>
+      </div>
+
+      <!-- ── Colonne droite : récapitulatif ── -->
+      <div class="col-lg-4">
+        <div class="card border rounded-3 shadow-sm p-4 cart-summary-card">
+          <h4 class="cart-page-title fs-5 mb-4">Récapitulatif</h4>
+
+          <div class="d-flex justify-content-between text-muted small mb-2">
+            <span>Sous-total</span>
+          
+            <!-- Sous-total -->
+          <span id="cart-page-subtotal">{{ cart_total|floatformat:2 }} HTG</span>
+
+          </div>
+          <div class="d-flex justify-content-between text-muted small mb-2">
+            <span>Livraison</span>
+            <span class="text-success fw-semibold">Gratuite</span>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="d-flex justify-content-between fw-semibold mb-0">
+            <span>Total</span>
+            <!-- Total -->
+           <span id="cart-page-total">{{ cart_total|floatformat:2 }} HTG</span>
+
+          </div>
+
+          {% if error_message %}
+            <div class="alert alert-danger small mt-3 py-2">{{ error_message }}</div>
+          {% endif %}
+
+          <div class="mt-4 d-grid">
+            {% if payment_url %}
+              <a id="btn-payer" href="{{ payment_url }}" class="btn btn-moncash">
+                <img src="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/resources/assets/images/MC_button_kr.png"
+                     alt="MonCash" style="height:20px;vertical-align:middle;">
+                Payer avec MonCash
+              </a>
+            {% else %}
+              <button class="btn btn-secondary" disabled>
+                Paiement indisponible
+              </button>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    {% else %}
+    <!-- Panier vide -->
+    <div class="text-center py-5">
+      <i class="fas fa-shopping-bag fa-4x text-muted mb-4 d-block"></i>
+      <h3 class="cart-page-title fs-3 mb-2">Votre panier est vide</h3>
+      <p class="text-muted mb-4">Découvrez nos produits et ajoutez vos favoris ici.</p>
+      <a href="{% url 'catalogue:index' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-store me-2"></i>Voir nos produits
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function getCsrf() {
+    for (const c of document.cookie.split(';')) {
+      const [k, v] = c.trim().split('=');
+      if (k === 'csrftoken') return decodeURIComponent(v);
+    }
+    return '';
+  }
+
+  function parsePrice(text) {
+    return parseFloat(
+      (text || '0').replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, '')
+    ) || 0;
+  }
+
+  function fmt(v) {
+    return parseFloat(v).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' HTG';
+  }
+
+  document.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const produitId  = this.dataset.produitId;
+      const input      = document.querySelector(`.qty-input[data-produit-id="${produitId}"]`);
+      const row        = this.closest('.cart-item-row');
+      const subtotalEl = document.getElementById(`subtotal-${produitId}`);
+
+      if (!input) return;
+
+      let qty = parseInt(input.value) || 1;
+      const max = parseInt(input.max);
+
+      if (this.classList.contains('increase') && qty < max) qty++;
+      else if (this.classList.contains('decrease') && qty > 1) qty--;
+      else return;
+
+      // Mise à jour optimiste immédiate
+      input.value = qty;
+      const unitPrice = parsePrice(row?.querySelector('.cart-item-price')?.textContent || '0');
+      if (subtotalEl) subtotalEl.textContent = fmt(unitPrice * qty);
+
+      // Recalc total local immédiat
+      let total = 0;
+      document.querySelectorAll('.cart-item-subtotal').forEach(el => total += parsePrice(el.textContent));
+      document.getElementById('cart-page-total').textContent    = fmt(total);
+      document.getElementById('cart-page-subtotal').textContent = fmt(total);
+
+      this.disabled = true;
+      try {
+        // POST — identique au modal
+        const res = await fetch(`/panier/modifier/${produitId}/${qty}/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCsrf(),
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        // Correction avec vraies valeurs serveur
+        if (subtotalEl) subtotalEl.textContent = fmt(data.item_total);
+        document.getElementById('cart-page-total').textContent    = fmt(data.total);
+        document.getElementById('cart-page-subtotal').textContent = fmt(data.total);
+
+        const badge = document.querySelector('.cart-count');
+        if (badge && data.cart_count !== undefined) badge.textContent = data.cart_count;
+
+    } catch (err) {
+        console.error('Erreur:', err);
+        // Restaurer la quantité
+        input.value = this.classList.contains('increase') ? qty - 1 : qty + 1;
+        // Restaurer les totaux aussi
+        let total = 0;
+        document.querySelectorAll('.cart-item-subtotal')
+                .forEach(el => total += parsePrice(el.textContent));
+        document.getElementById('cart-page-total').textContent    = fmt(total);
+        document.getElementById('cart-page-subtotal').textContent = fmt(total);
+    } finally {
+        this.disabled = false;
+      }
+    });
+  });
+
+});
+</script>
+{% endblock %}

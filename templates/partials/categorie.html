@@ -1,0 +1,19 @@
+{% load static %}
+<section class="categories">
+    <div class="container">
+        <h2 class="section-title">Nos Catégories</h2>
+        <div class="categories-grid">
+            {% for produit in produits %}
+                <div class="category-card">
+                <img src="{{ produit.get_image }}" alt="{{ produit.nom }}" class="category-img">
+                    <div class="category-overlay">
+                        <h3>{{ produit.nom }}</h3>
+                        <a href="{% url 'catalogue:detail' produit.id %}" class="btn btn-primary">Explorer</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Aucun produit trouvé dans cette catégorie.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

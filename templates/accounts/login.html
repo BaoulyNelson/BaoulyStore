@@ -1,0 +1,294 @@
+{% extends "auth_base.html" %}
+{% load static %}
+
+{% block title %}Connexion - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <!-- En-tête -->
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h2 class="auth-title">Connexion</h2>
+      <p class="auth-subtitle">Accédez à votre compte</p>
+    </div>
+
+
+    <!-- Erreurs non-field -->
+    {% if form.non_field_errors %}
+      <div class="messages">
+        <div class="alert alert-error" role="alert">
+          <i class="fas fa-exclamation-circle"></i>
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+
+    <!-- Formulaire de connexion -->
+    <form method="post" class="auth-form" id="loginForm" novalidate>
+      {% csrf_token %}
+      
+      <!-- Champ nom d'utilisateur/email -->
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">
+          <i class="fas fa-user"></i>
+          {% if form.username.label %}
+            {{ form.username.label }}
+          {% else %}
+            Nom d'utilisateur ou Email
+          {% endif %}
+          {% if form.username.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <input 
+          type="text" 
+          name="{{ form.username.name }}" 
+          id="{{ form.username.id_for_label }}" 
+          class="form-control{% if form.username.errors %} error{% endif %}"
+          value="{{ form.username.value|default_if_none:'' }}"
+          placeholder="Saisissez votre nom d'utilisateur ou email"
+          {% if form.username.field.required %}required{% endif %}
+          autocomplete="username"
+        >
+        {% if form.username.errors %}
+          <ul class="field-errors">
+            {% for error in form.username.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <!-- Champ mot de passe -->
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">
+          <i class="fas fa-lock"></i>
+          {{ form.password.label|default:"Mot de passe" }}
+          {% if form.password.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+        <div class="password-field">
+          <input 
+            type="password" 
+            name="{{ form.password.name }}" 
+            id="{{ form.password.id_for_label }}" 
+            class="form-control{% if form.password.errors %} error{% endif %}"
+            placeholder="Saisissez votre mot de passe"
+            {% if form.password.field.required %}required{% endif %}
+            autocomplete="current-password"
+          >
+          <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        {% if form.password.errors %}
+          <ul class="field-errors">
+            {% for error in form.password.errors %}
+              <li><i class="fas fa-exclamation-triangle"></i> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <!-- Checkbox "Se souvenir de moi" -->
+      <div class="remember-me">
+        <input type="checkbox" name="remember_me" id="remember_me">
+        <label for="remember_me">
+          <i class="fas fa-memory"></i>
+          Se souvenir de moi
+        </label>
+      </div>
+      
+      <!-- Bouton de connexion -->
+      <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Se connecter</span>
+      </button>
+    </form>
+    
+    <!-- Liens d'authentification -->
+    <div class="auth-links">
+      <p>
+        <a href="{% url 'accounts:password_reset' %}">
+          <i class="fas fa-key"></i>
+          Mot de passe oublié ?
+        </a>
+      </p>
+      <p>
+        Vous n'avez pas encore de compte ?
+        <a href="{% url 'accounts:signup' %}">
+          <i class="fas fa-user-plus"></i>
+          Créer un compte
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript pour l'interactivité -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const passwordToggle = document.querySelector('.password-toggle');
+    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+
+    // Gestion du toggle du mot de passe
+    if (passwordToggle && passwordField) {
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+            
+            const icon = this.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Gestion de la soumission du formulaire
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Animation du bouton de soumission
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+            
+            // Validation côté client
+            const username = form.querySelector('[name="username"]').value.trim();
+            const password = form.querySelector('[name="password"]').value;
+            
+            if (!username || !password) {
+                e.preventDefault();
+                showFieldError('Veuillez remplir tous les champs requis.');
+                resetSubmitButton();
+                return;
+            }
+        });
+    }
+
+    // Validation en temps réel
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                this.classList.remove('error');
+                const errorList = this.parentNode.querySelector('.field-errors');
+                if (errorList) {
+                    errorList.remove();
+                }
+            }
+        });
+    });
+
+    // Fonctions utilitaires
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        
+        if (field.required && !value) {
+            showFieldError(`Le champ ${getFieldLabel(fieldName)} est requis.`, field);
+            return false;
+        }
+        
+        if (fieldName === 'username' && value) {
+            // Validation basique pour email ou nom d'utilisateur
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isEmail = emailRegex.test(value);
+            const isValidUsername = /^[a-zA-Z0-9_.-]{3,}$/.test(value);
+            
+            if (!isEmail && !isValidUsername) {
+                showFieldError('Format invalide. Utilisez un email ou un nom d\'utilisateur valide.', field);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    function showFieldError(message, field = null) {
+        if (field) {
+            field.classList.add('error');
+            
+            // Supprimer l'ancien message d'erreur
+            const existingError = field.parentNode.querySelector('.field-errors');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Ajouter le nouveau message
+            const errorDiv = document.createElement('ul');
+            errorDiv.className = 'field-errors';
+            errorDiv.innerHTML = `<li><i class="fas fa-exclamation-triangle"></i> ${message}</li>`;
+            field.parentNode.appendChild(errorDiv);
+        } else {
+            // Message d'erreur général
+            const existingAlert = document.querySelector('.messages .alert-error');
+            if (!existingAlert) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'messages';
+                alertDiv.innerHTML = `
+                    <div class="alert alert-error" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        ${message}
+                    </div>
+                `;
+                form.insertBefore(alertDiv, form.firstChild);
+                
+                // Auto-suppression après 5 secondes
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+    }
+
+    function getFieldLabel(fieldName) {
+        const labels = {
+            'username': 'nom d\'utilisateur',
+            'password': 'mot de passe'
+        };
+        return labels[fieldName] || fieldName;
+    }
+
+    function resetSubmitButton() {
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.disabled = false;
+    }
+
+    // Auto-focus sur le premier champ
+    const firstInput = form.querySelector('.form-control');
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+    // Suppression automatique des messages après 5 secondes
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 300);
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

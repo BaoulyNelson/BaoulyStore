@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Recherche{% endblock %}
+
+{% block extra_css %}
+<style>
+ .search-hero {
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-container {
+  position: relative;
+  z-index: 2;
+}
+
+.search-title {
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.search-subtitle {
+  color: #a0a0a0;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+.search-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-form {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.search-form:focus-within {
+  border-color: #ffffff;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.1rem;
+  padding: 15px 25px;
+  border-radius: 8px;
+}
+
+.search-input::placeholder {
+  color: #666666;
+}
+
+.search-input:focus {
+  box-shadow: none;
+  background: transparent;
+  color: #ffffff;
+}
+
+.search-btn {
+  background: #ffffff;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.search-btn:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.search-suggestions {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.suggestion-tag {
+  display: inline-block;
+  background: transparent;
+  color: #a0a0a0;
+  padding: 6px 14px;
+  margin: 5px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: 1px solid #3a3a3a;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.suggestion-tag:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Features */
+.search-features {
+  background: #f5f5f5;
+  padding: 80px 0;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #ffffff;
+  font-size: 1.6rem;
+}
+
+.feature-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.feature-description {
+  color: #666666;
+  line-height: 1.6;
+}
+
+/* Quick access */
+.quick-access {
+  background: #ffffff;
+  padding: 60px 0;
+}
+
+.category-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.category-card:hover {
+  border-color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+}
+
+.category-icon {
+  width: 56px;
+  height: 56px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: #ffffff;
+  font-size: 1.4rem;
+}
+
+.category-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-title {
+    font-size: 2.2rem;
+  }
+
+  .search-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .search-form-container {
+    max-width: 90%;
+  }
+
+  .search-input {
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+
+  .search-btn {
+    padding: 12px 20px;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section avec recherche -->
+<section class="search-hero">
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+  
+  <div class="container search-container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h1 class="search-title">Trouvez le produit parfait</h1>
+        <p class="search-subtitle">Explorez notre vaste collection de produits de qualité</p>
+        
+        <div class="search-form-container">
+          <form action="{% url 'catalogue:search_results' %}" method="GET" class="search-form">
+            <div class="input-group">
+              <input type="text" 
+                     name="q" 
+                     id="search-input" 
+                     class="form-control search-input" 
+                     placeholder="Rechercher un produit, une marque, une catégorie..." 
+                     required />
+              <button type="submit" class="btn search-btn">
+                <i class="fas fa-search me-2"></i>Rechercher
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Suggestions de recherche -->
+        <div class="search-suggestions">
+          <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">Recherches populaires :</p>
+          <a href="{% url 'catalogue:categorie' 'homme' %}" class="suggestion-tag">
+            <i class="fas fa-male me-1"></i>Homme
+          </a>
+          <a href="{% url 'catalogue:categorie' 'femme' %}" class="suggestion-tag">
+            <i class="fas fa-female me-1"></i>Femme
+          </a>
+          <a href="{% url 'catalogue:categorie' 'enfant' %}" class="suggestion-tag">
+            <i class="fas fa-child me-1"></i>Enfant
+          </a>
+          <a href="{% url 'catalogue:liste' %}" class="suggestion-tag">
+            <i class="fas fa-fire me-1"></i>Tendances
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section d'accès rapide aux catégories -->
+<section class="quick-access">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-12">
+        <h2 class="mb-3" style="color: #2d3748; font-weight: 700;">Parcourir par catégorie</h2>
+        <p style="color: #718096;">Découvrez nos collections organisées pour vous</p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-3 col-md-6 mb-4">
+        <a href="{% url 'catalogue:categorie' 'homme' %}" class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-male"></i>
+          </div>
+          <div class="category-name">Collection Homme</div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <a href="{% url 'catalogue:categorie' 'femme' %}" class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-female"></i>
+          </div>
+          <div class="category-name">Collection Femme</div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <a href="{% url 'catalogue:categorie' 'enfant' %}" class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-child"></i>
+          </div>
+          <div class="category-name">Collection Enfant</div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <a href="{% url 'catalogue:liste' %}" class="category-card">
+          <div class="category-icon">
+            <i class="fas fa-th-large"></i>
+          </div>
+          <div class="category-name">Tous les produits</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section des fonctionnalités -->
+<section class="search-features">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-12">
+        <h2 class="mb-3" style="color: #2d3748; font-weight: 700;">Pourquoi nous choisir ?</h2>
+        <p style="color: #718096;">Une expérience de recherche optimisée pour vous</p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3 class="feature-title">Recherche Intelligente</h3>
+          <p class="feature-description">
+            Notre système de recherche avancé vous aide à trouver exactement ce que vous cherchez en quelques secondes.
+          </p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <h3 class="feature-title">Produits de Qualité</h3>
+          <p class="feature-description">
+            Tous nos produits sont soigneusement sélectionnés pour leur qualité et leur durabilité exceptionnelles.
+          </p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-12">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-shipping-fast"></i>
+          </div>
+          <h3 class="feature-title">Livraison Rapide</h3>
+          <p class="feature-description">
+            Bénéficiez d'une livraison rapide et sécurisée pour tous vos achats, partout où vous êtes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Script pour le focus automatique -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    
+    // Focus automatique
+    searchInput.focus();
+    
+    // Animation de typing pour le placeholder
+    const placeholders = [
+        "Rechercher un produit...",
+        "Rechercher une marque...",
+        "Rechercher une catégorie...",
+        "Que cherchez-vous ?"
+    ];
+    
+    let currentIndex = 0;
+    
+    function changePlaceholder() {
+        searchInput.placeholder = placeholders[currentIndex];
+        currentIndex = (currentIndex + 1) % placeholders.length;
+    }
+    
+    // Change le placeholder toutes les 3 secondes
+    setInterval(changePlaceholder, 3000);
+    
+    // Effet de focus sur le formulaire
+    searchInput.addEventListener('focus', function() {
+        this.parentElement.parentElement.style.transform = 'translateY(-2px)';
+    });
+    
+    searchInput.addEventListener('blur', function() {
+        this.parentElement.parentElement.style.transform = 'translateY(0)';
+    });
+});
+</script>
+
+{% endblock %}

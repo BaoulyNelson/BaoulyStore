@@ -1,26 +1,8 @@
-:root {
-        --primary-color: #2c3e50;
-        --secondary-color: #3498db;
-        --accent-color: #e74c3c;
-        --success-color: #27ae60;
-        --warning-color: #f39c12;
-        --light-gray: #ecf0f1;
-        --dark-gray: #7f8c8d;
-        --white: #ffffff;
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
-        --border-radius: 8px;
-        --transition: all 0.3s ease;
-    }
 
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+
 
     .hero-section {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        color: white;
+               color: white;
         padding: 60px 0;
         margin-bottom: 40px;
     }
@@ -399,7 +381,7 @@
     .btn-add-cart {
         flex: 1;
         background: var(--secondary-color);
-        color: white;
+       
         border: none;
         padding: 12px;
         border-radius: var(--border-radius);
@@ -412,7 +394,6 @@
     }
 
     .btn-add-cart:hover {
-        background: #2980b9;
         transform: translateY(-1px);
     }
 

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container py-4">
+  <div class="card shadow-sm border-0 rounded-4 mx-auto" style="max-width: 700px;">
+    <div class="card-body p-4">
+
+      <!-- Onglets -->
+      <ul class="nav nav-tabs mb-4" id="profileTabs">
+        <li class="nav-item">
+          <a class="nav-link {% if not password_form %}active{% endif %}"
+             href="{% url 'accounts:edit_profile' %}">
+            <i class="fas fa-user-edit me-1"></i> Profil
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if password_form %}active{% endif %}"
+             href="{% url 'accounts:change_password' %}">
+            <i class="fas fa-lock me-1"></i> Mot de passe
+          </a>
+        </li>
+      </ul>
+
+      {% if not password_form %}
+      <!-- Formulaire profil -->
+      <form method="POST" action="{% url 'accounts:edit_profile' %}">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-1"></i> Enregistrer
+          </button>
+          <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i> Annuler
+          </a>
+        </div>
+      </form>
+
+      {% else %}
+      <!-- Formulaire mot de passe -->
+      <form method="POST" action="{% url 'accounts:change_password' %}">
+        {% csrf_token %}
+        {% for field in password_form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+              {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-key me-1"></i> Changer le mot de passe
+          </button>
+          <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i> Annuler
+          </a>
+        </div>
+      </form>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

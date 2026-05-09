@@ -1,25 +1,26 @@
   /* Styles pour le conteneur d'authentification */
-  .auth-wrapper {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    position: relative;
-  }
+.auth-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  min-height: 100vh;
 
-  .auth-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("{% static 'images/pattern.svg' %}") repeat;
-    opacity: 0.1;
-    pointer-events: none;
-  }
+  /* ✅ Image directement ici, comme sur logout */
+  background: url("/static/images/LogoHaiti.png") no-repeat center center;
+  background-size: cover;
+}
+
+.auth-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  /* ✅ Overlay semi-transparent pour lisibilité, PAS l'image */
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
 
   .auth-container {
     background: rgba(255, 255, 255, 0.95);
@@ -41,7 +42,6 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
   }
@@ -62,7 +62,6 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 1rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -77,7 +76,6 @@
     font-weight: 700;
     color: #2c3e50;
     margin: 0;
-    background: linear-gradient(135deg, #2c3e50, #667eea);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -222,59 +220,6 @@
     user-select: none;
   }
 
-  /* Bouton de connexion */
-  .btn-primary {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-  }
-
-  .btn-primary:active {
-    transform: translateY(0);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .btn-loading {
-    position: relative;
-    color: transparent;
-  }
-
-  .btn-loading::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 50%;
-    left: 50%;
-    margin-left: -10px;
-    margin-top: -10px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: button-loading-spinner 1s ease infinite;
-  }
-
   @keyframes button-loading-spinner {
     from { transform: rotate(0turn); }
     to { transform: rotate(1turn); }
@@ -314,7 +259,6 @@
     height: 2px;
     bottom: -2px;
     left: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
     transition: all 0.3s ease;
     transform: translateX(-50%);
   }
@@ -441,7 +385,6 @@
     }
 
     .auth-title {
-      background: linear-gradient(135deg, #e2e8f0, #667eea);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -458,3 +401,52 @@
       background: rgba(255, 255, 255, 0.15);
     }
   }
+
+
+  /* Conteneur du champ mot de passe */
+.password-field {
+  position: relative;
+}
+
+.password-field .form-control {
+  padding-right: 50px; /* espace pour le bouton œil */
+}
+
+/* Bouton œil positionné à l'intérieur */
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  z-index: 2;
+}
+
+.password-toggle:hover {
+  color: #667eea;
+}
+
+.password-toggle:focus {
+  outline: none;
+}
+
+
+.requirements-list li.met {
+    color: #27ae60;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+.requirements-list li.met .icon i {
+    color: #27ae60;
+}
+.requirements-list li:not(.met) .icon i {
+    color: #e74c3c;
+}

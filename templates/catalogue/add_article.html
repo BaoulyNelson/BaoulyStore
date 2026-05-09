@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter un article{% endblock %}
+
+{% block extra_css %}
+<style>
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+  }
+  .page-header h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+  .page-header .breadcrumb {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: 0;
+  }
+  .page-header .breadcrumb a {
+    color: #6b7280;
+    text-decoration: none;
+  }
+  .page-header .breadcrumb a:hover { color: #374151; }
+
+  .form-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .card-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-section:last-child { margin-bottom: 0; }
+  .section-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .field-group { margin-bottom: 1rem; }
+  .field-group:last-child { margin-bottom: 0; }
+  .field-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.4rem;
+  }
+  .field-group label .req {
+    color: #ef4444;
+    margin-left: 2px;
+  }
+  .field-group .hint {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-top: 0.3rem;
+  }
+  .field-group .error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    margin-top: 0.3rem;
+  }
+
+  /* Champs Django stylisés */
+  .field-group input[type="text"],
+  .field-group input[type="number"],
+  .field-group select,
+  .field-group textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+  }
+  .field-group textarea { resize: vertical; min-height: 100px; }
+
+  /* Prix avec badge HTG */
+  .prix-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .prix-wrapper:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+  }
+  .prix-wrapper input {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+  }
+  .prix-wrapper .badge-htg {
+    padding: 0 .75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f9fafb;
+    border-left: 1px solid #e5e7eb;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Upload image */
+  .upload-zone {
+    border: 1.5px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+    background: #fafafa;
+  }
+  .upload-zone:hover { border-color: #6366f1; background: #f5f5ff; }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-zone .upload-icon {
+    font-size: 1.75rem;
+    color: #9ca3af;
+    margin-bottom: .5rem;
+  }
+  .upload-zone .upload-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+  .upload-zone .upload-label strong { color: #4f46e5; }
+  #imagePreview {
+    margin-top: .75rem;
+    display: none;
+  }
+  #imagePreview img {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  /* Couleur */
+  .color-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .color-row input[type="color"] {
+    width: 40px; height: 38px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 2px;
+    cursor: pointer;
+    background: none;
+  }
+  .color-hex {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-family: monospace;
+  }
+
+  /* Actions sidebar */
+  .sidebar-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .sidebar-card:last-child { margin-bottom: 0; }
+  .sidebar-card .s-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+  
+  .stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: 0.72rem;
+    padding: .25rem .6rem;
+    border-radius: 20px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-weight: 500;
+    margin-top: .5rem;
+  }
+  .stock-badge.low { background: #fef3c7; color: #92400e; }
+  .stock-badge.empty { background: #fef2f2; color: #991b1b; }
+
+  /* Erreurs générales */
+  .alert-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-size: .8rem;
+    color: #991b1b;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-layout { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+
+  <!-- En-tête -->
+  <div class="page-header">
+    <div>
+      <h4>Ajouter un article</h4>
+      <p class="breadcrumb">
+        <a href="{% url 'catalogue:liste' %}">Catalogue</a>
+        &rsaquo; Nouvel article
+      </p>
+    </div>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ form.non_field_errors.0 }}
+    </div>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" id="articleForm" novalidate>
+    {% csrf_token %}
+
+    <div class="form-layout">
+
+      <!-- Colonne principale -->
+      <div>
+
+        <!-- Informations générales -->
+        <div class="card-section">
+          <p class="section-heading">Informations générales</p>
+
+          <div class="field-group">
+            <label for="{{ form.nom.id_for_label }}">
+              Nom du produit <span class="req">*</span>
+            </label>
+            {{ form.nom }}
+            {% if form.nom.errors %}
+              <p class="error">{{ form.nom.errors.0 }}</p>
+            {% endif %}
+            <p class="hint">Saisissez un nom descriptif et unique pour votre produit.</p>
+          </div>
+
+          <div class="field-group">
+            <label for="{{ form.categorie.id_for_label }}">
+              Catégorie <span class="req">*</span>
+            </label>
+            {{ form.categorie }}
+            {% if form.categorie.errors %}
+              <p class="error">{{ form.categorie.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div class="field-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+              <p class="error">{{ form.description.errors.0 }}</p>
+            {% endif %}
+            <p class="hint">Une description détaillée aide les clients à comprendre le produit.</p>
+          </div>
+        </div>
+
+        <!-- Prix et stock -->
+        <div class="card-section">
+          <p class="section-heading">Prix et inventaire</p>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="field-group">
+                <label for="{{ form.prix.id_for_label }}">
+                  Prix <span class="req">*</span>
+                </label>
+                <div class="prix-wrapper">
+                  {{ form.prix }}
+                  <span class="badge-htg">HTG</span>
+                </div>
+                {% if form.prix.errors %}
+                  <p class="error">{{ form.prix.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="field-group">
+                <label for="{{ form.quantite_en_stock.id_for_label }}">
+                  Quantité en stock <span class="req">*</span>
+                </label>
+                {{ form.quantite_en_stock }}
+                {% if form.quantite_en_stock.errors %}
+                  <p class="error">{{ form.quantite_en_stock.errors.0 }}</p>
+                {% endif %}
+                <span class="stock-badge" id="stockBadge" style="display:none;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apparence -->
+        <div class="card-section">
+          <p class="section-heading">Apparence et média</p>
+
+          <div class="field-group">
+            <label>Image du produit</label>
+            <div class="upload-zone" id="uploadZone">
+              {{ form.image }}
+              <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+              <div class="upload-label">
+                <strong>Choisir une image</strong> ou glisser-déposer
+              </div>
+              <div class="hint" style="margin-top:.35rem;">JPG, PNG, GIF — max 5 Mo</div>
+            </div>
+            <div id="imagePreview">
+              <img id="previewImg" src="" alt="Aperçu">
+            </div>
+            {% if form.image.errors %}
+              <p class="error">{{ form.image.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div class="field-group">
+            <label for="{{ form.couleur.id_for_label }}">Couleur</label>
+            <div class="color-row">
+              {{ form.couleur }}
+              <span class="color-hex" id="colorHex">#000000</span>
+            </div>
+            {% if form.couleur.errors %}
+              <p class="error">{{ form.couleur.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar actions -->
+      <div>
+<div class="card border-0 shadow-sm rounded-4 sidebar-card">
+  <div class="card-body p-4">
+
+    <!-- Titre -->
+    <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+      <i class="fas fa-upload text-primary"></i>
+      Publication
+    </h5>
+
+    <!-- Actions -->
+    <div class="d-grid gap-3">
+
+      <!-- Enregistrer -->
+      <button type="submit"
+              class="btn btn-primary rounded-3 py-2 fw-semibold"
+              form="articleForm">
+        <i class="fas fa-save me-2"></i>
+        Enregistrer l'article
+      </button>
+
+      <!-- Enregistrer et ajouter -->
+      <button type="submit"
+              class="btn btn-outline-primary rounded-3 py-2"
+              form="articleForm"
+              name="save_and_add_another">
+        <i class="fas fa-plus me-2"></i>
+        Enregistrer et ajouter
+      </button>
+
+      <!-- Enregistrer et continuer -->
+      <button type="submit"
+              class="btn btn-outline-secondary rounded-3 py-2"
+              form="articleForm"
+              name="save_and_continue_editing">
+        <i class="fas fa-edit me-2"></i>
+        Enregistrer et continuer
+      </button>
+
+      <!-- Annuler -->
+      <a href="{% url 'catalogue:liste' %}"
+         class="btn btn-light border rounded-3 py-2">
+        <i class="fas fa-times me-2"></i>
+        Annuler
+      </a>
+
+    </div>
+
+  </div>
+</div>
+
+        <div class="sidebar-card">
+          <p class="s-heading">Conseils</p>
+          <ul style="font-size:.78rem; color:#6b7280; padding-left:1rem; margin:0; line-height:1.8;">
+            <li>Utilisez un fond blanc pour les photos produit.</li>
+            <li>Un nom court et précis améliore la recherche.</li>
+            <li>Définissez une alerte de stock bas dans les paramètres.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Aperçu image
+  const fileInput = document.querySelector('input[type="file"]');
+  const preview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const uploadZone = document.getElementById('uploadZone');
+
+  fileInput && fileInput.addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        preview.style.display = 'block';
+        uploadZone.style.borderStyle = 'solid';
+        uploadZone.style.borderColor = '#6366f1';
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+
+  // Couleur hex
+  const colorInput = document.querySelector('input[type="color"]');
+  const colorHex = document.getElementById('colorHex');
+  if (colorInput && colorHex) {
+    colorHex.textContent = colorInput.value;
+    colorInput.addEventListener('input', () => {
+      colorHex.textContent = colorInput.value;
+    });
+  }
+
+  // Badge stock
+  const qtyInput = document.getElementById('{{ form.quantite_en_stock.id_for_label }}');
+  const stockBadge = document.getElementById('stockBadge');
+  function updateStockBadge(val) {
+    if (!stockBadge) return;
+    const n = parseInt(val, 10);
+    if (isNaN(n)) { stockBadge.style.display = 'none'; return; }
+    stockBadge.style.display = 'inline-flex';
+    stockBadge.className = 'stock-badge';
+    if (n === 0) {
+      stockBadge.className += ' empty';
+      stockBadge.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
+    } else if (n <= 5) {
+      stockBadge.className += ' low';
+      stockBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Stock faible';
+    } else {
+      stockBadge.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
+    }
+  }
+  qtyInput && qtyInput.addEventListener('input', e => updateStockBadge(e.target.value));
+</script>
+{% endblock %}

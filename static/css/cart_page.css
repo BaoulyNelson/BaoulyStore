@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════
+   PANIER — CSS résiduel (ce que Bootstrap ne couvre pas)
+   ═══════════════════════════════════════════════ */
+
+/* Titre Playfair */
+.cart-page-title {
+  font-family: var(--font-main);
+  font-weight: 400;
+  color: var(--secondary-color);
+}
+
+/* Image produit — taille fixe */
+.cart-item-img {
+  width: 88px;
+  height: 108px;
+  background: var(--light-color);
+}
+.cart-item-img img {
+  transition: transform .4s ease;
+}
+.cart-item-row:hover .cart-item-img img {
+  transform: scale(1.05);
+}
+
+/* Hover ligne */
+.cart-item-row {
+  transition: background .2s;
+}
+.cart-item-row:hover {
+  background: var(--light-color);
+}
+
+/* Nom produit en Playfair */
+.cart-item-name {
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--secondary-color);
+}
+
+/* Sous-total ligne */
+.cart-item-subtotal {
+  font-family: var(--font-main);
+  font-size: 1.15rem;
+  white-space: nowrap;
+  color: var(--secondary-color);
+}
+
+/* Groupe quantité — largeur contenue */
+.cart-qty-group {
+  max-width: 130px;
+}
+.cart-qty-group .qty-input {
+  -moz-appearance: textfield;
+}
+.cart-qty-group .qty-input::-webkit-outer-spin-button,
+.cart-qty-group .qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Bouton MonCash */
+.btn-moncash {
+  background: red;
+  color: #fff;
+  border: none;
+  font-family: var(--font-secondary);
+  font-size: .85rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: .8rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background .2s, transform .15s;
+}
+.btn-moncash:hover {
+  background: red;
+  color: white; 
+  transform: translateY(-2px);
+}
+
+/* Récapitulatif sticky */
+.cart-summary-card {
+  position: sticky;
+  top: 100px;
+}
+
+/* Bouton supprimer — discret */
+.btn-remove {
+  opacity: .4;
+  transition: opacity .2s, color .2s;
+}
+.btn-remove:hover {
+  opacity: 1;
+}
+
+@media (max-width: 576px) {
+  .cart-summary-card { position: static; }
+}

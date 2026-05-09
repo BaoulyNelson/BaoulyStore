@@ -1,0 +1,512 @@
+[
+  {
+    "model": "catalogue.produit",
+    "pk": 1,
+    "fields": {
+      "nom": "jeans",
+      "description": "Jean coupe droite en denim épais, confortable et résistant pour un usage quotidien.",
+      "categorie": "homme",
+      "prix": "1800.00",
+      "quantite_en_stock": 25,
+      "image_url": "https://images.unsplash.com/photo-1542219550-37153d387c27?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-04-01T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 2,
+    "fields": {
+      "nom": "tshirt_homme",
+      "description": "T-shirt homme en coton 100% respirant, idéal pour les journées chaudes.",
+      "categorie": "homme",
+      "prix": "650.00",
+      "quantite_en_stock": 40,
+      "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "blanc",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-04-02T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 3,
+    "fields": {
+      "nom": "chemise_homme",
+      "description": "Chemise homme à manches longues, coupe slim, parfaite pour le bureau ou une sortie élégante.",
+      "categorie": "homme",
+      "prix": "1500.00",
+      "quantite_en_stock": 18,
+      "image_url": "https://images.unsplash.com/photo-1598033159083-2491aba0c8b2?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-10T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 4,
+    "fields": {
+      "nom": "polo_homme",
+      "description": "Polo homme en piqué de coton avec col côtelé, style décontracté chic.",
+      "categorie": "homme",
+      "prix": "900.00",
+      "quantite_en_stock": 30,
+      "image_url": "https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-15T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 5,
+    "fields": {
+      "nom": "hoodie_homme",
+      "description": "Hoodie homme en molleton doux avec poche kangourou, parfait pour les soirées fraîches.",
+      "categorie": "homme",
+      "prix": "2200.00",
+      "quantite_en_stock": 12,
+      "image_url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "gris",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-03-20T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 6,
+    "fields": {
+      "nom": "veste_homme",
+      "description": "Veste légère imperméable pour homme, idéale pour la mi-saison.",
+      "categorie": "homme",
+      "prix": "3500.00",
+      "quantite_en_stock": 8,
+      "image_url": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-15T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 7,
+    "fields": {
+      "nom": "pantalon_homme",
+      "description": "Pantalon chino homme coupe ajustée, tissu stretch très confortable.",
+      "categorie": "homme",
+      "prix": "2000.00",
+      "quantite_en_stock": 20,
+      "image_url": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "marron",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-10T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 8,
+    "fields": {
+      "nom": "short_homme",
+      "description": "Short homme en coton léger avec cordon de serrage, confortable pour le sport ou la plage.",
+      "categorie": "homme",
+      "prix": "750.00",
+      "quantite_en_stock": 35,
+      "image_url": "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-05T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 9,
+    "fields": {
+      "nom": "sweat_homme",
+      "description": "Sweatshirt homme col rond en molleton gratté, coupe décontractée.",
+      "categorie": "homme",
+      "prix": "1800.00",
+      "quantite_en_stock": 15,
+      "image_url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "gris",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-02-28T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 10,
+    "fields": {
+      "nom": "pull_homme",
+      "description": "Pull homme en laine mélangée, chaud et doux, col en V classique.",
+      "categorie": "homme",
+      "prix": "2500.00",
+      "quantite_en_stock": 10,
+      "image_url": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "marron",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-02-20T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 11,
+    "fields": {
+      "nom": "robe_femme",
+      "description": "Robe femme midi à fleurs, légère et fluide, parfaite pour l'été.",
+      "categorie": "femme",
+      "prix": "2800.00",
+      "quantite_en_stock": 20,
+      "image_url": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rose",
+      "populaire": true,
+      "nouveau": true,
+      "date_ajout": "2026-04-18T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 12,
+    "fields": {
+      "nom": "top_femme",
+      "description": "Top femme sans manches en satin, élégant et polyvalent.",
+      "categorie": "femme",
+      "prix": "900.00",
+      "quantite_en_stock": 30,
+      "image_url": "https://images.unsplash.com/photo-1508427953056-b00b179ef8b0?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "blanc",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-04-05T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 13,
+    "fields": {
+      "nom": "jupe_femme",
+      "description": "Jupe femme crayon en tissu stretch, coupe mi-longue et silhouette élégante.",
+      "categorie": "femme",
+      "prix": "1600.00",
+      "quantite_en_stock": 18,
+      "image_url": "https://images.unsplash.com/photo-1583496661160-fb5218eca1c6?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-25T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 14,
+    "fields": {
+      "nom": "chemise_femme",
+      "description": "Chemise femme en popeline légère avec col boutonné, coupe relaxée.",
+      "categorie": "femme",
+      "prix": "1400.00",
+      "quantite_en_stock": 22,
+      "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "blanc",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-12T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 15,
+    "fields": {
+      "nom": "pantalon_femme",
+      "description": "Pantalon femme taille haute en tissu fluide, coupe droite et moderne.",
+      "categorie": "femme",
+      "prix": "2100.00",
+      "quantite_en_stock": 16,
+      "image_url": "https://images.unsplash.com/photo-1594938298603-c8148c4b4057?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-18T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 16,
+    "fields": {
+      "nom": "cardigan_femme",
+      "description": "Cardigan femme long en maille douce, avec poches latérales pratiques.",
+      "categorie": "femme",
+      "prix": "2300.00",
+      "quantite_en_stock": 14,
+      "image_url": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "gris",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-08T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 17,
+    "fields": {
+      "nom": "veste_femme",
+      "description": "Veste femme blazer en tissu structuré, parfaite pour un look professionnel.",
+      "categorie": "femme",
+      "prix": "3200.00",
+      "quantite_en_stock": 10,
+      "image_url": "https://images.unsplash.com/photo-1548624313-0396c75e4b1a?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": true,
+      "nouveau": true,
+      "date_ajout": "2026-04-20T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 18,
+    "fields": {
+      "nom": "hoodie_femme",
+      "description": "Hoodie femme oversize en molleton doux, style cozy et tendance.",
+      "categorie": "femme",
+      "prix": "2000.00",
+      "quantite_en_stock": 20,
+      "image_url": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rose",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-03-30T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 19,
+    "fields": {
+      "nom": "combinaison_femme",
+      "description": "Combinaison pantalon femme en crêpe, chic et confortable pour toute occasion.",
+      "categorie": "femme",
+      "prix": "3800.00",
+      "quantite_en_stock": 7,
+      "image_url": "https://images.unsplash.com/photo-1617922001439-4a2e6562f328?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-22T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 20,
+    "fields": {
+      "nom": "short_femme",
+      "description": "Short femme en jean taille haute, style casual décontracté.",
+      "categorie": "femme",
+      "prix": "1100.00",
+      "quantite_en_stock": 25,
+      "image_url": "https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-12T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 21,
+    "fields": {
+      "nom": "tshirt_enfant",
+      "description": "T-shirt enfant en coton doux, avec motif imprimé amusant.",
+      "categorie": "enfant",
+      "prix": "450.00",
+      "quantite_en_stock": 50,
+      "image_url": "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rouge",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-04-03T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 22,
+    "fields": {
+      "nom": "pantalon_enfant",
+      "description": "Pantalon enfant en coton stretch avec ceinture élastique confortable.",
+      "categorie": "enfant",
+      "prix": "800.00",
+      "quantite_en_stock": 35,
+      "image_url": "https://images.unsplash.com/photo-1503944583220-79d4dd701819?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-22T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 23,
+    "fields": {
+      "nom": "robe_enfant",
+      "description": "Robe enfant à smocks avec nœud dans le dos, légère et festive.",
+      "categorie": "enfant",
+      "prix": "1200.00",
+      "quantite_en_stock": 20,
+      "image_url": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rose",
+      "populaire": true,
+      "nouveau": true,
+      "date_ajout": "2026-04-16T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 24,
+    "fields": {
+      "nom": "sweat_enfant",
+      "description": "Sweatshirt enfant molletonné avec capuche et cordon de serrage.",
+      "categorie": "enfant",
+      "prix": "950.00",
+      "quantite_en_stock": 28,
+      "image_url": "https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "gris",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-14T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 25,
+    "fields": {
+      "nom": "short_enfant",
+      "description": "Short enfant en jersey léger avec poches, idéal pour jouer à l'extérieur.",
+      "categorie": "enfant",
+      "prix": "500.00",
+      "quantite_en_stock": 40,
+      "image_url": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-03-02T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 26,
+    "fields": {
+      "nom": "veste_enfant",
+      "description": "Veste coupe-vent enfant légère avec capuche amovible, coloris vif.",
+      "categorie": "enfant",
+      "prix": "1800.00",
+      "quantite_en_stock": 15,
+      "image_url": "https://images.unsplash.com/photo-1611042553484-d61f84d22784?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rouge",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-14T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 27,
+    "fields": {
+      "nom": "pyjama_enfant",
+      "description": "Pyjama enfant deux pièces en coton doux avec motifs étoiles.",
+      "categorie": "enfant",
+      "prix": "1100.00",
+      "quantite_en_stock": 22,
+      "image_url": "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "bleu",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-02-25T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 28,
+    "fields": {
+      "nom": "pull_enfant",
+      "description": "Pull enfant en laine douce avec col roulé, chaud pour l'hiver.",
+      "categorie": "enfant",
+      "prix": "1300.00",
+      "quantite_en_stock": 18,
+      "image_url": "https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "rouge",
+      "populaire": false,
+      "nouveau": false,
+      "date_ajout": "2026-02-18T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 29,
+    "fields": {
+      "nom": "doudoune",
+      "description": "Doudoune unisexe légère et chaude, rembourrage en fibres synthétiques recyclées.",
+      "categorie": "homme",
+      "prix": "4500.00",
+      "quantite_en_stock": 5,
+      "image_url": "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "noir",
+      "populaire": true,
+      "nouveau": false,
+      "date_ajout": "2026-02-10T08:00:00Z"
+    }
+  },
+  {
+    "model": "catalogue.produit",
+    "pk": 30,
+    "fields": {
+      "nom": "pantalon_sport",
+      "description": "Pantalon de sport unisexe en tissu technique respirant, coupe ajustée.",
+      "categorie": "homme",
+      "prix": "1600.00",
+      "quantite_en_stock": 30,
+      "image_url": "https://images.unsplash.com/photo-1624200562718-dbe4a2f99e6f?w=600&fit=crop&q=80",
+      "image": null,
+      "couleur": "gris",
+      "populaire": false,
+      "nouveau": true,
+      "date_ajout": "2026-04-08T08:00:00Z"
+    }
+  }
+]
